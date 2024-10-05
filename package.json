@@ -1,0 +1,52 @@
+{
+  "name": "di-wise",
+  "packageManager": "yarn@4.5.0",
+  "version": "0.0.0",
+  "description": "",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/es/index.mjs",
+  "types": "./dist/cjs/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/es/index.d.mts",
+        "default": "./dist/es/index.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    }
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc && bunchee",
+    "lint": "eslint . --cache --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/exuanbo/di-wise.git"
+  },
+  "keywords": [],
+  "author": "exuanbo <exuanbo@protonmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/exuanbo/di-wise/issues"
+  },
+  "homepage": "https://github.com/exuanbo/di-wise#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.12.0",
+    "@stylistic/eslint-plugin": "^2.9.0",
+    "@types/eslint__js": "^8.42.3",
+    "@types/node": "^22.7.4",
+    "bunchee": "^5.5.0",
+    "eslint": "^9.12.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "globals": "^15.10.0",
+    "typescript": "5.5.4",
+    "typescript-eslint": "^8.8.0"
+  }
+}

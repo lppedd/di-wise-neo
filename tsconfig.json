@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    // Type Checking
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+
+    // Modules
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+
+    // Emit
+    "noEmit": true,
+    "allowJs": true,
+
+    // Interop Constraints
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "verbatimModuleSyntax": true,
+
+    // Language and Environment
+    "lib": ["ES2022", "ESNext.Decorators"],
+    "target": "ES2022",
+
+    // Completeness
+    "skipLibCheck": true
+  },
+  "include": ["."],
+  "exclude": ["dist"]
+}
