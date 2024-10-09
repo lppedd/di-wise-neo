@@ -22,7 +22,7 @@ export default tseslint.config(
   },
   {
     name: 'exuanbo/ignores',
-    ignores: ['.yarn', 'coverage', 'dist'],
+    ignores: ['.yarn', 'coverage', 'dist', 'docs'],
   },
   {
     name: 'exuanbo/files',
