@@ -8,10 +8,8 @@ export type Resolvable<T> =
   | InjectionConfig<T>
   | InjectionProvider<T>
 
-/** @internal */
 export type ResolvedScope = Exclude<InjectionScope, typeof InjectionScope.Inherited>
 
-/** @internal */
 export interface Resolver {
   scope: ResolvedScope
   stack: InjectionToken[]
@@ -20,18 +18,12 @@ export interface Resolver {
   resolve<T>(resolvable: Resolvable<T>): T
 }
 
-/** @internal */
-export type ResolverProvider = <T>(resolver: Resolver, callback: ResolverCallback<T>) => T
-/** @internal */
 export type ResolverCallback<T> = (resolver: Resolver) => T
-/** @internal */
-export type ResolverConsumer = () => Resolver | null
 
-/** @internal */
 function createResolverContext() {
   let contextResolver: Resolver | null = null
 
-  const withResolver: ResolverProvider = (resolver, callback) => {
+  const withResolver = <T>(resolver: Resolver, callback: ResolverCallback<T>) => {
     const currentResolver = contextResolver
     contextResolver = resolver
     try {
@@ -42,7 +34,7 @@ function createResolverContext() {
     }
   }
 
-  const useResolver: ResolverConsumer = () => {
+  const useResolver = () => {
     return contextResolver
   }
 

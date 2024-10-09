@@ -2,19 +2,15 @@ import type {InjectionConfig} from './config'
 import type {Resolvable} from './resolver'
 import type {Constructor} from './token'
 
-/** @internal */
 export interface InjectionMetadata<T = any> extends Partial<InjectionConfig<T>> {
   injections?: InjectionBindings
   deferredInjections?: InjectionCollection
 }
 
-/** @internal */
 export type InjectionBindings = Map<string | symbol, Injection>
 
-/** @internal */
 export type InjectionCollection = Set<Injection>
 
-/** @internal */
 export interface Injection<T = any> {
   resolvable: Resolvable<T>
   getValue(instance: object): T
