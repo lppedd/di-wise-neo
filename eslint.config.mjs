@@ -37,7 +37,9 @@ export default tseslint.config(
     extends: tseslint.configs.recommendedTypeChecked,
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ['eslint.config.mjs'],
+        },
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -53,6 +55,9 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-expressions': ['error', {
         allowShortCircuit: true,
       }],
+      '@typescript-eslint/no-unused-vars': ['error', {
+        argsIgnorePattern: '^_',
+      }],
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
@@ -61,6 +66,8 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-enum-comparison': 'off',
       '@typescript-eslint/no-unsafe-function-type': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/restrict-plus-operands': 'off',
+      '@typescript-eslint/unbound-method': 'off',
     },
   },
   {
@@ -80,22 +87,9 @@ export default tseslint.config(
     },
     rules: extendRules(pluginStylistic.configs['recommended-flat'].rules, {
       '@stylistic/arrow-parens': ['error', 'always'],
+      '@stylistic/object-curly-spacing': ['error', 'never'],
       '@stylistic/indent': ['error', 2, {
         SwitchCase: 0,
-      }],
-      '@stylistic/key-spacing': ['error', {
-        mode: 'minimum',
-      }],
-      '@stylistic/max-statements-per-line': ['error', {
-        max: 2,
-      }],
-      '@stylistic/no-multi-spaces': ['error', {
-        exceptions: {
-          ObjectExpression: true,
-          TSEnumMember: true,
-          TSTypeAnnotation: true,
-          VariableDeclarator: true,
-        },
       }],
       '@stylistic/quotes': ['error', 'single', {
         avoidEscape: true,
@@ -124,11 +118,11 @@ function extendRules(rules = {}, record) {
    */
   function extendRule(name, entry) {
     if (!Array.isArray(entry)) {
-      return { [name]: entry }
+      return {[name]: entry}
     }
     const defaultEntry = rules[name]
     if (!Array.isArray(defaultEntry)) {
-      return { [name]: entry }
+      return {[name]: entry}
     }
     const [, ...defaultOptions] = defaultEntry
     const [level, ...options] = entry
@@ -145,6 +139,6 @@ function extendRules(rules = {}, record) {
         ...option,
       }
     })
-    return { [name]: [level, ...extendedOptions] }
+    return {[name]: [level, ...extendedOptions]}
   }
 }

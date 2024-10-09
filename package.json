@@ -2,7 +2,7 @@
   "name": "di-wise",
   "packageManager": "yarn@4.5.0",
   "version": "0.0.0",
-  "description": "",
+  "description": "A lightweight and flexible dependency injection library for JavaScript and TypeScript, w/o ECMAScript decorators (Stage 3 proposal).",
   "files": [
     "dist"
   ],
@@ -24,29 +24,49 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsc && bunchee",
-    "lint": "eslint . --cache --fix"
+    "test": "vitest --coverage --coverage.all=false",
+    "lint": "eslint . --fix --cache",
+    "lint:ci": "eslint . --max-warnings 0 --cache --cache-location ./node_modules/.cache/eslint/.eslintcache",
+    "typedoc": "typedoc src/index.ts --includeVersion"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/exuanbo/di-wise.git"
   },
-  "keywords": [],
+  "keywords": [
+    "di",
+    "ioc",
+    "dependency injection",
+    "inversion of control",
+    "ecmascript decorators",
+    "dependency",
+    "injection",
+    "injector",
+    "container",
+    "ecmascript",
+    "decorators",
+    "metadata"
+  ],
   "author": "exuanbo <exuanbo@protonmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/exuanbo/di-wise/issues"
   },
-  "homepage": "https://github.com/exuanbo/di-wise#readme",
+  "homepage": "https://exuanbo.xyz/di-wise/",
   "devDependencies": {
     "@eslint/js": "^9.12.0",
     "@stylistic/eslint-plugin": "^2.9.0",
     "@types/eslint__js": "^8.42.3",
-    "@types/node": "^22.7.4",
-    "bunchee": "^5.5.0",
+    "@types/node": "^22.7.5",
+    "@vitest/coverage-v8": "^2.1.2",
+    "@vitest/ui": "^2.1.2",
+    "bunchee": "^5.5.1",
     "eslint": "^9.12.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "globals": "^15.10.0",
+    "globals": "^15.11.0",
+    "typedoc": "^0.26.8",
     "typescript": "5.5.4",
-    "typescript-eslint": "^8.8.0"
+    "typescript-eslint": "^8.8.1",
+    "vitest": "^2.1.2"
   }
 }
