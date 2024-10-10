@@ -24,7 +24,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsc && bunchee",
-    "test": "vitest --coverage --coverage.all=false",
+    "test": "vitest --coverage --coverage.all=false \"$@\"",
     "lint": "eslint . --fix --cache",
     "lint:ci": "eslint . --max-warnings 0 --cache --cache-location ./node_modules/.cache/eslint/.eslintcache",
     "typedoc": "typedoc src/index.ts --includeVersion"

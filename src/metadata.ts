@@ -1,5 +1,5 @@
 import type {InjectionConfig} from './config'
-import type {Resolvable} from './resolver'
+import type {Resolvable} from './resolvable'
 import type {Constructor} from './token'
 
 export interface InjectionMetadata<T = any> extends Partial<InjectionConfig<T>> {

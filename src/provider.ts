@@ -1,5 +1,5 @@
 import type {InjectionConfig, InjectionConfigLike} from './config'
-import type {Resolvable} from './resolver'
+import type {Resolvable} from './resolvable'
 import type {Constructor, InjectionToken} from './token'
 
 export type Providable<T> =

@@ -1,4 +1,4 @@
-import type {Resolvable} from './resolver'
+import type {Resolvable} from './resolvable'
 import type {InjectionScope} from './scope'
 import type {InjectionToken} from './token'
 

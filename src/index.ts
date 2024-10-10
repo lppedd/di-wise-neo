@@ -16,7 +16,7 @@ export type {
   TokenProvider,
   ValueProvider,
 } from './provider'
-export type {Resolvable} from './resolver'
+export type {Resolvable} from './resolvable'
 export {InjectionScope} from './scope'
 export type {Constructor, InjectionToken} from './token'
 export {InjectableType} from './token'

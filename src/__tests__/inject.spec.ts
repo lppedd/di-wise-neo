@@ -111,4 +111,15 @@ describe('inject', () => {
     const a = container.resolve(A)
     expect(a.value).toBeInstanceOf(BImpl)
   })
+
+  it('should inject container', () => {
+    const container = new Container()
+
+    class A {
+      container = inject(Container)
+    }
+
+    const a = container.resolve(A)
+    expect(a.container).toBe(container)
+  })
 })

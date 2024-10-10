@@ -1,6 +1,6 @@
 import {inject} from './inject'
 import {metadataRegistry} from './metadata'
-import type {Resolvable} from './resolver'
+import type {Resolvable} from './resolvable'
 import type {InjectionScope} from './scope'
 import type {Constructor, InjectionToken} from './token'
 

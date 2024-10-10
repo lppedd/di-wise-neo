@@ -1,4 +1,5 @@
 import {type InjectionConfig, isConfigLike} from './config'
+import {createContext} from './create-context'
 import {assert, ErrorMessage, expectNever} from './errors'
 import {getMetadata} from './metadata'
 import {
@@ -11,12 +12,12 @@ import {
   type Providable,
 } from './provider'
 import {
-  type Resolvable,
-  type Resolver,
-  type ResolverCallback,
-  useResolver,
-  withResolver,
-} from './resolver'
+  type Instantiate,
+  type ResolutionContext,
+  useResolutionContext,
+  withResolutionContext,
+} from './resolution-context'
+import type {Resolvable} from './resolvable'
 import {InjectionScope} from './scope'
 import {type InjectionToken, isConstructor} from './token'
 
@@ -121,32 +122,36 @@ export class Container {
   resolveInstance<T>(provider: InjectionProvider<T>): T {
     if (isClassProvider(provider)) {
       const Class = provider.useClass
-      return this.resolveScopedInstance(provider, (resolver) => {
-        const instance = new Class()
-        const metadata = getMetadata(Class)
-        if (metadata?.dependencies) {
-          const token = provider.token
-          resolver.dependents.set(token, instance)
-          try {
-            metadata.dependencies.forEach((dependency) => {
-              const value = this.resolve(dependency.resolvable)
-              dependency.setValue(instance, value)
-            })
+      return withContainer(this, () =>
+        this.resolveScopedInstance(provider, (context) => {
+          const instance = new Class()
+          const metadata = getMetadata(Class)
+          if (metadata?.dependencies) {
+            const token = provider.token
+            context.dependents.set(token, instance)
+            try {
+              metadata.dependencies.forEach((dependency) => {
+                const value = this.resolve(dependency.resolvable)
+                dependency.setValue(instance, value)
+              })
+            }
+            finally {
+              context.dependents.delete(token)
+            }
           }
-          finally {
-            resolver.dependents.delete(token)
-          }
-        }
-        return instance
-      })
+          return instance
+        }),
+      )
     }
     else if (isFactoryProvider(provider)) {
       const factory = provider.useFactory
-      return this.resolveScopedInstance(provider, () => factory())
+      return withContainer(this, () =>
+        this.resolveScopedInstance(provider, (_context) => factory()),
+      )
     }
     else if (isTokenProvider(provider)) {
-      const forwardToken = provider.useToken
-      return this.resolve(forwardToken)
+      const forwardedToken = provider.useToken
+      return this.resolve(forwardedToken)
     }
     else if (isValueProvider(provider)) {
       const value = provider.useValue
@@ -155,64 +160,66 @@ export class Container {
     expectNever(provider)
   }
 
-  private resolveScopedInstance<T>(config: InjectionConfig<T>, instantiate: ResolverCallback<T>): T {
+  private resolveScopedInstance<T>(config: InjectionConfig<T>, instantiate: Instantiate<T>): T {
     const token = config.token
-    const resolver = this.createResolver(config.scope)
-    if (resolver.stack.includes(token)) {
-      if (resolver.dependents.has(token)) {
-        return resolver.dependents.get(token)
+    const context = this.createResolutionContext(config.scope)
+    if (context.stack.includes(token)) {
+      if (context.dependents.has(token)) {
+        return context.dependents.get(token)
       }
       assert(false, ErrorMessage.CircularDependency, token.name)
     }
-    resolver.stack.push(token)
+    context.stack.push(token)
     try {
-      if (resolver.scope == InjectionScope.Container) {
+      if (context.scope == InjectionScope.Container) {
         if (this.instanceCache.has(token)) {
           return this.instanceCache.get(token)
         }
-        const instance = withResolver(resolver, instantiate)
+        const instance = withResolutionContext(context, instantiate)
         this.instanceCache.set(token, instance)
         return instance
       }
-      else if (resolver.scope == InjectionScope.Resolution) {
-        if (resolver.resolutions.has(token)) {
-          return resolver.resolutions.get(token)
+      else if (context.scope == InjectionScope.Resolution) {
+        if (context.instances.has(token)) {
+          return context.instances.get(token)
         }
-        const instance = withResolver(resolver, instantiate)
-        resolver.resolutions.set(token, instance)
+        const instance = withResolutionContext(context, instantiate)
+        context.instances.set(token, instance)
         return instance
       }
-      else if (resolver.scope == InjectionScope.Transient) {
-        return withResolver(resolver, instantiate)
+      else if (context.scope == InjectionScope.Transient) {
+        return withResolutionContext(context, instantiate)
       }
     }
     finally {
-      resolver.stack.pop()
-      if (!resolver.stack.length) {
-        resolver.resolutions.clear()
+      context.stack.pop()
+      if (!context.stack.length) {
+        context.instances.clear()
       }
     }
-    expectNever(resolver.scope)
+    expectNever(context.scope)
   }
 
-  private createResolver(scope: InjectionScope = this.defaultScope): Resolver {
-    const currentResolver = useResolver()
+  private createResolutionContext(scope = this.defaultScope): ResolutionContext {
+    const currentContext = useResolutionContext()
     let resolvedScope = scope
     if (resolvedScope == InjectionScope.Inherited) {
-      resolvedScope = currentResolver?.scope || InjectionScope.Transient
+      resolvedScope = currentContext?.scope || InjectionScope.Transient
     }
-    if (currentResolver) {
+    if (currentContext) {
       return {
-        ...currentResolver,
+        ...currentContext,
         scope: resolvedScope,
       }
     }
     return {
-      stack: [],
-      dependents: new Map(),
-      resolutions: new Map(),
       scope: resolvedScope,
-      resolve: this.resolve,
+      stack: [],
+      instances: new Map(),
+      dependents: new Map(),
     }
   }
 }
+
+/** @internal */
+export const [withContainer, useContainer] = createContext<Container>()
