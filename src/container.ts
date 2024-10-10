@@ -6,10 +6,8 @@ import {
   type InjectionProvider,
   isClassProvider,
   isFactoryProvider,
-  isProvider,
   isTokenProvider,
   isValueProvider,
-  type Providable,
 } from './provider'
 import {
   type Instantiate,
@@ -19,7 +17,7 @@ import {
 } from './resolution-context'
 import type {Resolvable} from './resolvable'
 import {InjectionScope} from './scope'
-import {type InjectionToken, isConstructor} from './token'
+import {type Constructor, type InjectionToken, isConstructor} from './token'
 
 export interface ContainerOptions {
   parent?: Container
@@ -53,12 +51,11 @@ export class Container {
     )
   }
 
-  register<T>(providable: Providable<T>): void {
+  register<T>(Class: Constructor<T>): void
+  register<T>(provider: InjectionProvider<T>): void
+  register<T>(providable: InjectionProvider<T> | Constructor<T>): void {
     let provider: InjectionProvider<T>
-    if (isProvider(providable)) {
-      provider = providable
-    }
-    else {
+    if (isConstructor(providable)) {
       const Class = providable
       const metadata = getMetadata(Class)
       const token = metadata?.token || Class
@@ -68,6 +65,9 @@ export class Container {
         scope: metadata?.scope,
       }
     }
+    else {
+      provider = providable
+    }
     const token = provider.token
     this.providerRegistry.set(token, provider)
   }
@@ -76,16 +76,11 @@ export class Container {
     let token: InjectionToken<T>
     let provider: InjectionProvider<T> | undefined
     if (isConfigLike(resolvable)) {
-      token = resolvable.token
-      if (isProvider(resolvable)) {
-        provider = resolvable
-      }
-      else {
-        const config = resolvable
-        provider = this.resolveProvider(token)
-        if (provider && config.scope) {
-          provider = Object.assign({}, provider, config)
-        }
+      const config = resolvable
+      token = config.token
+      provider = this.resolveProvider(token)
+      if (provider && config.scope) {
+        provider = Object.assign({}, provider, config)
       }
     }
     else {

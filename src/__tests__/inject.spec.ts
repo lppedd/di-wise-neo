@@ -38,22 +38,6 @@ describe('inject', () => {
     expect(a.value).toBeInstanceOf(B)
   })
 
-  it('should inject with inline provider', () => {
-    const container = new Container()
-
-    class A {
-      value = inject({
-        token: B,
-        useFactory: () => new B(),
-      })
-    }
-
-    class B {}
-
-    const a = container.resolve(A)
-    expect(a.value).toBeInstanceOf(B)
-  })
-
   it('should inject with inline config', () => {
     const container = new Container()
 
@@ -96,17 +80,19 @@ describe('inject', () => {
     const B = InjectableType<B>('B')
 
     class A {
-      value = inject({
-        token: B,
-        useFactory: createB,
-      })
+      value = inject(B)
     }
 
-    class BImpl {}
+    class BImpl implements B {}
 
     function createB() {
       return inject(BImpl)
     }
+
+    container.register({
+      token: B,
+      useFactory: createB,
+    })
 
     const a = container.resolve(A)
     expect(a.value).toBeInstanceOf(BImpl)

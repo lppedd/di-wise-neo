@@ -11,36 +11,6 @@ import {
 } from '..'
 
 describe('Features', () => {
-  it('should prioritize inline provider/config', () => {
-    const container = new Container()
-
-    interface WithValue {
-      value: string
-    }
-    const WithValue = InjectableType<WithValue>('WithValue')
-
-    @Injectable(WithValue)
-    class A implements WithValue {
-      value = 'A'
-    }
-
-    class B implements WithValue {
-      value = 'B'
-    }
-
-    class C {
-      @Inject({
-        token: WithValue,
-        useClass: B,
-      })
-      content!: WithValue
-    }
-
-    container.register(A)
-    const c = container.resolve(C)
-    expect(c.content.value).toBe('B')
-  })
-
   it('should handle circular dependencies', () => {
     const container = new Container()
 

@@ -1,10 +1,5 @@
 import type {InjectionConfig, InjectionConfigLike} from './config'
-import type {Resolvable} from './resolvable'
 import type {Constructor, InjectionToken} from './token'
-
-export type Providable<T> =
-  | Constructor<T>
-  | InjectionProvider<T>
 
 export type InjectionProvider<T = any> =
   | ClassProvider<T>
@@ -29,31 +24,21 @@ export interface ValueProvider<T> extends InjectionConfigLike<T> {
 }
 
 /** @internal */
-export function isProvider<T>(resolvable: Resolvable<T>) {
-  return (
-    isClassProvider(resolvable)
-    || isFactoryProvider(resolvable)
-    || isTokenProvider(resolvable)
-    || isValueProvider(resolvable)
-  )
+export function isClassProvider<T>(provider: InjectionProvider<T>) {
+  return 'useClass' in provider
 }
 
 /** @internal */
-export function isClassProvider<T>(resolvable: Resolvable<T>) {
-  return 'useClass' in resolvable
+export function isFactoryProvider<T>(provider: InjectionProvider<T>) {
+  return 'useFactory' in provider
 }
 
 /** @internal */
-export function isFactoryProvider<T>(resolvable: Resolvable<T>) {
-  return 'useFactory' in resolvable
+export function isTokenProvider<T>(provider: InjectionProvider<T>) {
+  return 'useToken' in provider
 }
 
 /** @internal */
-export function isTokenProvider<T>(resolvable: Resolvable<T>) {
-  return 'useToken' in resolvable
-}
-
-/** @internal */
-export function isValueProvider<T>(resolvable: Resolvable<T>) {
-  return 'useValue' in resolvable
+export function isValueProvider<T>(provider: InjectionProvider<T>) {
+  return 'useValue' in provider
 }

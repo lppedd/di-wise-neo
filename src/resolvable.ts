@@ -1,8 +1,6 @@
 import type {InjectionConfig} from './config'
-import type {InjectionProvider} from './provider'
 import type {InjectionToken} from './token'
 
 export type Resolvable<T> =
   | InjectionToken<T>
   | InjectionConfig<T>
-  | InjectionProvider<T>

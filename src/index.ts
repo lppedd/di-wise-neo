@@ -12,7 +12,6 @@ export type {
   ClassProvider,
   FactoryProvider,
   InjectionProvider,
-  Providable,
   TokenProvider,
   ValueProvider,
 } from './provider'

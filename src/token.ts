@@ -19,6 +19,6 @@ export function InjectableType<T>(typeName: string): InjectableType<T> {
 }
 
 /** @internal */
-export function isConstructor<T>(token: InjectionToken<T>) {
+export function isConstructor(token: unknown) {
   return typeof token == 'function'
 }
