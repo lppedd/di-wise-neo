@@ -1,5 +1,5 @@
 import {type InjectionConfig, isConfigLike} from './config'
-import {assert, ErrorMessages, expectNever} from './errors'
+import {assert, ErrorMessage, expectNever} from './errors'
 import {getMetadata} from './metadata'
 import {
   type InjectionProvider,
@@ -90,7 +90,7 @@ export class Container {
       token = resolvable
       provider = this.resolveProvider(token)
     }
-    assert(provider, ErrorMessages.UnresolvableToken, token.name)
+    assert(provider, ErrorMessage.UnresolvableToken, token.name)
     return this.resolveInstance(provider)
   }
 
@@ -161,7 +161,7 @@ export class Container {
       if (resolver.deferredInstances.has(token)) {
         return resolver.deferredInstances.get(token)
       }
-      assert(false, ErrorMessages.CircularDependency, token.name)
+      assert(false, ErrorMessage.CircularDependency, token.name)
     }
     resolver.stack.push(token)
     try {

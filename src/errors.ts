@@ -1,4 +1,4 @@
-export const ErrorMessages = {
+export const ErrorMessage = {
   UnresolvableToken: 'unresolvable token:',
   CircularDependency: 'circular dependency:',
   DeferredWithoutInject: 'deferred without Inject:',

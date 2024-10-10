@@ -1,4 +1,4 @@
-import {assert, ErrorMessages} from './errors'
+import {assert, ErrorMessage} from './errors'
 import {inject} from './inject'
 import {
   type Injection,
@@ -62,7 +62,7 @@ export function Deferred<T>(): ClassFieldDecorator<T> {
   return (_value, context) => {
     const metadata = metadataRegistry.get(context.metadata)
     const injection = metadata?.injections?.get(context.name)
-    assert(injection, ErrorMessages.DeferredWithoutInject, context.name)
+    assert(injection, ErrorMessage.DeferredWithoutInject, context.name)
     const deferredInjections: InjectionCollection = (metadata!.deferredInjections ||= new Set())
     deferredInjections.add(injection)
   }

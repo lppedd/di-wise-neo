@@ -17,8 +17,7 @@ export interface Injection<T = any> {
   setValue(instance: object, value: T): void
 }
 
-/** @internal */
-export class InjectionMetadataRegistry {
+class InjectionMetadataRegistry {
   private readonly map = new WeakMap<DecoratorMetadata, InjectionMetadata>()
 
   get(key: DecoratorMetadata) {
