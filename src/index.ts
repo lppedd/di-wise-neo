@@ -10,6 +10,7 @@ export {ErrorMessage} from './errors'
 export {inject} from './inject'
 export type {
   ClassProvider,
+  defineProvider,
   FactoryProvider,
   Provider,
   TokenProvider,

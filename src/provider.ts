@@ -29,6 +29,10 @@ export interface ValueProvider<T> {
   useValue: T
 }
 
+export function defineProvider<T>(provider: Provider<T>): Provider<T> {
+  return provider
+}
+
 /** @internal */
 export function isClassProvider<T>(provider: Provider<T>) {
   return 'useClass' in provider
