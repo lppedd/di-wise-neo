@@ -2,8 +2,11 @@ import type {Resolvable} from './resolver'
 import type {InjectionScope} from './scope'
 import type {InjectionToken} from './token'
 
-export interface InjectionConfig<T> {
+export interface InjectionConfigLike<T> {
   token: InjectionToken<T>
+}
+
+export interface InjectionConfig<T> extends InjectionConfigLike<T> {
   scope?: InjectionScope
 }
 

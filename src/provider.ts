@@ -1,4 +1,4 @@
-import type {InjectionConfig} from './config'
+import type {InjectionConfig, InjectionConfigLike} from './config'
 import type {Resolvable} from './resolver'
 import type {Constructor, InjectionToken} from './token'
 
@@ -20,14 +20,12 @@ export interface FactoryProvider<T> extends InjectionConfig<T> {
   useFactory: () => T
 }
 
-export interface TokenProvider<T> extends InjectionConfig<T> {
+export interface TokenProvider<T> extends InjectionConfigLike<T> {
   useToken: InjectionToken<T>
-  scope?: undefined
 }
 
-export interface ValueProvider<T> extends InjectionConfig<T> {
+export interface ValueProvider<T> extends InjectionConfigLike<T> {
   useValue: T
-  scope?: undefined
 }
 
 /** @internal */
