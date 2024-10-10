@@ -2,15 +2,12 @@ import type {Resolvable} from './resolvable'
 import type {InjectionScope} from './scope'
 import type {InjectionToken} from './token'
 
-export interface InjectionConfigLike<T> {
-  token: InjectionToken<T>
-}
-
-export interface InjectionConfig<T> extends InjectionConfigLike<T> {
+export interface InjectionConfig<T> {
   scope?: InjectionScope
+  tokens: InjectionToken<T>[]
 }
 
 /** @internal */
 export function isConfigLike<T>(resolvable: Resolvable<T>) {
-  return 'token' in resolvable
+  return 'tokens' in resolvable
 }

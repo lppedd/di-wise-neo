@@ -1,20 +1,20 @@
-export type InjectionToken<T = any> = Constructor<T> | InjectableType<T>
+export type InjectionToken<T = any> = Constructor<T> | Type<T>
 
 export interface Constructor<T> {
   new (...args: []): T
 }
 
-export interface InjectableType<T> {
+export interface Type<T> {
   readonly name: string
-  inter<I>(typeName: string, I: InjectableType<I>): InjectableType<T & I>
-  union<U>(typeName: string, U: InjectableType<U>): InjectableType<T | U>
+  inter<I>(typeName: string, I: Type<I>): Type<T & I>
+  union<U>(typeName: string, U: Type<U>): Type<T | U>
 }
 
-export function InjectableType<T>(typeName: string): InjectableType<T> {
+export function Type<T>(typeName: string): Type<T> {
   return {
     name: typeName,
-    inter: InjectableType,
-    union: InjectableType,
+    inter: Type,
+    union: Type,
   }
 }
 

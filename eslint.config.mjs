@@ -87,10 +87,11 @@ export default tseslint.config(
     },
     rules: extendRules(pluginStylistic.configs['recommended-flat'].rules, {
       '@stylistic/arrow-parens': ['error', 'always'],
-      '@stylistic/object-curly-spacing': ['error', 'never'],
+      '@stylistic/block-spacing': ['error', 'never'],
       '@stylistic/indent': ['error', 2, {
         SwitchCase: 0,
       }],
+      '@stylistic/object-curly-spacing': ['error', 'never'],
       '@stylistic/quotes': ['error', 'single', {
         avoidEscape: true,
         allowTemplateLiterals: true,

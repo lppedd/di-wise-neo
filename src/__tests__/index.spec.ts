@@ -5,9 +5,9 @@ import {
   Deferred,
   Inject,
   Injectable,
-  InjectableType,
   InjectionScope,
   Scoped,
+  Type,
 } from '..'
 
 describe('Features', () => {
@@ -20,8 +20,8 @@ describe('Features', () => {
     interface B {
       a: A
     }
-    const A = InjectableType<A>('A')
-    const B = InjectableType<B>('B')
+    const A = Type<A>('A')
+    const B = Type<B>('B')
 
     @Injectable(B)
     class BImpl {
@@ -82,7 +82,7 @@ describe('Features', () => {
     interface A {
       value: string
     }
-    const A = InjectableType<A>('A')
+    const A = Type<A>('A')
 
     @Injectable(A)
     class AImpl implements A {
@@ -110,7 +110,7 @@ describe('Features', () => {
 
     class B {
       @Inject({
-        token: A,
+        tokens: [A],
         scope: InjectionScope.Container,
       })
       a!: A
@@ -120,9 +120,36 @@ describe('Features', () => {
     expect(container.instanceCache.has(A)).toBe(true)
 
     const a = container.resolve({
-      token: A,
+      tokens: [A],
       scope: InjectionScope.Container,
     })
     expect(a).toBe(b.a)
+  })
+
+  it('should resolve multiple tokens', () => {
+    const container = new Container()
+
+    interface A {
+      value: string
+    }
+    const A = Type<A>('A')
+
+    interface B {
+      value: string
+    }
+    const B = Type<B>('B')
+
+    class C {
+      @Inject({tokens: [A, B]})
+      content!: {value: string}
+    }
+
+    container.register({
+      token: B,
+      useValue: {value: 'B'},
+    })
+
+    const c = container.resolve(C)
+    expect(c.content.value).toBe('B')
   })
 })

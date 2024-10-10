@@ -1,6 +1,6 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {Container, inject, InjectableType, InjectionScope} from '..'
+import {Container, inject, InjectionScope, Type} from '..'
 
 describe('inject', () => {
   beforeEach(() => {
@@ -43,7 +43,7 @@ describe('inject', () => {
 
     class A {
       value = inject({
-        token: B,
+        tokens: [B],
         scope: InjectionScope.Container,
       })
     }
@@ -77,7 +77,7 @@ describe('inject', () => {
     const container = new Container()
 
     interface B {}
-    const B = InjectableType<B>('B')
+    const B = Type<B>('B')
 
     class A {
       value = inject(B)

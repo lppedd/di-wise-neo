@@ -19,14 +19,14 @@ export type ClassFieldInitializer<This extends object, Value> = (
   initialValue: Value,
 ) => Value
 
-export function Injectable<T extends object>(token: InjectionToken<T>): ClassDecorator<Constructor<T>> {
+export function Injectable<T extends object>(...tokens: InjectionToken<T>[]): ClassDecorator<Constructor<T>> {
   return (_value, context) => {
     const metadata = metadataRegistry.ensure(context.metadata)
-    metadata.token = token
+    metadata.tokens.push(...tokens)
   }
 }
 
-export function Scoped(scope: InjectionScope): ClassDecorator<Constructor<object>> {
+export function Scoped<T extends object>(scope: InjectionScope): ClassDecorator<Constructor<T>> {
   return (_value, context) => {
     const metadata = metadataRegistry.ensure(context.metadata)
     metadata.scope = scope

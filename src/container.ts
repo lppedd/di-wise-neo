@@ -1,13 +1,14 @@
-import {type InjectionConfig, isConfigLike} from './config'
+import {isConfigLike} from './config'
 import {createContext} from './create-context'
 import {assert, ErrorMessage, expectNever} from './errors'
 import {getMetadata} from './metadata'
 import {
-  type InjectionProvider,
+  getScope,
   isClassProvider,
   isFactoryProvider,
   isTokenProvider,
   isValueProvider,
+  type Provider,
 } from './provider'
 import {
   type Instantiate,
@@ -26,11 +27,12 @@ export interface ContainerOptions {
 
 export class Container {
   readonly instanceCache: Map<InjectionToken, any> = new Map()
-  readonly providerRegistry: Map<InjectionToken, InjectionProvider> = new Map()
+  readonly providerRegistry: Map<InjectionToken, Provider> = new Map()
 
   parent?: Container
   defaultScope: InjectionScope
 
+  constructor(options?: ContainerOptions)
   constructor({parent, defaultScope = InjectionScope.Inherited}: ContainerOptions = {}) {
     this.parent = parent
     this.defaultScope = defaultScope
@@ -52,46 +54,51 @@ export class Container {
   }
 
   register<T>(Class: Constructor<T>): void
-  register<T>(provider: InjectionProvider<T>): void
-  register<T>(providable: InjectionProvider<T> | Constructor<T>): void {
-    let provider: InjectionProvider<T>
+  register<T>(provider: Provider<T>): void
+  register<T>(providable: Provider<T> | Constructor<T>): void {
     if (isConstructor(providable)) {
       const Class = providable
       const metadata = getMetadata(Class)
-      const token = metadata?.token || Class
-      provider = {
-        token,
-        useClass: Class,
-        scope: metadata?.scope,
-      }
+      const tokens = metadata?.tokens || [Class]
+      tokens.forEach((token) => {
+        const provider = {
+          token,
+          useClass: Class,
+          scope: metadata?.scope,
+        }
+        this.providerRegistry.set(token, provider)
+      })
     }
     else {
-      provider = providable
+      const provider = providable
+      const token = provider.token
+      this.providerRegistry.set(token, provider)
     }
-    const token = provider.token
-    this.providerRegistry.set(token, provider)
   }
 
   resolve = <T>(resolvable: Resolvable<T>): T => {
-    let token: InjectionToken<T>
-    let provider: InjectionProvider<T> | undefined
     if (isConfigLike(resolvable)) {
       const config = resolvable
-      token = config.token
-      provider = this.resolveProvider(token)
-      if (provider && config.scope) {
-        provider = Object.assign({}, provider, config)
+      const tokens = config.tokens
+      for (const token of tokens) {
+        const provider = this.resolveProvider(token)
+        if (provider) {
+          const scope = config.scope
+          return this.resolveInstance({...provider, ...(scope && {scope})})
+        }
       }
+      const tokenNames = tokens.map((token) => token.name).join(', ')
+      assert(false, ErrorMessage.UnresolvableToken, tokenNames)
     }
     else {
-      token = resolvable
-      provider = this.resolveProvider(token)
+      const token = resolvable
+      const provider = this.resolveProvider(token)
+      assert(provider, ErrorMessage.UnresolvableToken, token.name)
+      return this.resolveInstance(provider)
     }
-    assert(provider, ErrorMessage.UnresolvableToken, token.name)
-    return this.resolveInstance(provider)
   }
 
-  resolveProvider<T>(token: InjectionToken<T>): InjectionProvider<T> | undefined {
+  resolveProvider<T>(token: InjectionToken<T>): Provider<T> | undefined {
     if (isConstructor(token)) {
       const Class = token
       const provider = this.providerRegistry.get(token)
@@ -114,7 +121,7 @@ export class Container {
     }
   }
 
-  resolveInstance<T>(provider: InjectionProvider<T>): T {
+  resolveInstance<T>(provider: Provider<T>): T {
     if (isClassProvider(provider)) {
       const Class = provider.useClass
       return withContainer(this, () =>
@@ -155,9 +162,10 @@ export class Container {
     expectNever(provider)
   }
 
-  private resolveScopedInstance<T>(config: InjectionConfig<T>, instantiate: Instantiate<T>): T {
-    const token = config.token
-    const context = this.createResolutionContext(config.scope)
+  private resolveScopedInstance<T>(provider: Provider<T>, instantiate: Instantiate<T>): T {
+    const token = provider.token
+    const scope = getScope(provider)
+    const context = this.createResolutionContext(scope)
     if (context.stack.includes(token)) {
       if (context.dependents.has(token)) {
         return context.dependents.get(token)
