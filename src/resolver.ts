@@ -13,8 +13,8 @@ export type ResolvedScope = Exclude<InjectionScope, typeof InjectionScope.Inheri
 export interface Resolver {
   scope: ResolvedScope
   stack: InjectionToken[]
-  deferredInstances: Map<InjectionToken, any>
-  resolvedInstances: Map<InjectionToken, any>
+  dependents: Map<InjectionToken, any>
+  resolutionContext: Map<InjectionToken, any>
   resolve<T>(resolvable: Resolvable<T>): T
 }
 

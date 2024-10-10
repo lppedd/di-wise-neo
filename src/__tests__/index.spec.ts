@@ -55,8 +55,7 @@ describe('Features', () => {
 
     @Injectable(B)
     class BImpl {
-      @Deferred()
-      @Inject(A)
+      @Deferred(A)
       a!: A
 
       constructor() {
@@ -66,8 +65,7 @@ describe('Features', () => {
 
     @Injectable(A)
     class AImpl {
-      @Deferred()
-      @Inject(B)
+      @Deferred(B)
       b!: B
 
       constructor() {

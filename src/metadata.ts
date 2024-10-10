@@ -3,17 +3,11 @@ import type {Resolvable} from './resolver'
 import type {Constructor} from './token'
 
 export interface InjectionMetadata<T = any> extends Partial<InjectionConfig<T>> {
-  injections?: InjectionBindings
-  deferredInjections?: InjectionCollection
+  dependencies: Set<InjectionDependency>
 }
 
-export type InjectionBindings = Map<string | symbol, Injection>
-
-export type InjectionCollection = Set<Injection>
-
-export interface Injection<T = any> {
+export interface InjectionDependency<T = any> {
   resolvable: Resolvable<T>
-  getValue(instance: object): T
   setValue(instance: object, value: T): void
 }
 
@@ -25,12 +19,12 @@ class InjectionMetadataRegistry {
   }
 
   ensure(key: DecoratorMetadata) {
-    let value = this.map.get(key)
-    if (!value) {
-      value = {}
-      this.map.set(key, value)
+    let metadata = this.map.get(key)
+    if (!metadata) {
+      metadata = {dependencies: new Set()}
+      this.map.set(key, metadata)
     }
-    return value
+    return metadata
   }
 }
 

@@ -123,17 +123,17 @@ export class Container {
       return this.resolveScopedInstance(provider, (resolver) => {
         const instance = new Class()
         const metadata = getMetadata(Class)
-        if (metadata?.deferredInjections) {
+        if (metadata?.dependencies) {
           const token = provider.token
-          resolver.deferredInstances.set(token, instance)
+          resolver.dependents.set(token, instance)
           try {
-            metadata.deferredInjections.forEach((injection) => {
-              const dependency = this.resolve(injection.resolvable)
-              injection.setValue(instance, dependency)
+            metadata.dependencies.forEach((dependency) => {
+              const value = this.resolve(dependency.resolvable)
+              dependency.setValue(instance, value)
             })
           }
           finally {
-            resolver.deferredInstances.delete(token)
+            resolver.dependents.delete(token)
           }
         }
         return instance
@@ -158,8 +158,8 @@ export class Container {
     const token = config.token
     const resolver = this.createResolver(config.scope)
     if (resolver.stack.includes(token)) {
-      if (resolver.deferredInstances.has(token)) {
-        return resolver.deferredInstances.get(token)
+      if (resolver.dependents.has(token)) {
+        return resolver.dependents.get(token)
       }
       assert(false, ErrorMessage.CircularDependency, token.name)
     }
@@ -174,11 +174,11 @@ export class Container {
         return instance
       }
       else if (resolver.scope == InjectionScope.Resolution) {
-        if (resolver.resolvedInstances.has(token)) {
-          return resolver.resolvedInstances.get(token)
+        if (resolver.resolutionContext.has(token)) {
+          return resolver.resolutionContext.get(token)
         }
         const instance = withResolver(resolver, instantiate)
-        resolver.resolvedInstances.set(token, instance)
+        resolver.resolutionContext.set(token, instance)
         return instance
       }
       else if (resolver.scope == InjectionScope.Transient) {
@@ -188,7 +188,7 @@ export class Container {
     finally {
       resolver.stack.pop()
       if (!resolver.stack.length) {
-        resolver.resolvedInstances.clear()
+        resolver.resolutionContext.clear()
       }
     }
     expectNever(resolver.scope)
@@ -208,8 +208,8 @@ export class Container {
     }
     return {
       stack: [],
-      deferredInstances: new Map(),
-      resolvedInstances: new Map(),
+      dependents: new Map(),
+      resolutionContext: new Map(),
       scope: resolvedScope,
       resolve: this.resolve,
     }
