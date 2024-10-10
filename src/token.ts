@@ -1,7 +1,7 @@
 export type InjectionToken<T = any> = Constructor<T> | InjectableType<T>
 
 export interface Constructor<T> {
-  new (...args: []): T & object
+  new (...args: []): T
 }
 
 export interface InjectableType<T> {

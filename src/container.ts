@@ -32,9 +32,10 @@ export class Container {
   parent?: Container
   defaultScope: InjectionScope
 
-  constructor(options: ContainerOptions = {}) {
-    this.parent = options.parent
-    this.defaultScope = options.defaultScope || InjectionScope.Inherited
+  constructor({parent, defaultScope = InjectionScope.Inherited}: ContainerOptions = {}) {
+    this.parent = parent
+    this.defaultScope = defaultScope
+    this.register({token: Container, useValue: this})
   }
 
   createChild(): Container {
@@ -194,9 +195,9 @@ export class Container {
     expectNever(resolver.scope)
   }
 
-  private createResolver(scope: InjectionScope | undefined): Resolver {
+  private createResolver(scope: InjectionScope = this.defaultScope): Resolver {
     const currentResolver = useResolver()
-    let resolvedScope = scope || this.defaultScope
+    let resolvedScope = scope
     if (resolvedScope == InjectionScope.Inherited) {
       resolvedScope = currentResolver?.scope || InjectionScope.Transient
     }

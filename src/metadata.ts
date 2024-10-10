@@ -8,7 +8,7 @@ export interface InjectionMetadata<T = any> extends Partial<InjectionConfig<T>> 
 
 export interface InjectionDependency<T = any> {
   resolvable: Resolvable<T>
-  setValue(instance: object, value: T): void
+  setValue(instance: any, value: T): void
 }
 
 class InjectionMetadataRegistry {
