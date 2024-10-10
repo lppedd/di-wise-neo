@@ -1,7 +1,6 @@
 export const ErrorMessage = {
   UnresolvableToken: 'unresolvable token:',
   CircularDependency: 'circular dependency:',
-  DeferredWithoutInject: 'deferred without Inject:',
   InjectOutsideOfContext: 'inject outside of context',
 } as const
 

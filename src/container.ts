@@ -174,11 +174,11 @@ export class Container {
         return instance
       }
       else if (resolver.scope == InjectionScope.Resolution) {
-        if (resolver.resolutionContext.has(token)) {
-          return resolver.resolutionContext.get(token)
+        if (resolver.resolutions.has(token)) {
+          return resolver.resolutions.get(token)
         }
         const instance = withResolver(resolver, instantiate)
-        resolver.resolutionContext.set(token, instance)
+        resolver.resolutions.set(token, instance)
         return instance
       }
       else if (resolver.scope == InjectionScope.Transient) {
@@ -188,7 +188,7 @@ export class Container {
     finally {
       resolver.stack.pop()
       if (!resolver.stack.length) {
-        resolver.resolutionContext.clear()
+        resolver.resolutions.clear()
       }
     }
     expectNever(resolver.scope)
@@ -209,7 +209,7 @@ export class Container {
     return {
       stack: [],
       dependents: new Map(),
-      resolutionContext: new Map(),
+      resolutions: new Map(),
       scope: resolvedScope,
       resolve: this.resolve,
     }

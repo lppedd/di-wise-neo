@@ -14,7 +14,7 @@ export interface Resolver {
   scope: ResolvedScope
   stack: InjectionToken[]
   dependents: Map<InjectionToken, any>
-  resolutionContext: Map<InjectionToken, any>
+  resolutions: Map<InjectionToken, any>
   resolve<T>(resolvable: Resolvable<T>): T
 }
 
