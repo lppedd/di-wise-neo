@@ -2,7 +2,7 @@ import type {InjectionConfig} from './config'
 import type {Resolvable} from './resolvable'
 import type {Constructor} from './token'
 
-export interface InjectionMetadata<T = any> extends InjectionConfig<T> {
+export interface InjectionMetadata<T = any> extends InjectionConfig<T[]> {
   dependencies: Set<InjectionDependency>
 }
 

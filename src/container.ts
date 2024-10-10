@@ -1,4 +1,4 @@
-import {isConfigLike} from './config'
+import {type InjectionConfig, isConfig} from './config'
 import {createContext} from './create-context'
 import {assert, ErrorMessage, expectNever} from './errors'
 import {getMetadata} from './metadata'
@@ -59,7 +59,7 @@ export class Container {
     if (isConstructor(providable)) {
       const Class = providable
       const metadata = getMetadata(Class)
-      const tokens = metadata?.tokens || [Class]
+      const tokens = (metadata?.tokens || []).concat(Class)
       tokens.forEach((token) => {
         const provider = {
           token,
@@ -76,8 +76,11 @@ export class Container {
     }
   }
 
-  resolve = <T>(resolvable: Resolvable<T>): T => {
-    if (isConfigLike(resolvable)) {
+  resolve<T extends any[]>(config: InjectionConfig<T>): T[number]
+  resolve<T>(token: InjectionToken<T>): T
+  resolve<T>(resolvable: Resolvable<T>): T
+  resolve<T>(resolvable: Resolvable<T>): T {
+    if (isConfig(resolvable)) {
       const config = resolvable
       const tokens = config.tokens
       for (const token of tokens) {

@@ -1,6 +1,6 @@
 export type InjectionToken<T = any> = Constructor<T> | Type<T>
 
-export interface Constructor<T> {
+export interface Constructor<T = any> {
   new (...args: []): T
 }
 
