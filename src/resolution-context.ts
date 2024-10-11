@@ -16,5 +16,5 @@ export type ResolvedScope = Exclude<
   typeof InjectionScope.Inherited
 >
 
-/** @internal */
+// @internal
 export const [withResolutionContext, useResolutionContext] = createContext<ResolutionContext>()

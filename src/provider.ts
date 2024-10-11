@@ -44,7 +44,7 @@ export function defineProvider<Value>(provider: InjectionProvider<Value>): Injec
   return provider
 }
 
-/** @internal */
+// @internal
 export function isProvider<T>(injection: Injection<T>) {
   return (
     isValueProvider(injection)
@@ -53,17 +53,17 @@ export function isProvider<T>(injection: Injection<T>) {
   )
 }
 
-/** @internal */
+// @internal
 export function isClassProvider<T>(injection: Injection<T>) {
   return 'useClass' in injection
 }
 
-/** @internal */
+// @internal
 export function isFactoryProvider<T>(injection: Injection<T>) {
   return 'useFactory' in injection
 }
 
-/** @internal */
+// @internal
 export function isValueProvider<T>(injection: Injection<T>) {
   return 'useValue' in injection
 }

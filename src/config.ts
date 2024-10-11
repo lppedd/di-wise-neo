@@ -13,7 +13,7 @@ export interface InjectionConfigLike<Value> {
   token: InjectionToken<Value>
 }
 
-/** @internal */
+// @internal
 export function isConfigLike<T>(injection: Injection<T>) {
   return 'token' in injection
 }

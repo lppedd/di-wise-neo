@@ -26,7 +26,7 @@ export namespace Type {
   export const Undefined: Type<undefined> = Type('Undefined')
 }
 
-/** @internal */
+// @internal
 export function isConstructor(token: unknown) {
   return typeof token == 'function'
 }

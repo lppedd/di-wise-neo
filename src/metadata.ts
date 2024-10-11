@@ -30,10 +30,10 @@ class InjectionMetadataRegistry {
   }
 }
 
-/** @internal */
+// @internal
 export const metadataRegistry = new InjectionMetadataRegistry()
 
-/** @internal */
+// @internal
 export function getMetadata<T extends object>(Class: Constructor<T>) {
   const decoratorMetadata = Class[Symbol.metadata]
   return decoratorMetadata && metadataRegistry.get<T>(decoratorMetadata)

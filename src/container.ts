@@ -262,5 +262,5 @@ export class Container {
   }
 }
 
-/** @internal */
+// @internal
 export const [withContainer, useContainer] = createContext<Container>()

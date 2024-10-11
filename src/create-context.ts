@@ -3,7 +3,7 @@ export type ContextCallback<T, R> = (value: T) => R
 
 export type ContextConsumer<T> = () => T | null
 
-/** @internal */
+// @internal
 export function createContext<T extends {}>() {
   let contextValue: T | null = null
 
