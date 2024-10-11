@@ -41,6 +41,7 @@ export function Inject<Values extends unknown[]>(...injections: Injections<Value
   }
 }
 
+// TODO: support @Deferred() a = inject(A)
 export function Deferred<Values extends unknown[]>(...injections: Injections<Values>): ClassFieldDecorator<Values[number]> {
   return (_value, context) => {
     const metadata = metadataRegistry.ensure(context.metadata)
