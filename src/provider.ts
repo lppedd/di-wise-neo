@@ -1,5 +1,6 @@
 import type {InjectionConfig, InjectionConfigLike, InjectionScopeConfig} from './config'
 import type {Injection} from './injection'
+import {InjectionScope} from './scope'
 import {type Constructor, Type} from './token'
 
 export type InjectionProvider<Value = any> =
@@ -24,6 +25,7 @@ export type Factory<Value> = (...args: []) => Value
 
 export function Build<Value>(factory: Factory<Value>): FactoryProvider<Value> {
   return {
+    scope: InjectionScope.Transient,
     token: Type.Any,
     useFactory: factory,
   }
