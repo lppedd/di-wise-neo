@@ -1,6 +1,6 @@
 import {inject} from './inject'
+import type {Injections} from './injection'
 import {metadataRegistry} from './metadata'
-import type {Resolvables} from './resolvable'
 import type {InjectionScope} from './scope'
 import type {Constructor, InjectionToken} from './token'
 
@@ -33,19 +33,19 @@ export function Scoped<This extends object>(scope: InjectionScope): ClassDecorat
   }
 }
 
-export function Inject<Values extends unknown[]>(...resolvables: Resolvables<Values>): ClassFieldDecorator<Values[number]> {
+export function Inject<Values extends unknown[]>(...injections: Injections<Values>): ClassFieldDecorator<Values[number]> {
   return (_value, _context) => {
     return (_initialValue) => {
-      return inject(...resolvables)
+      return inject(...injections)
     }
   }
 }
 
-export function Deferred<Values extends unknown[]>(...resolvables: Resolvables<Values>): ClassFieldDecorator<Values[number]> {
+export function Deferred<Values extends unknown[]>(...injections: Injections<Values>): ClassFieldDecorator<Values[number]> {
   return (_value, context) => {
     const metadata = metadataRegistry.ensure(context.metadata)
     metadata.dependencies.add({
-      resolvables,
+      injections,
       setValue: context.access.set,
     })
   }

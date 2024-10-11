@@ -1,6 +1,7 @@
 import {isConfig} from './config'
 import {createContext} from './create-context'
 import {assert, ErrorMessage, expectNever} from './errors'
+import type {Injections} from './injection'
 import {getMetadata} from './metadata'
 import {
   getScope,
@@ -16,7 +17,6 @@ import {
   useResolutionContext,
   withResolutionContext,
 } from './resolution-context'
-import type {Resolvables} from './resolvable'
 import {InjectionScope} from './scope'
 import {type Constructor, type InjectionToken, isConstructor} from './token'
 
@@ -77,32 +77,32 @@ export class Container {
     }
   }
 
-  resolve<Values extends unknown[]>(...resolvables: Resolvables<Values>): Values[number] {
-    for (const resolvable of resolvables) {
-      if (isConfig(resolvable)) {
-        const config = resolvable
+  resolve<Values extends unknown[]>(...injections: Injections<Values>): Values[number] {
+    for (const injection of injections) {
+      if (isConfig(injection)) {
+        const config = injection
         const token = config.token
         const provider = this.resolveProvider(token)
         if (provider) {
           const scope = config.scope
-          return this.resolveInstance({...provider, ...(scope && {scope})})
+          return this.resolveValue({...provider, ...(scope && {scope})})
         }
       }
       else {
-        const token = resolvable
+        const token = injection
         const provider = this.resolveProvider(token)
         if (provider) {
-          return this.resolveInstance(provider)
+          return this.resolveValue(provider)
         }
       }
     }
-    const tokenNames = resolvables.map((resolvable) => {
-      if (isConfig(resolvable)) {
-        const config = resolvable
+    const tokenNames = injections.map((injection) => {
+      if (isConfig(injection)) {
+        const config = injection
         const token = config.token
         return token.name
       }
-      const token = resolvable
+      const token = injection
       return token.name
     })
     assert(false, ErrorMessage.UnresolvableToken, tokenNames.join(', '))
@@ -131,8 +131,7 @@ export class Container {
     }
   }
 
-  // TODO: rename to resolveValue
-  resolveInstance<Value>(provider: Provider<Value>): Value {
+  resolveValue<Value>(provider: Provider<Value>): Value {
     if (isClassProvider(provider)) {
       const Class = provider.useClass
       return withContainer(this, () =>
@@ -144,7 +143,7 @@ export class Container {
             context.dependents.set(token, instance)
             try {
               metadata.dependencies.forEach((dependency) => {
-                const value = this.resolve(...dependency.resolvables)
+                const value = this.resolve(...dependency.injections)
                 dependency.setValue(instance, value)
               })
             }

@@ -1,4 +1,4 @@
-import type {Resolvable} from './resolvable'
+import type {Injection} from './injection'
 import type {InjectionScope} from './scope'
 import type {InjectionToken} from './token'
 
@@ -9,6 +9,6 @@ export interface InjectionConfig<Value> {
 }
 
 /** @internal */
-export function isConfig<T>(resolvable: Resolvable<T>) {
-  return 'token' in resolvable
+export function isConfig<T>(injection: Injection<T>) {
+  return 'token' in injection
 }

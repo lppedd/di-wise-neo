@@ -1,4 +1,4 @@
-import type {Resolvable} from './resolvable'
+import type {Injection} from './injection'
 import type {InjectionScope} from './scope'
 import type {Constructor, InjectionToken} from './token'
 
@@ -10,7 +10,7 @@ export interface InjectionMetadata<This extends object = any> {
 }
 
 export interface InjectionDependency<This extends object, Value = any> {
-  resolvables: Resolvable<Value>[]
+  injections: Injection<Value>[]
   setValue(instance: This, value: Value): void
 }
 

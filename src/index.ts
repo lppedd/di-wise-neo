@@ -8,6 +8,7 @@ export type {ClassDecorator, ClassFieldDecorator, ClassFieldInitializer} from '.
 export {Deferred, Inject, Injectable, Scoped} from './decorators'
 export {ErrorMessage} from './errors'
 export {inject} from './inject'
+export type {Injection, Injections} from './injection'
 export type {
   ClassProvider,
   defineProvider,
@@ -16,7 +17,6 @@ export type {
   TokenProvider,
   ValueProvider,
 } from './provider'
-export type {Resolvable} from './resolvable'
 export {InjectionScope} from './scope'
 export type {Constructor, InjectionToken} from './token'
 export {Type} from './token'
