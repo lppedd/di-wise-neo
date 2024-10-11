@@ -18,7 +18,7 @@ import {
   withResolutionContext,
 } from './resolution-context'
 import {InjectionScope} from './scope'
-import {type Constructor, type InjectionToken, isConstructor} from './token'
+import {type Constructor, type InjectionToken, isConstructor, Type} from './token'
 
 export interface ContainerOptions {
   parent?: Container
@@ -26,8 +26,14 @@ export interface ContainerOptions {
 }
 
 export class Container {
-  readonly instanceCache: Map<InjectionToken, any> = new Map()
-  readonly providerRegistry: Map<InjectionToken, InjectionProvider> = new Map()
+  #reservedRegistry = new Map<InjectionToken, InjectionProvider>([
+    [Type.Any, null!],
+    [Type.Null, {token: Type.Null, useValue: null}],
+    [Type.Undefined, {token: Type.Undefined, useValue: void 0}],
+  ])
+
+  providerRegistry: Map<InjectionToken, InjectionProvider> = new Map()
+  instanceCache: Map<InjectionToken, any> = new Map()
 
   parent?: Container
   defaultScope: InjectionScope
@@ -36,8 +42,7 @@ export class Container {
   constructor({parent, defaultScope = InjectionScope.Inherited}: ContainerOptions = {}) {
     this.parent = parent
     this.defaultScope = defaultScope
-    // TODO: use separate registry
-    this.register<Container>({token: Container, useValue: this})
+    this.#reservedRegistry.set(Container, {token: Container, useValue: this})
   }
 
   createChild(): Container {
@@ -54,6 +59,18 @@ export class Container {
     )
   }
 
+  #getProvider<Value>(token: InjectionToken<Value>): InjectionProvider<Value> | null | undefined {
+    return (
+      this.providerRegistry.get(token)
+      || this.#reservedRegistry.get(token)
+    )
+  }
+
+  #setProvider<Value>(token: InjectionToken<Value>, provider: InjectionProvider<Value>): void {
+    assert(!this.#reservedRegistry.has(token), ErrorMessage.ReservedToken, token.name)
+    this.providerRegistry.set(token, provider)
+  }
+
   register<Instance extends object>(Class: Constructor<Instance>): void
   register<Value>(provider: InjectionProvider<Value>): void
   register<Value>(providable: InjectionProvider<Value> | Constructor<Value & object>): void {
@@ -67,13 +84,13 @@ export class Container {
           useClass: Class,
           scope: metadata?.scope,
         }
-        this.providerRegistry.set(token, provider)
+        this.#setProvider(token, provider)
       })
     }
     else {
       const provider = providable
       const token = provider.token
-      this.providerRegistry.set(token, provider)
+      this.#setProvider(token, provider)
     }
   }
 
@@ -115,7 +132,7 @@ export class Container {
   resolveProvider<Value>(token: InjectionToken<Value>): InjectionProvider<Value> | undefined {
     if (isConstructor(token)) {
       const Class = token
-      const provider = this.providerRegistry.get(token)
+      const provider = this.#getProvider(token)
       if (provider) {
         return provider
       }
@@ -127,7 +144,7 @@ export class Container {
       }
     }
     else {
-      const provider = this.providerRegistry.get(token)
+      const provider = this.#getProvider(token)
       if (provider) {
         return provider
       }
@@ -139,7 +156,7 @@ export class Container {
     if (isClassProvider(provider)) {
       const Class = provider.useClass
       return withContainer(this, () =>
-        this.resolveScopedInstance(provider, (context) => {
+        this.#resolveScopedInstance(provider, (context) => {
           const instance = new Class()
           const metadata = getMetadata(Class)
           if (metadata?.dependencies) {
@@ -162,7 +179,7 @@ export class Container {
     else if (isFactoryProvider(provider)) {
       const factory = provider.useFactory
       return withContainer(this, () =>
-        this.resolveScopedInstance(provider, (_context) => factory()),
+        this.#resolveScopedInstance(provider, (_context) => factory()),
       )
     }
     else if (isValueProvider(provider)) {
@@ -172,9 +189,9 @@ export class Container {
     expectNever(provider)
   }
 
-  private resolveScopedInstance<T>(provider: ScopedProvider<T>, instantiate: Instantiate<T>): T {
+  #resolveScopedInstance<T>(provider: ScopedProvider<T>, instantiate: Instantiate<T>): T {
     const token = provider.token
-    const context = this.createResolutionContext(provider.scope)
+    const context = this.#createResolutionContext(provider.scope)
     if (context.stack.includes(token)) {
       if (context.dependents.has(token)) {
         return context.dependents.get(token)
@@ -212,7 +229,7 @@ export class Container {
     expectNever(context.scope)
   }
 
-  private createResolutionContext(scope = this.defaultScope): ResolutionContext {
+  #createResolutionContext(scope = this.defaultScope): ResolutionContext {
     const currentContext = useResolutionContext()
     let resolvedScope = scope
     if (resolvedScope == InjectionScope.Inherited) {

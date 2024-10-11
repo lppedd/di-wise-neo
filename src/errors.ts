@@ -1,4 +1,5 @@
 export const ErrorMessage = {
+  ReservedToken: 'reserved token:',
   UnresolvableToken: 'unresolvable token:',
   CircularDependency: 'circular dependency:',
   InjectOutsideOfContext: 'inject outside of context',

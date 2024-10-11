@@ -1,10 +1,6 @@
 import type {InjectionConfig, InjectionConfigLike, InjectionScopeConfig} from './config'
 import type {Injection} from './injection'
-import type {Constructor} from './token'
-
-export function defineProvider<Value>(provider: InjectionProvider<Value>): InjectionProvider<Value> {
-  return provider
-}
+import {type Constructor, Type} from './token'
 
 export type InjectionProvider<Value = any> =
   | ClassProvider<Value & object>
@@ -21,11 +17,31 @@ export interface ClassProvider<Instance extends object> extends InjectionConfig<
 }
 
 export interface FactoryProvider<Value> extends InjectionConfig<Value> {
-  useFactory: (...args: []) => Value
+  useFactory: Factory<Value>
 }
 
-export interface ValueProvider<Value> extends InjectionConfigLike<Value> {
-  useValue: Value
+export type Factory<Value> = (...args: []) => Value
+
+export function Build<Value>(factory: Factory<Value>): FactoryProvider<Value> {
+  return {
+    token: Type.Any,
+    useFactory: factory,
+  }
+}
+
+export interface ValueProvider<T> extends InjectionConfigLike<T> {
+  useValue: T
+}
+
+export function Value<T>(value: T): ValueProvider<T> {
+  return {
+    token: Type.Any,
+    useValue: value,
+  }
+}
+
+export function defineProvider<Value>(provider: InjectionProvider<Value>): InjectionProvider<Value> {
+  return provider
 }
 
 /** @internal */

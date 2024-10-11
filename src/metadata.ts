@@ -14,7 +14,7 @@ export interface InjectionDependency<This extends object, Value = any> {
 }
 
 class InjectionMetadataRegistry {
-  private readonly map = new WeakMap<DecoratorMetadata, InjectionMetadata>()
+  private map = new WeakMap<DecoratorMetadata, InjectionMetadata>()
 
   get<T extends object>(key: DecoratorMetadata): InjectionMetadata<T> | undefined {
     return this.map.get(key)
