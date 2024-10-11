@@ -1,4 +1,4 @@
-import {type InjectionConfig, isConfig} from './config'
+import {isConfig} from './config'
 import {createContext} from './create-context'
 import {assert, ErrorMessage, expectNever} from './errors'
 import {getMetadata} from './metadata'
@@ -16,7 +16,7 @@ import {
   useResolutionContext,
   withResolutionContext,
 } from './resolution-context'
-import type {Resolvable} from './resolvable'
+import type {Resolvables} from './resolvable'
 import {InjectionScope} from './scope'
 import {type Constructor, type InjectionToken, isConstructor} from './token'
 
@@ -36,7 +36,8 @@ export class Container {
   constructor({parent, defaultScope = InjectionScope.Inherited}: ContainerOptions = {}) {
     this.parent = parent
     this.defaultScope = defaultScope
-    this.register({token: Container, useValue: this})
+    // TODO: use separate registry
+    this.register<Container>({token: Container, useValue: this})
   }
 
   createChild(): Container {
@@ -46,16 +47,16 @@ export class Container {
     })
   }
 
-  isRegistered<T>(token: InjectionToken<T>): boolean {
+  isRegistered<Value>(token: InjectionToken<Value>): boolean {
     return (
       this.providerRegistry.has(token)
       || !!(this.parent?.isRegistered(token))
     )
   }
 
-  register<T>(Class: Constructor<T>): void
-  register<T>(provider: Provider<T>): void
-  register<T>(providable: Provider<T> | Constructor<T>): void {
+  register<Instance extends object>(Class: Constructor<Instance>): void
+  register<Value>(provider: Provider<Value>): void
+  register<Value>(providable: Provider<Value> | Constructor<Value & object>): void {
     if (isConstructor(providable)) {
       const Class = providable
       const metadata = getMetadata(Class)
@@ -76,32 +77,38 @@ export class Container {
     }
   }
 
-  resolve<T extends any[]>(config: InjectionConfig<T>): T[number]
-  resolve<T>(token: InjectionToken<T>): T
-  resolve<T>(resolvable: Resolvable<T>): T
-  resolve<T>(resolvable: Resolvable<T>): T {
-    if (isConfig(resolvable)) {
-      const config = resolvable
-      const tokens = config.tokens
-      for (const token of tokens) {
+  resolve<Values extends unknown[]>(...resolvables: Resolvables<Values>): Values[number] {
+    for (const resolvable of resolvables) {
+      if (isConfig(resolvable)) {
+        const config = resolvable
+        const token = config.token
         const provider = this.resolveProvider(token)
         if (provider) {
           const scope = config.scope
           return this.resolveInstance({...provider, ...(scope && {scope})})
         }
       }
-      const tokenNames = tokens.map((token) => token.name).join(', ')
-      assert(false, ErrorMessage.UnresolvableToken, tokenNames)
+      else {
+        const token = resolvable
+        const provider = this.resolveProvider(token)
+        if (provider) {
+          return this.resolveInstance(provider)
+        }
+      }
     }
-    else {
+    const tokenNames = resolvables.map((resolvable) => {
+      if (isConfig(resolvable)) {
+        const config = resolvable
+        const token = config.token
+        return token.name
+      }
       const token = resolvable
-      const provider = this.resolveProvider(token)
-      assert(provider, ErrorMessage.UnresolvableToken, token.name)
-      return this.resolveInstance(provider)
-    }
+      return token.name
+    })
+    assert(false, ErrorMessage.UnresolvableToken, tokenNames.join(', '))
   }
 
-  resolveProvider<T>(token: InjectionToken<T>): Provider<T> | undefined {
+  resolveProvider<Value>(token: InjectionToken<Value>): Provider<Value> | undefined {
     if (isConstructor(token)) {
       const Class = token
       const provider = this.providerRegistry.get(token)
@@ -124,7 +131,8 @@ export class Container {
     }
   }
 
-  resolveInstance<T>(provider: Provider<T>): T {
+  // TODO: rename to resolveValue
+  resolveInstance<Value>(provider: Provider<Value>): Value {
     if (isClassProvider(provider)) {
       const Class = provider.useClass
       return withContainer(this, () =>
@@ -136,7 +144,7 @@ export class Container {
             context.dependents.set(token, instance)
             try {
               metadata.dependencies.forEach((dependency) => {
-                const value = this.resolve(dependency.resolvable)
+                const value = this.resolve(...dependency.resolvables)
                 dependency.setValue(instance, value)
               })
             }

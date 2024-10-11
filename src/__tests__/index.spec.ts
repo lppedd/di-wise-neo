@@ -110,7 +110,7 @@ describe('Features', () => {
 
     class B {
       @Inject({
-        tokens: [A],
+        token: A,
         scope: InjectionScope.Container,
       })
       a!: A
@@ -120,7 +120,7 @@ describe('Features', () => {
     expect(container.instanceCache.has(A)).toBe(true)
 
     const a = container.resolve({
-      tokens: [A],
+      token: A,
       scope: InjectionScope.Container,
     })
     expect(a).toBe(b.a)
@@ -140,7 +140,7 @@ describe('Features', () => {
     const B = Type<B>('B')
 
     class C {
-      @Inject({tokens: [A, B]})
+      @Inject(A, B)
       content!: {value: string}
     }
 

@@ -1,58 +1,51 @@
-import type {InjectionConfig} from './config'
 import {inject} from './inject'
 import {metadataRegistry} from './metadata'
-import type {Resolvable} from './resolvable'
+import type {Resolvables} from './resolvable'
 import type {InjectionScope} from './scope'
 import type {Constructor, InjectionToken} from './token'
 
-export type ClassDecorator<Class extends Constructor> = (
+export type ClassDecorator<Class extends Constructor<object>> = (
   value: Class,
   context: ClassDecoratorContext<Class>,
 ) => Class | void
 
-export type ClassFieldDecorator<Value> = <This>(
+export type ClassFieldDecorator<Value> = <This extends object>(
   value: undefined,
   context: ClassFieldDecoratorContext<This, Value>,
 ) => ClassFieldInitializer<This, Value> | void
 
-export type ClassFieldInitializer<This, Value> = (
+export type ClassFieldInitializer<This extends object, Value> = (
   this: This,
   initialValue: Value,
 ) => Value
 
-export function Injectable<T>(...tokens: InjectionToken<T>[]): ClassDecorator<Constructor<T>> {
+export function Injectable<This extends object>(...tokens: InjectionToken<This>[]): ClassDecorator<Constructor<This>> {
   return (_value, context) => {
-    const metadata = metadataRegistry.ensure<T>(context.metadata)
+    const metadata = metadataRegistry.ensure<This>(context.metadata)
     metadata.tokens.push(...tokens)
   }
 }
 
-export function Scoped<T>(scope: InjectionScope): ClassDecorator<Constructor<T>> {
+export function Scoped<This extends object>(scope: InjectionScope): ClassDecorator<Constructor<This>> {
   return (_value, context) => {
-    const metadata = metadataRegistry.ensure<T>(context.metadata)
+    const metadata = metadataRegistry.ensure<This>(context.metadata)
     metadata.scope = scope
   }
 }
 
-export function Inject<T extends any[]>(config: InjectionConfig<T>): ClassFieldDecorator<T[number]>
-export function Inject<T>(token: InjectionToken<T>): ClassFieldDecorator<T>
-export function Inject<T>(resolvable: Resolvable<T>): ClassFieldDecorator<T>
-export function Inject<T>(resolvable: Resolvable<T>): ClassFieldDecorator<T> {
+export function Inject<Values extends unknown[]>(...resolvables: Resolvables<Values>): ClassFieldDecorator<Values[number]> {
   return (_value, _context) => {
     return (_initialValue) => {
-      return inject(resolvable)
+      return inject(...resolvables)
     }
   }
 }
 
-export function Deferred<T extends any[]>(config: InjectionConfig<T>): ClassFieldDecorator<T[number]>
-export function Deferred<T>(token: InjectionToken<T>): ClassFieldDecorator<T>
-export function Deferred<T>(resolvable: Resolvable<T>): ClassFieldDecorator<T>
-export function Deferred<T>(resolvable: Resolvable<T>): ClassFieldDecorator<T> {
+export function Deferred<Values extends unknown[]>(...resolvables: Resolvables<Values>): ClassFieldDecorator<Values[number]> {
   return (_value, context) => {
-    const metadata = metadataRegistry.ensure<T>(context.metadata)
+    const metadata = metadataRegistry.ensure(context.metadata)
     metadata.dependencies.add({
-      resolvable,
+      resolvables,
       setValue: context.access.set,
     })
   }

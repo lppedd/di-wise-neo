@@ -43,7 +43,7 @@ describe('inject', () => {
 
     class A {
       value = inject({
-        tokens: [B],
+        token: B,
         scope: InjectionScope.Container,
       })
     }

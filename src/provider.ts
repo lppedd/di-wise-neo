@@ -1,36 +1,36 @@
 import type {InjectionScope} from './scope'
 import type {Constructor, InjectionToken} from './token'
 
-export type Provider<T = any> =
-  | ClassProvider<T>
-  | FactoryProvider<T>
-  | TokenProvider<T>
-  | ValueProvider<T>
-
-export interface ClassProvider<T> {
-  scope?: InjectionScope
-  token: InjectionToken<T>
-  useClass: Constructor<T>
-}
-
-export interface FactoryProvider<T> {
-  scope?: InjectionScope
-  token: InjectionToken<T>
-  useFactory: (...args: []) => T
-}
-
-export interface TokenProvider<T> {
-  token: InjectionToken<T>
-  useToken: InjectionToken<T>
-}
-
-export interface ValueProvider<T> {
-  token: InjectionToken<T>
-  useValue: T
-}
-
-export function defineProvider<T>(provider: Provider<T>): Provider<T> {
+export function defineProvider<Value>(provider: Provider<Value>): Provider<Value> {
   return provider
+}
+
+export type Provider<Value = any> =
+  | ClassProvider<Value & object>
+  | FactoryProvider<Value>
+  | TokenProvider<Value>
+  | ValueProvider<Value>
+
+export interface ClassProvider<Instance extends object> {
+  scope?: InjectionScope
+  token: InjectionToken<Instance>
+  useClass: Constructor<Instance>
+}
+
+export interface FactoryProvider<Value> {
+  scope?: InjectionScope
+  token: InjectionToken<Value>
+  useFactory: (...args: []) => Value
+}
+
+export interface TokenProvider<Value> {
+  token: InjectionToken<Value>
+  useToken: InjectionToken<Value>
+}
+
+export interface ValueProvider<Value> {
+  token: InjectionToken<Value>
+  useValue: Value
 }
 
 /** @internal */
