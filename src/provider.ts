@@ -1,6 +1,6 @@
 import type {InjectionConfig, InjectionConfigLike, InjectionScopeConfig} from './config'
 import type {Injection} from './injection'
-import type {Constructor, InjectionToken} from './token'
+import type {Constructor} from './token'
 
 export function defineProvider<Value>(provider: InjectionProvider<Value>): InjectionProvider<Value> {
   return provider
@@ -9,7 +9,6 @@ export function defineProvider<Value>(provider: InjectionProvider<Value>): Injec
 export type InjectionProvider<Value = any> =
   | ClassProvider<Value & object>
   | FactoryProvider<Value>
-  | TokenProvider<Value>
   | ValueProvider<Value>
 
 export type ScopedProvider<Value> = Extract<
@@ -25,10 +24,6 @@ export interface FactoryProvider<Value> extends InjectionConfig<Value> {
   useFactory: (...args: []) => Value
 }
 
-export interface TokenProvider<Value> extends InjectionConfigLike<Value> {
-  useToken: InjectionToken<Value>
-}
-
 export interface ValueProvider<Value> extends InjectionConfigLike<Value> {
   useValue: Value
 }
@@ -36,10 +31,9 @@ export interface ValueProvider<Value> extends InjectionConfigLike<Value> {
 /** @internal */
 export function isProvider<T>(injection: Injection<T>) {
   return (
-    isClassProvider(injection)
+    isValueProvider(injection)
+    || isClassProvider(injection)
     || isFactoryProvider(injection)
-    || isTokenProvider(injection)
-    || isValueProvider(injection)
   )
 }
 
@@ -51,11 +45,6 @@ export function isClassProvider<T>(injection: Injection<T>) {
 /** @internal */
 export function isFactoryProvider<T>(injection: Injection<T>) {
   return 'useFactory' in injection
-}
-
-/** @internal */
-export function isTokenProvider<T>(injection: Injection<T>) {
-  return 'useToken' in injection
 }
 
 /** @internal */

@@ -14,7 +14,6 @@ export type {
   defineProvider,
   FactoryProvider,
   InjectionProvider,
-  TokenProvider,
   ValueProvider,
 } from './provider'
 export {InjectionScope} from './scope'

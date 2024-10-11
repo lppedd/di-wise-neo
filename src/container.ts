@@ -8,7 +8,6 @@ import {
   isClassProvider,
   isFactoryProvider,
   isProvider,
-  isTokenProvider,
   isValueProvider,
   type ScopedProvider,
 } from './provider'
@@ -165,10 +164,6 @@ export class Container {
       return withContainer(this, () =>
         this.resolveScopedInstance(provider, (_context) => factory()),
       )
-    }
-    else if (isTokenProvider(provider)) {
-      const forwardedToken = provider.useToken
-      return this.resolve(forwardedToken)
     }
     else if (isValueProvider(provider)) {
       const value = provider.useValue
