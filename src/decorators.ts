@@ -44,7 +44,7 @@ export function Inject<Values extends unknown[]>(...injections: Injections<Value
 export function Deferred<Values extends unknown[]>(...injections: Injections<Values>): ClassFieldDecorator<Values[number]> {
   return (_value, context) => {
     const metadata = metadataRegistry.ensure(context.metadata)
-    metadata.dependencies.add({
+    metadata.dependencies.push({
       injections,
       setValue: context.access.set,
     })

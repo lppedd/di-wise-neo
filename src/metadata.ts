@@ -5,8 +5,7 @@ import type {Constructor, InjectionToken} from './token'
 export interface InjectionMetadata<This extends object = any> {
   scope?: InjectionScope
   tokens: InjectionToken<This>[]
-  // TODO: use array
-  dependencies: Set<InjectionDependency<This>>
+  dependencies: InjectionDependency<This>[]
 }
 
 export interface InjectionDependency<This extends object, Value = any> {
@@ -24,7 +23,7 @@ class InjectionMetadataRegistry {
   ensure<T extends object>(key: DecoratorMetadata): InjectionMetadata<T> {
     let metadata = this.map.get(key)
     if (!metadata) {
-      metadata = {tokens: [], dependencies: new Set()}
+      metadata = {tokens: [], dependencies: []}
       this.map.set(key, metadata)
     }
     return metadata
