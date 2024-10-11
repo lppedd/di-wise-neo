@@ -7,5 +7,3 @@ export function inject<Values extends unknown[]>(...injections: Injections<Value
   assert(container, ErrorMessage.InjectOutsideOfContext)
   return container.resolve(...injections)
 }
-
-// TODO: Injector

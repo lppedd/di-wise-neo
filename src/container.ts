@@ -32,7 +32,10 @@ export class Container {
     [Type.Undefined, {token: Type.Undefined, useValue: void 0}],
   ])
 
+  /** @deprecated unsafe */
   providerRegistry: Map<InjectionToken, InjectionProvider> = new Map()
+
+  /** @deprecated unsafe */
   instanceCache: Map<InjectionToken, any> = new Map()
 
   parent?: Container
@@ -52,6 +55,15 @@ export class Container {
     })
   }
 
+  clearCache(): void {
+    this.instanceCache.clear()
+  }
+
+  resetRegistry(): void {
+    this.instanceCache.clear()
+    this.providerRegistry.clear()
+  }
+
   isRegistered<Value>(token: InjectionToken<Value>): boolean {
     return (
       this.providerRegistry.has(token)
@@ -61,8 +73,8 @@ export class Container {
 
   #getProvider<Value>(token: InjectionToken<Value>): InjectionProvider<Value> | null | undefined {
     return (
-      this.providerRegistry.get(token)
-      || this.#reservedRegistry.get(token)
+      this.#reservedRegistry.get(token)
+      || this.providerRegistry.get(token)
     )
   }
 
