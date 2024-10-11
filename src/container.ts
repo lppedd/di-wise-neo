@@ -1,15 +1,16 @@
-import {isConfig} from './config'
+import {isConfigLike} from './config'
 import {createContext} from './create-context'
 import {assert, ErrorMessage, expectNever} from './errors'
 import type {Injections} from './injection'
 import {getMetadata} from './metadata'
 import {
-  getScope,
+  type InjectionProvider,
   isClassProvider,
   isFactoryProvider,
+  isProvider,
   isTokenProvider,
   isValueProvider,
-  type Provider,
+  type ScopedProvider,
 } from './provider'
 import {
   type Instantiate,
@@ -27,7 +28,7 @@ export interface ContainerOptions {
 
 export class Container {
   readonly instanceCache: Map<InjectionToken, any> = new Map()
-  readonly providerRegistry: Map<InjectionToken, Provider> = new Map()
+  readonly providerRegistry: Map<InjectionToken, InjectionProvider> = new Map()
 
   parent?: Container
   defaultScope: InjectionScope
@@ -55,12 +56,12 @@ export class Container {
   }
 
   register<Instance extends object>(Class: Constructor<Instance>): void
-  register<Value>(provider: Provider<Value>): void
-  register<Value>(providable: Provider<Value> | Constructor<Value & object>): void {
+  register<Value>(provider: InjectionProvider<Value>): void
+  register<Value>(providable: InjectionProvider<Value> | Constructor<Value & object>): void {
     if (isConstructor(providable)) {
       const Class = providable
       const metadata = getMetadata(Class)
-      const tokens = (metadata?.tokens || []).concat(Class)
+      const tokens = [Class, ...(metadata?.tokens || [])]
       tokens.forEach((token) => {
         const provider = {
           token,
@@ -79,7 +80,11 @@ export class Container {
 
   resolve<Values extends unknown[]>(...injections: Injections<Values>): Values[number] {
     for (const injection of injections) {
-      if (isConfig(injection)) {
+      if (isConfigLike(injection)) {
+        if (isProvider(injection)) {
+          const provider = injection
+          return this.resolveValue(provider)
+        }
         const config = injection
         const token = config.token
         const provider = this.resolveProvider(token)
@@ -97,7 +102,7 @@ export class Container {
       }
     }
     const tokenNames = injections.map((injection) => {
-      if (isConfig(injection)) {
+      if (isConfigLike(injection)) {
         const config = injection
         const token = config.token
         return token.name
@@ -108,7 +113,7 @@ export class Container {
     assert(false, ErrorMessage.UnresolvableToken, tokenNames.join(', '))
   }
 
-  resolveProvider<Value>(token: InjectionToken<Value>): Provider<Value> | undefined {
+  resolveProvider<Value>(token: InjectionToken<Value>): InjectionProvider<Value> | undefined {
     if (isConstructor(token)) {
       const Class = token
       const provider = this.providerRegistry.get(token)
@@ -131,7 +136,7 @@ export class Container {
     }
   }
 
-  resolveValue<Value>(provider: Provider<Value>): Value {
+  resolveValue<Value>(provider: InjectionProvider<Value>): Value {
     if (isClassProvider(provider)) {
       const Class = provider.useClass
       return withContainer(this, () =>
@@ -172,10 +177,9 @@ export class Container {
     expectNever(provider)
   }
 
-  private resolveScopedInstance<T>(provider: Provider<T>, instantiate: Instantiate<T>): T {
+  private resolveScopedInstance<T>(provider: ScopedProvider<T>, instantiate: Instantiate<T>): T {
     const token = provider.token
-    const scope = getScope(provider)
-    const context = this.createResolutionContext(scope)
+    const context = this.createResolutionContext(provider.scope)
     if (context.stack.includes(token)) {
       if (context.dependents.has(token)) {
         return context.dependents.get(token)

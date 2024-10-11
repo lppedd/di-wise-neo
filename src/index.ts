@@ -1,7 +1,7 @@
 // @ts-expect-error: readonly property
 Symbol.metadata ||= Symbol('Symbol.metadata')
 
-export type {InjectionConfig} from './config'
+export type {InjectionConfig, InjectionConfigLike, InjectionScopeConfig} from './config'
 export type {ContainerOptions} from './container'
 export {Container} from './container'
 export type {ClassDecorator, ClassFieldDecorator, ClassFieldInitializer} from './decorators'
@@ -13,7 +13,7 @@ export type {
   ClassProvider,
   defineProvider,
   FactoryProvider,
-  Provider,
+  InjectionProvider,
   TokenProvider,
   ValueProvider,
 } from './provider'
