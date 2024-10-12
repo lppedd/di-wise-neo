@@ -53,7 +53,7 @@ describe('inject', () => {
     const a = container.resolve(A)
     expect(a).toBeInstanceOf(A)
     expect(a.value).toBeInstanceOf(B)
-    expect(container.instanceCache.get(B)).toBe(a.value)
+    expect(container.unsafe_instanceCache.get(B)).toBe(a.value)
   })
 
   it('should error if outside context', () => {

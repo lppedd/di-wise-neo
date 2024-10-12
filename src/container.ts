@@ -19,23 +19,33 @@ import {
 import {InjectionScope} from './scope'
 import {type Constructor, type InjectionToken, isConstructor, Type} from './token'
 
+const ProviderRegistry: typeof Map<InjectionToken, InjectionProvider> = Map
+type ProviderRegistry = InstanceType<typeof ProviderRegistry>
+
+const InstanceCache: typeof Map<InjectionToken, any> = Map
+type InstanceCache = InstanceType<typeof InstanceCache>
+
 export interface ContainerOptions {
   parent?: Container
   defaultScope?: InjectionScope
 }
 
 export class Container {
-  #reservedRegistry = new Map<InjectionToken, InjectionProvider>([
+  #reservedRegistry = new ProviderRegistry([
     [Type.Any, null!],
     [Type.Null, {token: Type.Null, useValue: null}],
-    [Type.Undefined, {token: Type.Undefined, useValue: void 0}],
+    [Type.Undefined, {token: Type.Undefined, useValue: undefined}],
   ])
 
-  /** @deprecated unsafe */
-  providerRegistry: Map<InjectionToken, InjectionProvider> = new Map()
+  #providerRegistry = new ProviderRegistry()
+  get unsafe_providerRegistry(): ProviderRegistry {
+    return this.#providerRegistry
+  }
 
-  /** @deprecated unsafe */
-  instanceCache: Map<InjectionToken, any> = new Map()
+  #instanceCache = new InstanceCache()
+  get unsafe_instanceCache(): InstanceCache {
+    return this.#instanceCache
+  }
 
   parent?: Container
   defaultScope: InjectionScope
@@ -55,17 +65,17 @@ export class Container {
   }
 
   clearCache(): void {
-    this.instanceCache.clear()
+    this.#instanceCache.clear()
   }
 
   resetRegistry(): void {
-    this.instanceCache.clear()
-    this.providerRegistry.clear()
+    this.#instanceCache.clear()
+    this.#providerRegistry.clear()
   }
 
   isRegistered<Value>(token: InjectionToken<Value>): boolean {
     return (
-      this.providerRegistry.has(token)
+      this.#providerRegistry.has(token)
       || !!(this.parent?.isRegistered(token))
     )
   }
@@ -73,13 +83,13 @@ export class Container {
   #getProvider<Value>(token: InjectionToken<Value>): InjectionProvider<Value> | null | undefined {
     return (
       this.#reservedRegistry.get(token)
-      || this.providerRegistry.get(token)
+      || this.#providerRegistry.get(token)
     )
   }
 
   #setProvider<Value>(token: InjectionToken<Value>, provider: InjectionProvider<Value>): void {
     assert(!this.#reservedRegistry.has(token), ErrorMessage.ReservedToken, token.name)
-    this.providerRegistry.set(token, provider)
+    this.#providerRegistry.set(token, provider)
   }
 
   register<Instance extends object>(Class: Constructor<Instance>): void
@@ -195,11 +205,11 @@ export class Container {
     context.stack.push(token)
     try {
       if (context.scope == InjectionScope.Container) {
-        if (this.instanceCache.has(token)) {
-          return this.instanceCache.get(token)
+        if (this.#instanceCache.has(token)) {
+          return this.#instanceCache.get(token)
         }
         const instance = withResolutionContext(context, instantiate)
-        this.instanceCache.set(token, instance)
+        this.#instanceCache.set(token, instance)
         return instance
       }
       else if (context.scope == InjectionScope.Resolution) {

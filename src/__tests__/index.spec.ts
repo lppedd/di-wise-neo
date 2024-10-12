@@ -116,7 +116,7 @@ describe('Features', () => {
     }
 
     const b = container.resolve(B)
-    expect(container.instanceCache.has(A)).toBe(true)
+    expect(container.unsafe_instanceCache.has(A)).toBe(true)
 
     const a = container.resolve({
       token: A,
