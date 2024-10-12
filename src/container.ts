@@ -11,11 +11,7 @@ import {
   isValueProvider,
   type ScopedProvider,
 } from './provider'
-import {
-  type ResolutionContext,
-  useResolutionContext,
-  withResolutionContext,
-} from './resolution-context'
+import {createResolutionContext, withResolutionContext} from './resolution-context'
 import {InjectionScope} from './scope'
 import {type Constructor, type InjectionToken, isConstructor, Type} from './token'
 
@@ -193,9 +189,8 @@ export class Container {
     expectNever(provider)
   }
 
-  #resolveScopedInstance<T>(provider: ScopedProvider<T>, instantiate: () => T): T {
-    const token = provider.token
-    const context = this.#createResolutionContext(provider.scope)
+  #resolveScopedInstance<T>({token, scope = this.defaultScope}: ScopedProvider<T>, instantiate: () => T) {
+    const context = createResolutionContext(scope)
     if (context.stack.includes(token)) {
       if (context.dependents.has(token)) {
         return context.dependents.get(token)
@@ -231,26 +226,6 @@ export class Container {
       }
     }
     expectNever(context.scope)
-  }
-
-  #createResolutionContext(scope = this.defaultScope): ResolutionContext {
-    const currentContext = useResolutionContext()
-    let resolvedScope = scope
-    if (resolvedScope == InjectionScope.Inherited) {
-      resolvedScope = currentContext?.scope || InjectionScope.Transient
-    }
-    if (currentContext) {
-      return {
-        ...currentContext,
-        scope: resolvedScope,
-      }
-    }
-    return {
-      scope: resolvedScope,
-      stack: [],
-      instances: new Map(),
-      dependents: new Map(),
-    }
   }
 }
 

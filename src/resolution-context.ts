@@ -1,5 +1,5 @@
 import {createContext} from './create-context'
-import type {InjectionScope} from './scope'
+import {InjectionScope} from './scope'
 import type {InjectionToken} from './token'
 
 export interface ResolutionContext {
@@ -13,6 +13,26 @@ export type ResolvedScope = Exclude<
   InjectionScope,
   typeof InjectionScope.Inherited
 >
+
+export function createResolutionContext(scope: InjectionScope): ResolutionContext {
+  const currentContext = useResolutionContext()
+  let resolvedScope = scope
+  if (resolvedScope == InjectionScope.Inherited) {
+    resolvedScope = currentContext?.scope || InjectionScope.Transient
+  }
+  if (currentContext) {
+    return {
+      ...currentContext,
+      scope: resolvedScope,
+    }
+  }
+  return {
+    stack: [],
+    instances: new Map(),
+    dependents: new Map(),
+    scope: resolvedScope,
+  }
+}
 
 // @internal
 export const [withResolutionContext, useResolutionContext] = createContext<ResolutionContext>()

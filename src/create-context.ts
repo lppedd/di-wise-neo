@@ -5,7 +5,7 @@ export type ContextConsumer<T> = () => T | null
 export function createContext<T extends {}>() {
   let contextValue: T | null = null
 
-  const Provider: ContextProvider<T> = (value, callback) => {
+  const provide: ContextProvider<T> = (value, callback) => {
     const currentValue = contextValue
     contextValue = value
     try {
@@ -16,12 +16,12 @@ export function createContext<T extends {}>() {
     }
   }
 
-  const Consumer: ContextConsumer<T> = () => {
+  const use: ContextConsumer<T> = () => {
     return contextValue
   }
 
   return <const>[
-    Provider,
-    Consumer,
+    provide,
+    use,
   ]
 }
