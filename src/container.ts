@@ -16,10 +16,8 @@ import {InjectionScope} from './scope'
 import {type Constructor, type InjectionToken, isConstructor, Type} from './token'
 
 const ProviderRegistry: typeof Map<InjectionToken, InjectionProvider> = Map
-type ProviderRegistry = InstanceType<typeof ProviderRegistry>
 
 const InstanceCache: typeof Map<InjectionToken, any> = Map
-type InstanceCache = InstanceType<typeof InstanceCache>
 
 export interface ContainerOptions {
   parent?: Container
@@ -34,12 +32,14 @@ export class Container {
   ])
 
   #providerRegistry = new ProviderRegistry()
-  get unsafe_providerRegistry(): ProviderRegistry {
+
+  get unsafe_providerRegistry(): InstanceType<typeof ProviderRegistry> {
     return this.#providerRegistry
   }
 
   #instanceCache = new InstanceCache()
-  get unsafe_instanceCache(): InstanceCache {
+
+  get unsafe_instanceCache(): InstanceType<typeof InstanceCache> {
     return this.#instanceCache
   }
 
@@ -76,14 +76,14 @@ export class Container {
     )
   }
 
-  #getProvider<Value>(token: InjectionToken<Value>): InjectionProvider<Value> | null | undefined {
+  #getProvider<Value>(token: InjectionToken<Value>) {
     return (
       this.#reservedRegistry.get(token)
       || this.#providerRegistry.get(token)
     )
   }
 
-  #setProvider<Value>(token: InjectionToken<Value>, provider: InjectionProvider<Value>): void {
+  #setProvider<Value>(token: InjectionToken<Value>, provider: InjectionProvider<Value>) {
     assert(!this.#reservedRegistry.has(token), ErrorMessage.ReservedToken, token.name)
     this.#providerRegistry.set(token, provider)
   }
