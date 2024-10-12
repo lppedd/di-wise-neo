@@ -1,16 +1,9 @@
-import type {Injection} from './injection'
 import type {InjectionScope} from './scope'
 import type {Constructor, InjectionToken} from './token'
 
 export interface InjectionMetadata<This extends object = any> {
   scope?: InjectionScope
   tokens: InjectionToken<This>[]
-  dependencies: InjectionDependency<This>[]
-}
-
-export interface InjectionDependency<This extends object, Value = any> {
-  injections: Injection<Value>[]
-  setValue(instance: This, value: Value): void
 }
 
 class InjectionMetadataRegistry {
@@ -23,7 +16,7 @@ class InjectionMetadataRegistry {
   ensure<T extends object>(key: DecoratorMetadata): InjectionMetadata<T> {
     let metadata = this.map.get(key)
     if (!metadata) {
-      metadata = {tokens: [], dependencies: []}
+      metadata = {tokens: []}
       this.map.set(key, metadata)
     }
     return metadata

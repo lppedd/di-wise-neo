@@ -12,7 +12,6 @@ import {
   type ScopedProvider,
 } from './provider'
 import {
-  type Instantiate,
   type ResolutionContext,
   useResolutionContext,
   withResolutionContext,
@@ -168,30 +167,13 @@ export class Container {
     if (isClassProvider(provider)) {
       const Class = provider.useClass
       return withContainer(this, () =>
-        this.#resolveScopedInstance(provider, (context) => {
-          const instance = new Class()
-          const metadata = getMetadata(Class)
-          if (metadata?.dependencies) {
-            const token = provider.token
-            context.dependents.set(token, instance)
-            try {
-              metadata.dependencies.forEach((dependency) => {
-                const value = this.resolve(...dependency.injections)
-                dependency.setValue(instance, value)
-              })
-            }
-            finally {
-              context.dependents.delete(token)
-            }
-          }
-          return instance
-        }),
+        this.#resolveScopedInstance(provider, () => new Class()),
       )
     }
     else if (isFactoryProvider(provider)) {
       const factory = provider.useFactory
       return withContainer(this, () =>
-        this.#resolveScopedInstance(provider, (_context) => factory()),
+        this.#resolveScopedInstance(provider, factory),
       )
     }
     else if (isValueProvider(provider)) {
@@ -201,7 +183,7 @@ export class Container {
     expectNever(provider)
   }
 
-  #resolveScopedInstance<T>(provider: ScopedProvider<T>, instantiate: Instantiate<T>): T {
+  #resolveScopedInstance<T>(provider: ScopedProvider<T>, instantiate: () => T): T {
     const token = provider.token
     const context = this.#createResolutionContext(provider.scope)
     if (context.stack.includes(token)) {

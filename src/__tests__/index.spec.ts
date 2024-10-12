@@ -2,7 +2,6 @@ import {describe, expect, it} from 'vitest'
 
 import {
   Container,
-  Deferred,
   Inject,
   Injectable,
   InjectionScope,
@@ -25,21 +24,21 @@ describe('Features', () => {
 
     @Injectable(B)
     class BImpl {
-      @Deferred(A)
+      @Inject(A)
       a!: A
 
       constructor() {
-        expect(this.a).toBeUndefined()
+        expect(this.a).toBeDefined()
       }
     }
 
     @Injectable(A)
     class AImpl {
-      @Deferred(B)
+      @Inject(B)
       b!: B
 
       constructor() {
-        expect(this.b).toBeUndefined()
+        expect(this.b).toBeDefined()
       }
     }
 

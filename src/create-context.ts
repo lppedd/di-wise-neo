@@ -1,6 +1,4 @@
-export type ContextProvider<T> = <R>(value: T, callback: ContextCallback<T, R>) => R
-export type ContextCallback<T, R> = (value: T) => R
-
+export type ContextProvider<T> = <R>(value: T, callback: () => R) => R
 export type ContextConsumer<T> = () => T | null
 
 // @internal
@@ -11,7 +9,7 @@ export function createContext<T extends {}>() {
     const currentValue = contextValue
     contextValue = value
     try {
-      return callback(value)
+      return callback()
     }
     finally {
       contextValue = currentValue

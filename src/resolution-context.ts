@@ -1,8 +1,6 @@
-import {type ContextCallback, createContext} from './create-context'
+import {createContext} from './create-context'
 import type {InjectionScope} from './scope'
 import type {InjectionToken} from './token'
-
-export type Instantiate<T> = ContextCallback<ResolutionContext, T>
 
 export interface ResolutionContext {
   scope: ResolvedScope
