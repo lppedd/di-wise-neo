@@ -36,6 +36,6 @@ export function Scoped<This extends object>(scope: InjectionScope): ClassDecorat
 export function Inject<Values extends unknown[]>(...injections: Injections<Values>): ClassFieldDecorator<Values[number]> {
   return (_value, _context) =>
     function (this, _initialValue) {
-      return inject.call(this, ...injections)
+      return inject.by(this, ...injections)
     }
 }
