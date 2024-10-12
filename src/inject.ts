@@ -9,8 +9,6 @@ export function inject<Values extends unknown[]>(...injections: Injections<Value
   return container.resolve(...injections)
 }
 
-// HACK: workaround with flag --isolatedDeclarations
-// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace inject {
   export function by<Values extends unknown[]>(thisArg: any, ...injections: Injections<Values>): Values[number] {
     const context = useResolutionContext()

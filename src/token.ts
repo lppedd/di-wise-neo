@@ -18,8 +18,6 @@ export function Type<Value>(typeName: string): Type<Value> {
   }
 }
 
-// HACK: workaround with flag --isolatedDeclarations
-// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Type {
   export const Any: Type<any> = Type('Any')
   export const Null: Type<null> = Type('Null')
