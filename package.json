@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "description": "A lightweight and flexible dependency injection library for JavaScript and TypeScript, w/o ECMAScript decorators (Stage 3 proposal).",
   "files": [
-    "dist"
+    "dist",
+    "src",
+    "!src/__tests__"
   ],
   "main": "./dist/cjs/index.js",
   "module": "./dist/es/index.mjs",
@@ -23,7 +25,7 @@
   },
   "sideEffects": false,
   "scripts": {
-    "build": "tsc && bunchee",
+    "build": "tsc && bunchee --sourcemap",
     "test": "vitest --coverage --coverage.all=false \"$@\"",
     "lint": "eslint . --fix --cache",
     "lint:ci": "eslint . --max-warnings 0 --cache --cache-location ./node_modules/.cache/eslint/.eslintcache",
@@ -38,13 +40,13 @@
     "ioc",
     "dependency injection",
     "inversion of control",
-    "ecmascript decorators",
+    "ecmascript decorator",
     "dependency",
     "injection",
     "injector",
     "container",
     "ecmascript",
-    "decorators",
+    "decorator",
     "metadata"
   ],
   "author": "exuanbo <exuanbo@protonmail.com>",
