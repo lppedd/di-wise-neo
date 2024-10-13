@@ -2,7 +2,7 @@
   "name": "di-wise",
   "packageManager": "yarn@4.5.0",
   "version": "0.0.0",
-  "description": "A lightweight and flexible dependency injection library for JavaScript and TypeScript, w/o ECMAScript decorators (Stage 3 proposal).",
+  "description": "Lightweight and flexible dependency injection library for JavaScript and TypeScript, w/wo ECMAScript decorators.",
   "files": [
     "dist",
     "src",
