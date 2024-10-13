@@ -1,11 +1,12 @@
 import {type InjectionConfig, isConfigLike} from './config'
 import {assert, ErrorMessage, expectNever, invariant} from './errors'
 import type {Injections} from './injection'
-import {Stack, useInjectionContext, withInjectionContext} from './injection-context'
+import {useInjectionContext, withInjectionContext} from './injection-context'
 import {getMetadata} from './metadata'
 import {type InjectionProvider, isClassProvider, isFactoryProvider, isProvider, isValueProvider} from './provider'
 import {InjectionScope} from './scope'
 import {type Constructor, type InjectionToken, isConstructor, Type} from './token'
+import {Stack} from './utils/stack'
 
 const ProviderRegistry: typeof Map<InjectionToken, InjectionProvider> = Map
 
