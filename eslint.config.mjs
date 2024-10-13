@@ -29,8 +29,16 @@ export default tseslint.config(
     files: ['**/*.?(c|m){j,t}s'],
   },
   {
-    name: 'eslint/recommended',
-    ...eslint.configs.recommended,
+    name: 'exuanbo/eslint',
+    extends: [
+      {
+        name: 'eslint/recommended',
+        ...eslint.configs.recommended,
+      },
+    ],
+    rules: {
+      'no-param-reassign': 'error',
+    },
   },
   {
     name: 'exuanbo/typescript',

@@ -1,25 +1,27 @@
-import {useContainer} from './container'
-import {assert, ErrorMessage} from './errors'
+import {assert, ErrorMessage, invariant} from './errors'
 import type {Injections} from './injection'
-import {useResolutionContext} from './resolution-context'
+import {useInjectionContext} from './injection-context'
 
 export function inject<Values extends unknown[]>(...injections: Injections<Values>): Values[number] {
-  const container = useContainer()
-  assert(container, ErrorMessage.InjectOutsideOfContext)
+  const context = useInjectionContext()
+  assert(context, ErrorMessage.InjectOutsideOfContext)
+  const container = context.container
   return container.resolve(...injections)
 }
 
 export namespace inject {
   export function by<Values extends unknown[]>(thisArg: any, ...injections: Injections<Values>): Values[number] {
-    const context = useResolutionContext()
-    const currentFrame = context?.stack[context.stack.length - 1]
-    assert(currentFrame, ErrorMessage.InjectOutsideOfContext)
-    context.dependents.set(currentFrame.token, thisArg)
+    const context = useInjectionContext()
+    assert(context, ErrorMessage.InjectOutsideOfContext)
+    const resolution = context.resolution
+    const currentFrame = resolution.stack.at(-1)
+    invariant(currentFrame)
+    resolution.dependents.set(currentFrame.token, thisArg)
     try {
       return inject(...injections)
     }
     finally {
-      context.dependents.delete(currentFrame.token)
+      resolution.dependents.delete(currentFrame.token)
     }
   }
 }

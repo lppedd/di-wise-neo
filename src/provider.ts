@@ -1,4 +1,4 @@
-import type {InjectionConfig, InjectionConfigLike, InjectionScopeConfig} from './config'
+import type {InjectionConfig, InjectionConfigLike} from './config'
 import type {Injection} from './injection'
 import {InjectionScope} from './scope'
 import {type Constructor, Type} from './token'
@@ -7,11 +7,6 @@ export type InjectionProvider<Value = any> =
   | ClassProvider<Value & object>
   | FactoryProvider<Value>
   | ValueProvider<Value>
-
-export type ScopedProvider<Value> = Extract<
-  InjectionProvider<Value>,
-  InjectionScopeConfig
->
 
 export interface ClassProvider<Instance extends object> extends InjectionConfig<Instance> {
   useClass: Constructor<Instance>

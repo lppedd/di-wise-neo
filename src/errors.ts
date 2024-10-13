@@ -11,6 +11,12 @@ export function assert(condition: unknown, ...args: any[]): asserts condition {
   }
 }
 
+export function invariant(condition: unknown): asserts condition {
+  if (!condition) {
+    throw new Error('invariant violation')
+  }
+}
+
 export function expectNever(value: never): never {
   throw new TypeError('unexpected value: ' + value)
 }
