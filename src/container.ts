@@ -1,7 +1,7 @@
 import {type InjectionConfig, isConfigLike} from './config'
 import {assert, ErrorMessage, expectNever, invariant} from './errors'
 import type {Injections} from './injection'
-import {useInjectionContext, withInjectionContext} from './injection-context'
+import {Stack, useInjectionContext, withInjectionContext} from './injection-context'
 import {getMetadata} from './metadata'
 import {type InjectionProvider, isClassProvider, isFactoryProvider, isProvider, isValueProvider} from './provider'
 import {InjectionScope} from './scope'
@@ -191,14 +191,14 @@ export class Container {
         }, () => this.#resolveScopedInstance({token, scope}, instantiate))
       }
       const resolution = context.resolution
-      if (resolution.stack.some((frame) => frame.token === token)) {
+      if (resolution.stack.has(token)) {
         if (resolution.dependents.has(token)) {
           return resolution.dependents.get(token)
         }
         assert(false, ErrorMessage.CircularDependency, token.name)
       }
       if (resolvedScope == InjectionScope.Inherited) {
-        const dependentFrame = resolution.stack.at(-1)
+        const dependentFrame = resolution.stack.peek()
         invariant(dependentFrame)
         resolvedScope = dependentFrame.scope
       }
@@ -210,7 +210,7 @@ export class Container {
       context = {
         container: this,
         resolution: {
-          stack: [],
+          stack: new Stack(),
           instances: new Map(),
           dependents: new Map(),
         },
@@ -224,7 +224,7 @@ export class Container {
       return withInjectionContext(context, instantiate)
     }
     const resolution = context.resolution
-    resolution.stack.push({scope: resolvedScope, token})
+    resolution.stack.push(token, {token, scope: resolvedScope})
     try {
       if (resolvedScope == InjectionScope.Container) {
         if (this.#instanceCache.has(token)) {

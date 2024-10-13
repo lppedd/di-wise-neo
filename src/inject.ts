@@ -14,7 +14,7 @@ export namespace inject {
     const context = useInjectionContext()
     assert(context, ErrorMessage.InjectOutsideOfContext)
     const resolution = context.resolution
-    const currentFrame = resolution.stack.at(-1)
+    const currentFrame = resolution.stack.peek()
     invariant(currentFrame)
     resolution.dependents.set(currentFrame.token, thisArg)
     try {
