@@ -12,14 +12,14 @@ export function inject<Values extends unknown[]>(...injections: Injections<Value
 export namespace inject {
   export function by<Values extends unknown[]>(thisArg: any, ...injections: Injections<Values>): Values[number] {
     const context = useResolutionContext()
-    const token = context?.stack[context.stack.length - 1]
-    assert(token, ErrorMessage.InjectOutsideOfContext)
-    context.dependents.set(token, thisArg)
+    const currentFrame = context?.stack[context.stack.length - 1]
+    assert(currentFrame, ErrorMessage.InjectOutsideOfContext)
+    context.dependents.set(currentFrame.token, thisArg)
     try {
       return inject(...injections)
     }
     finally {
-      context.dependents.delete(token)
+      context.dependents.delete(currentFrame.token)
     }
   }
 }

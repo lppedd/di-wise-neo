@@ -11,7 +11,7 @@ import {
   isValueProvider,
   type ScopedProvider,
 } from './provider'
-import {createResolutionContext, withResolutionContext} from './resolution-context'
+import {useResolutionContext, withResolutionContext} from './resolution-context'
 import {InjectionScope} from './scope'
 import {type Constructor, type InjectionToken, isConstructor, Type} from './token'
 
@@ -190,16 +190,26 @@ export class Container {
   }
 
   #resolveScopedInstance<T>({token, scope = this.defaultScope}: ScopedProvider<T>, instantiate: () => T) {
-    const context = createResolutionContext(scope)
-    if (context.stack.includes(token)) {
+    let context = useResolutionContext()
+    if (context?.stack.some((frame) => frame.token == token)) {
       if (context.dependents.has(token)) {
         return context.dependents.get(token)
       }
       assert(false, ErrorMessage.CircularDependency, token.name)
     }
-    context.stack.push(token)
+    let resolvedScope = scope
+    if (resolvedScope == InjectionScope.Inherited) {
+      const dependentFrame = context?.stack.at(-1)
+      resolvedScope = dependentFrame?.scope || InjectionScope.Transient
+    }
+    context ||= {
+      stack: [],
+      instances: new Map(),
+      dependents: new Map(),
+    }
+    context.stack.push({scope: resolvedScope, token})
     try {
-      if (context.scope == InjectionScope.Container) {
+      if (resolvedScope == InjectionScope.Container) {
         if (this.#instanceCache.has(token)) {
           return this.#instanceCache.get(token)
         }
@@ -207,7 +217,7 @@ export class Container {
         this.#instanceCache.set(token, instance)
         return instance
       }
-      else if (context.scope == InjectionScope.Resolution) {
+      else if (resolvedScope == InjectionScope.Resolution) {
         if (context.instances.has(token)) {
           return context.instances.get(token)
         }
@@ -215,7 +225,7 @@ export class Container {
         context.instances.set(token, instance)
         return instance
       }
-      else if (context.scope == InjectionScope.Transient) {
+      else if (resolvedScope == InjectionScope.Transient) {
         return withResolutionContext(context, instantiate)
       }
     }
@@ -225,7 +235,7 @@ export class Container {
         context.instances.clear()
       }
     }
-    expectNever(context.scope)
+    expectNever(resolvedScope)
   }
 }
 
