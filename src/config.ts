@@ -6,11 +6,11 @@ export interface InjectionConfig<Value>
   extends InjectionConfigLike<Value>, InjectionScopeConfig {}
 
 export interface InjectionScopeConfig {
-  scope?: InjectionScope
+  readonly scope?: InjectionScope
 }
 
 export interface InjectionConfigLike<Value> {
-  token: InjectionToken<Value>
+  readonly token: InjectionToken<Value>
 }
 
 // @internal

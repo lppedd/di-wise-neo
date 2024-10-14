@@ -9,11 +9,11 @@ export type InjectionProvider<Value = any> =
   | ValueProvider<Value>
 
 export interface ClassProvider<Instance extends object> extends InjectionConfig<Instance> {
-  useClass: Constructor<Instance>
+  readonly useClass: Constructor<Instance>
 }
 
 export interface FactoryProvider<Value> extends InjectionConfig<Value> {
-  useFactory: Factory<Value>
+  readonly useFactory: Factory<Value>
 }
 
 export type Factory<Value> = (...args: []) => Value
@@ -27,7 +27,7 @@ export function Build<Value>(factory: Factory<Value>): FactoryProvider<Value> {
 }
 
 export interface ValueProvider<T> extends InjectionConfigLike<T> {
-  useValue: T
+  readonly useValue: T
 }
 
 export function Value<T>(value: T): ValueProvider<T> {
