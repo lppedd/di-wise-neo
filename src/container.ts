@@ -1,6 +1,6 @@
 import {type InjectionConfig, isConfigLike} from './config'
 import {assert, ErrorMessage, expectNever} from './errors'
-import type {Injections} from './injection'
+import type {Injection, Injections} from './injection'
 import {useInjectionContext, withInjectionContext} from './injection-context'
 import {getMetadata} from './metadata'
 import {type InjectionProvider, isClassProvider, isFactoryProvider, isProvider, isValueProvider} from './provider'
@@ -83,7 +83,7 @@ export class Container {
 
   register<Instance extends object>(Class: Constructor<Instance>): void
   register<Value>(provider: InjectionProvider<Value>): void
-  register<Value>(providable: InjectionProvider<Value> | Constructor<Value & object>): void {
+  register<Value>(providable: Constructor<Value & object> | InjectionProvider<Value>): void {
     if (isConstructor(providable)) {
       const Class = providable
       const metadata = getMetadata(Class)
@@ -104,7 +104,8 @@ export class Container {
     }
   }
 
-  resolve<Values extends unknown[]>(...injections: Injections<Values>): Values[number] {
+  resolve<Values extends unknown[]>(...injections: Injections<Values>): Values[number]
+  resolve<Value>(...injections: Injection<Value>[]): Value {
     for (const injection of injections) {
       if (isConfigLike(injection)) {
         if (isProvider(injection)) {

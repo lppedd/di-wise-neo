@@ -1,8 +1,9 @@
 import {assert, ErrorMessage} from './errors'
-import type {Injections} from './injection'
+import type {Injection, Injections} from './injection'
 import {useInjectionContext} from './injection-context'
 
-export function inject<Values extends unknown[]>(...injections: Injections<Values>): Values[number] {
+export function inject<Values extends unknown[]>(...injections: Injections<Values>): Values[number]
+export function inject<Value>(...injections: Injection<Value>[]): Value {
   const context = useInjectionContext()
   assert(context, ErrorMessage.InjectOutsideOfContext)
   const container = context.container
@@ -10,7 +11,8 @@ export function inject<Values extends unknown[]>(...injections: Injections<Value
 }
 
 export namespace inject {
-  export function by<Values extends unknown[]>(thisArg: any, ...injections: Injections<Values>): Values[number] {
+  export function by<Values extends unknown[]>(thisArg: any, ...injections: Injections<Values>): Values[number]
+  export function by<Value>(thisArg: any, ...injections: Injection<Value>[]): Value {
     const context = useInjectionContext()
     assert(context, ErrorMessage.InjectOutsideOfContext)
     const resolution = context.resolution

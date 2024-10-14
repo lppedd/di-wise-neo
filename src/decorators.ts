@@ -1,5 +1,5 @@
 import {inject} from './inject'
-import type {Injections} from './injection'
+import type {Injection, Injections} from './injection'
 import {metadataRegistry} from './metadata'
 import type {InjectionScope} from './scope'
 import type {Constructor, InjectionToken} from './token'
@@ -33,7 +33,8 @@ export function Scoped<This extends object>(scope: InjectionScope): ClassDecorat
   }
 }
 
-export function Inject<Values extends unknown[]>(...injections: Injections<Values>): ClassFieldDecorator<Values[number]> {
+export function Inject<Values extends unknown[]>(...injections: Injections<Values>): ClassFieldDecorator<Values[number]>
+export function Inject<Value>(...injections: Injection<Value>[]): ClassFieldDecorator<Value> {
   return (_value, _context) =>
     function (this, _initialValue) {
       return inject.by(this, ...injections)
