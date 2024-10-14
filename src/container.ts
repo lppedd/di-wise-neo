@@ -136,7 +136,8 @@ export class Container {
       const token = injection
       return token.name
     })
-    assert(false, ErrorMessage.UnresolvableToken, tokenNames.join(', '))
+    const formatter = new Intl.ListFormat('en', {style: 'narrow', type: 'conjunction'})
+    assert(false, ErrorMessage.UnresolvableToken, formatter.format(tokenNames))
   }
 
   resolveProvider<Value>(token: InjectionToken<Value>): InjectionProvider<Value> | undefined {
