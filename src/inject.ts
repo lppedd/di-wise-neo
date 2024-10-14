@@ -1,29 +1,29 @@
-import {assert, ErrorMessage} from './errors'
-import type {Injection, Injections} from './injection'
-import {useInjectionContext} from './injection-context'
+import {assert, ErrorMessage} from "./errors";
+import type {Injection, Injections} from "./injection";
+import {useInjectionContext} from "./injection-context";
 
-export function inject<Values extends unknown[]>(...injections: Injections<Values>): Values[number]
+export function inject<Values extends unknown[]>(...injections: Injections<Values>): Values[number];
 export function inject<Value>(...injections: Injection<Value>[]): Value {
-  const context = useInjectionContext()
-  assert(context, ErrorMessage.InjectOutsideOfContext)
-  const container = context.container
-  return container.resolve(...injections)
+  const context = useInjectionContext();
+  assert(context, ErrorMessage.InjectOutsideOfContext);
+  const container = context.container;
+  return container.resolve(...injections);
 }
 
 export namespace inject {
-  export function by<Values extends unknown[]>(thisArg: any, ...injections: Injections<Values>): Values[number]
+  export function by<Values extends unknown[]>(thisArg: any, ...injections: Injections<Values>): Values[number];
   export function by<Value>(thisArg: any, ...injections: Injection<Value>[]): Value {
-    const context = useInjectionContext()
-    assert(context, ErrorMessage.InjectOutsideOfContext)
-    const resolution = context.resolution
-    const currentFrame = resolution.stack.peek()
-    assert(currentFrame, ErrorMessage.InvariantViolation)
-    resolution.dependents.set(currentFrame.token, thisArg)
+    const context = useInjectionContext();
+    assert(context, ErrorMessage.InjectOutsideOfContext);
+    const resolution = context.resolution;
+    const currentFrame = resolution.stack.peek();
+    assert(currentFrame, ErrorMessage.InvariantViolation);
+    resolution.dependents.set(currentFrame.token, thisArg);
     try {
-      return inject(...injections)
+      return inject(...injections);
     }
     finally {
-      resolution.dependents.delete(currentFrame.token)
+      resolution.dependents.delete(currentFrame.token);
     }
   }
 }

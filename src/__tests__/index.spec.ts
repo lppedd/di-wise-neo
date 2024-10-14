@@ -1,108 +1,101 @@
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it} from "vitest";
 
-import {
-  Container,
-  Inject,
-  Injectable,
-  InjectionScope,
-  Scoped,
-  Type,
-} from '..'
+import {Container, Inject, Injectable, InjectionScope, Scoped, Type} from "..";
 
-describe('Features', () => {
-  it('should handle circular dependencies', () => {
-    const container = new Container()
+describe("Features", () => {
+  it("should handle circular dependencies", () => {
+    const container = new Container();
 
     interface A {
-      b: B
+      b: B;
     }
     interface B {
-      a: A
+      a: A;
     }
-    const A = Type<A>('A')
-    const B = Type<B>('B')
+    const A = Type<A>("A");
+    const B = Type<B>("B");
 
     @Injectable(B)
     class BImpl {
       @Inject(A)
-      a!: A
+      a!: A;
 
       constructor() {
-        expect(this.a).toBeDefined()
+        expect(this.a).toBeDefined();
       }
     }
 
     @Injectable(A)
     class AImpl {
       @Inject(B)
-      b!: B
+      b!: B;
 
       constructor() {
-        expect(this.b).toBeDefined()
+        expect(this.b).toBeDefined();
       }
     }
 
-    container.register(AImpl)
-    container.register(BImpl)
+    container.register(AImpl);
+    container.register(BImpl);
 
-    const a = container.resolve(A)
-    expect(a).toBeInstanceOf(AImpl)
-    const b = a.b
-    expect(b).toBeInstanceOf(BImpl)
-    expect(b.a).toBe(a)
-  })
+    const a = container.resolve(A);
+    expect(a).toBeInstanceOf(AImpl);
+    const b = a.b;
+    expect(b).toBeInstanceOf(BImpl);
+    expect(b.a).toBe(a);
+  });
 
-  it('should handle resolution scope', () => {
-    const container = new Container()
+  it("should handle resolution scope", () => {
+    const container = new Container();
 
     @Scoped(InjectionScope.Resolution)
     class A {}
 
     class B {
       @Inject(A)
-      a!: A
+      a!: A;
     }
 
     class C {
       @Inject(A)
-      a!: A
+      a!: A;
 
       @Inject(B)
-      b!: B
+      b!: B;
     }
 
-    const c = container.resolve(C)
-    expect(c.a).toBeInstanceOf(A)
-    expect(c.b).toBeInstanceOf(B)
-    expect(c.b.a).toBe(c.a)
-  })
+    const c = container.resolve(C);
+    expect(c.a).toBeInstanceOf(A);
+    expect(c.b).toBeInstanceOf(B);
+    expect(c.b.a).toBe(c.a);
+  });
 
-  it('should create child containers', () => {
+  it("should create child containers", () => {
     interface A {
-      value: string
+      value: string;
     }
-    const A = Type<A>('A')
+    const A = Type<A>("A");
 
     @Injectable(A)
     class AImpl implements A {
-      value = 'A'
+      value = "A";
     }
 
-    const parent = new Container()
+    const parent = new Container();
     parent.register({
       token: A,
       useClass: AImpl,
-    })
+    });
 
-    const child = parent.createChild()
-    expect(child.isRegistered(A)).toBe(true)
+    const child = parent.createChild();
+    expect(child.isRegistered(A)).toBe(true);
 
-    const a = child.resolve(A)
-    expect(a).toBeInstanceOf(AImpl)
-  })
+    const a = child.resolve(A);
+    expect(a).toBeInstanceOf(AImpl);
+  });
 
-  it('should override config', () => {
-    const container = new Container()
+  it("should override config", () => {
+    const container = new Container();
 
     @Scoped(InjectionScope.Transient)
     class A {}
@@ -112,43 +105,43 @@ describe('Features', () => {
         token: A,
         scope: InjectionScope.Container,
       })
-      a!: A
+      a!: A;
     }
 
-    const b = container.resolve(B)
-    expect(container.unsafe_instanceCache.has(A)).toBe(true)
+    const b = container.resolve(B);
+    expect(container.unsafe_instanceCache.has(A)).toBe(true);
 
     const a = container.resolve({
       token: A,
       scope: InjectionScope.Container,
-    })
-    expect(a).toBe(b.a)
-  })
+    });
+    expect(a).toBe(b.a);
+  });
 
-  it('should resolve multiple tokens', () => {
-    const container = new Container()
+  it("should resolve multiple tokens", () => {
+    const container = new Container();
 
     interface A {
-      value: string
+      value: string;
     }
-    const A = Type<A>('A')
+    const A = Type<A>("A");
 
     interface B {
-      value: string
+      value: string;
     }
-    const B = Type<B>('B')
+    const B = Type<B>("B");
 
     class C {
       @Inject(A, B)
-      content!: {value: string}
+      content!: {value: string};
     }
 
     container.register({
       token: B,
-      useValue: {value: 'B'},
-    })
+      useValue: {value: "B"},
+    });
 
-    const c = container.resolve(C)
-    expect(c.content.value).toBe('B')
-  })
-})
+    const c = container.resolve(C);
+    expect(c.content.value).toBe("B");
+  });
+});
