@@ -19,9 +19,9 @@ export function Type<Value>(typeName: string): Type<Value> {
 }
 
 export namespace Type {
-  export const Any: Type<any> = Type('Any')
-  export const Null: Type<null> = Type('Null')
-  export const Undefined: Type<undefined> = Type('Undefined')
+  export const Any: Type<any> = Type('any')
+  export const Null: Type<null> = Type('null')
+  export const Undefined: Type<undefined> = Type('undefined')
 }
 
 // @internal
