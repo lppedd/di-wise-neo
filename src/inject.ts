@@ -1,4 +1,4 @@
-import {assert, ErrorMessage, invariant} from './errors'
+import {assert, ErrorMessage} from './errors'
 import type {Injections} from './injection'
 import {useInjectionContext} from './injection-context'
 
@@ -15,7 +15,7 @@ export namespace inject {
     assert(context, ErrorMessage.InjectOutsideOfContext)
     const resolution = context.resolution
     const currentFrame = resolution.stack.peek()
-    invariant(currentFrame)
+    assert(currentFrame, ErrorMessage.InvariantViolation)
     resolution.dependents.set(currentFrame.token, thisArg)
     try {
       return inject(...injections)
