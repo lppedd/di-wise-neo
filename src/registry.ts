@@ -29,16 +29,28 @@ export class Registry {
   get<T>(token: InjectionToken<T>): Registration<T> | undefined {
     return (
       internals.get(token)
-      || this.map.get(token)
-      || this.parent?.map.get(token)
+      || this.getRecursive(token)
+    );
+  }
+
+  private getRecursive<T>(token: InjectionToken<T>): Registration<T> | undefined {
+    return (
+      this.map.get(token)
+      || this.parent?.getRecursive(token)
     );
   }
 
   has(token: InjectionToken): boolean {
     return Boolean(
       internals.has(token)
-      || this.map.has(token)
-      || this.parent?.map.has(token),
+      || this.hasRecursive(token),
+    );
+  }
+
+  private hasRecursive(token: InjectionToken): boolean | undefined {
+    return (
+      this.map.has(token)
+      || this.parent?.hasRecursive(token)
     );
   }
 
