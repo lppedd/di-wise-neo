@@ -94,30 +94,6 @@ describe("Features", () => {
     expect(a).toBeInstanceOf(AImpl);
   });
 
-  it("should override config", () => {
-    const container = new Container();
-
-    @Scoped(InjectionScope.Transient)
-    class A {}
-
-    class B {
-      @Inject({
-        token: A,
-        scope: InjectionScope.Container,
-      })
-      a!: A;
-    }
-
-    const b = container.resolve(B);
-    expect(container.unsafe_instanceCache.has(A)).toBe(true);
-
-    const a = container.resolve({
-      token: A,
-      scope: InjectionScope.Container,
-    });
-    expect(a).toBe(b.a);
-  });
-
   it("should resolve multiple tokens", () => {
     const container = new Container();
 

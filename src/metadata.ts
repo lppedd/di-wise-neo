@@ -9,6 +9,7 @@ export interface InjectionMetadata<This extends object = any> {
   tokens: InjectionToken<This>[];
 }
 
+// @internal
 export class InjectionMetadataRegistry {
   #map = new WeakMap<DecoratorMetadata, InjectionMetadata>();
 

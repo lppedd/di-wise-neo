@@ -1,8 +1,7 @@
 import {inject} from "./inject";
-import type {Injection, Injections} from "./injection";
 import {metadataRegistry} from "./metadata";
 import type {InjectionScope} from "./scope";
-import type {Constructor, InjectionToken} from "./token";
+import type {Constructor, InjectionToken, InjectionTokens} from "./token";
 
 export type ClassDecorator<Class extends Constructor<object>> = (
   value: Class,
@@ -33,10 +32,10 @@ export function Scoped<This extends object>(scope: InjectionScope): ClassDecorat
   };
 }
 
-export function Inject<Values extends unknown[]>(...injections: Injections<Values>): ClassFieldDecorator<Values[number]>;
-export function Inject<Value>(...injections: Injection<Value>[]): ClassFieldDecorator<Value> {
+export function Inject<Values extends unknown[]>(...tokens: InjectionTokens<Values>): ClassFieldDecorator<Values[number]>;
+export function Inject<Value>(...tokens: InjectionToken<Value>[]): ClassFieldDecorator<Value> {
   return (_value, _context) =>
     function (this, _initialValue) {
-      return inject.by(this, ...injections);
+      return inject.by(this, ...tokens);
     };
 }

@@ -6,6 +6,7 @@ export const ErrorMessage = {
   InjectOutsideOfContext: "inject outside of context",
 } as const;
 
+// @internal
 export function assert(condition: unknown, ...args: any[]): asserts condition {
   if (!condition) {
     const formatter = new Intl.ListFormat("en", {style: "narrow", type: "unit"});
@@ -13,6 +14,7 @@ export function assert(condition: unknown, ...args: any[]): asserts condition {
   }
 }
 
+// @internal
 export function expectNever(value: never): never {
   throw new TypeError("unexpected value: " + value);
 }

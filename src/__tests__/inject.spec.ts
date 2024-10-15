@@ -1,6 +1,6 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
-import {Container, inject, InjectionScope, Type} from "..";
+import {Container, inject, Type} from "..";
 
 describe("inject", () => {
   beforeEach(() => {
@@ -36,24 +36,6 @@ describe("inject", () => {
 
     const a = container.resolve(A);
     expect(a.value).toBeInstanceOf(B);
-  });
-
-  it("should inject with inline config", () => {
-    const container = new Container();
-
-    class A {
-      value = inject({
-        token: B,
-        scope: InjectionScope.Container,
-      });
-    }
-
-    class B {}
-
-    const a = container.resolve(A);
-    expect(a).toBeInstanceOf(A);
-    expect(a.value).toBeInstanceOf(B);
-    expect(container.unsafe_instanceCache.get(B)).toBe(a.value);
   });
 
   it("should error if outside context", () => {
@@ -96,16 +78,5 @@ describe("inject", () => {
 
     const a = container.resolve(A);
     expect(a.value).toBeInstanceOf(BImpl);
-  });
-
-  it("should inject container", () => {
-    const container = new Container();
-
-    class A {
-      container = inject(Container);
-    }
-
-    const a = container.resolve(A);
-    expect(a.container).toBe(container);
   });
 });

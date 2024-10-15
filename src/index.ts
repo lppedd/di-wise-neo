@@ -1,13 +1,13 @@
-export type {InjectionConfig, InjectionConfigLike, InjectionScopeConfig} from "./config";
 export type {ContainerOptions} from "./container";
 export {Container} from "./container";
 export type {ClassDecorator, ClassFieldDecorator, ClassFieldInitializer} from "./decorators";
 export {Inject, Injectable, Scoped} from "./decorators";
 export {ErrorMessage} from "./errors";
 export {inject} from "./inject";
-export type {Injection, Injections} from "./injection";
-export type {ClassProvider, Factory, FactoryProvider, InjectionProvider, ValueProvider} from "./provider";
-export {Build, defineProvider, Value} from "./provider";
+export type {ClassProvider, FactoryProvider, InjectionConfig, InjectionProvider, ValueProvider} from "./provider";
+export {defineProvider} from "./provider";
+export type {InstanceCache, Registration, Registry} from "./registry";
+export {Build, Value} from "./registry";
 export {InjectionScope} from "./scope";
-export type {Constructor, InjectionToken} from "./token";
+export type {Constructor, InjectionToken, InjectionTokens} from "./token";
 export {Type} from "./token";
