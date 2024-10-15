@@ -3,7 +3,15 @@ import {assert, ErrorMessage, expectNever} from "./errors";
 import type {Injection, Injections} from "./injection";
 import {useInjectionContext, withInjectionContext} from "./injection-context";
 import {getMetadata} from "./metadata";
-import {type InjectionProvider, isClassProvider, isFactoryProvider, isProvider, isValueProvider} from "./provider";
+import {
+  type InjectionProvider,
+  isClassProvider,
+  isFactoryProvider,
+  isProvider,
+  isValueProvider,
+  NullProvider,
+  UndefinedProvider,
+} from "./provider";
 import {InjectionScope} from "./scope";
 import {type Constructor, type InjectionToken, isConstructor, Type} from "./token";
 import {Stack} from "./utils/stack";
@@ -20,8 +28,8 @@ export interface ContainerOptions {
 export class Container {
   #reservedRegistry = new ProviderRegistry([
     [Type.Any, null!],
-    [Type.Null, {token: Type.Null, useValue: null}],
-    [Type.Undefined, {token: Type.Undefined, useValue: undefined}],
+    [Type.Null, NullProvider],
+    [Type.Undefined, UndefinedProvider],
   ]);
 
   #providerRegistry = new ProviderRegistry();
@@ -160,7 +168,6 @@ export class Container {
       if (provider) {
         return provider;
       }
-      return this.parent?.resolveProvider(token);
     }
   }
 

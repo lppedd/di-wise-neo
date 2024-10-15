@@ -42,6 +42,18 @@ export function defineProvider<Value>(provider: InjectionProvider<Value>): Injec
 }
 
 // @internal
+export const NullProvider = defineProvider({
+  token: Type.Null,
+  useValue: null,
+});
+
+// @internal
+export const UndefinedProvider = defineProvider({
+  token: Type.Undefined,
+  useValue: undefined,
+});
+
+// @internal
 export function isProvider<T>(injection: Injection<T>) {
   return (
     isValueProvider(injection)
