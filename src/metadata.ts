@@ -11,17 +11,17 @@ export interface InjectionMetadata<This extends object = any> {
 
 // @internal
 export class InjectionMetadataRegistry {
-  #map = new WeakMap<DecoratorMetadata, InjectionMetadata>();
+  private map = new WeakMap<DecoratorMetadata, InjectionMetadata>();
 
   get<T extends object>(key: DecoratorMetadata): InjectionMetadata<T> | undefined {
-    return this.#map.get(key);
+    return this.map.get(key);
   }
 
   ensure<T extends object>(key: DecoratorMetadata): InjectionMetadata<T> {
-    let metadata = this.#map.get(key);
+    let metadata = this.map.get(key);
     if (!metadata) {
       metadata = {tokens: []};
-      this.#map.set(key, metadata);
+      this.map.set(key, metadata);
     }
     return metadata;
   }

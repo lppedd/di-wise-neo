@@ -16,10 +16,10 @@ export interface InstanceCache<T> {
 export class Registry {
   private map = new Map<InjectionToken, Registration>();
 
-  #parent?: Registry;
+  private parent?: Registry;
 
   constructor(parent?: Registry) {
-    this.#parent = parent;
+    this.parent = parent;
   }
 
   clear(): void {
@@ -30,7 +30,7 @@ export class Registry {
     return (
       internals.get(token)
       || this.map.get(token)
-      || this.#parent?.map.get(token)
+      || this.parent?.map.get(token)
     );
   }
 
@@ -38,7 +38,7 @@ export class Registry {
     return Boolean(
       internals.has(token)
       || this.map.has(token)
-      || this.#parent?.map.has(token),
+      || this.parent?.map.has(token),
     );
   }
 

@@ -77,7 +77,7 @@ export class Container {
     for (const token of tokens) {
       const registration = this.registry.get(token);
       if (registration) {
-        return this.#resolveValue(registration);
+        return this.resolveValue(registration);
       }
       if (isConstructor(token)) {
         const Class = token;
@@ -87,7 +87,7 @@ export class Container {
           useClass: Class,
           scope: metadata?.scope,
         };
-        return this.#resolveValue({provider});
+        return this.resolveValue({provider});
       }
     }
     const tokenNames = tokens.map((token) => token.name);
@@ -95,15 +95,15 @@ export class Container {
     assert(false, ErrorMessage.UnresolvableToken, formatter.format(tokenNames));
   }
 
-  #resolveValue<Value>(registration: Registration<Value>): Value {
+  private resolveValue<Value>(registration: Registration<Value>): Value {
     const {provider} = registration;
     if (isClassProvider(provider)) {
       const Class = provider.useClass;
-      return this.#resolveScopedInstance(registration, () => new Class());
+      return this.resolveScopedInstance(registration, () => new Class());
     }
     else if (isFactoryProvider(provider)) {
       const factory = provider.useFactory;
-      return this.#resolveScopedInstance(registration, factory);
+      return this.resolveScopedInstance(registration, factory);
     }
     else if (isValueProvider(provider)) {
       const value = provider.useValue;
@@ -112,7 +112,7 @@ export class Container {
     expectNever(provider);
   }
 
-  #resolveScopedInstance<T>(registration: Registration<T>, instantiate: () => T): T {
+  private resolveScopedInstance<T>(registration: Registration<T>, instantiate: () => T): T {
     const context = useInjectionContext();
 
     if (!context || context.container != this) {
@@ -123,7 +123,7 @@ export class Container {
           instances: new Map(),
           dependents: new Map(),
         },
-      }, () => this.#resolveScopedInstance(registration, instantiate));
+      }, () => this.resolveScopedInstance(registration, instantiate));
     }
 
     const {token, scope = this.defaultScope} = registration.provider;
