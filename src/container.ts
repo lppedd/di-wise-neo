@@ -18,12 +18,14 @@ export interface ContainerOptions {
 }
 
 export class Container {
+  readonly parent?: Container;
   readonly registry: Registry;
 
   defaultScope: InjectionScope;
 
   constructor(options?: ContainerOptions);
   constructor({parent, defaultScope = InjectionScope.Inherited}: ContainerOptions = {}) {
+    this.parent = parent;
     this.registry = new Registry(parent?.registry);
     this.defaultScope = defaultScope;
   }
