@@ -6,8 +6,7 @@ export function inject<Values extends unknown[]>(...tokens: InjectionTokens<Valu
 export function inject<Value>(...tokens: InjectionToken<Value>[]): Value {
   const context = useInjectionContext();
   assert(context, ErrorMessage.InjectOutsideOfContext);
-  const {container} = context;
-  return container.resolve(...tokens);
+  return context.container.resolve(...tokens);
 }
 
 export namespace inject {
@@ -15,15 +14,21 @@ export namespace inject {
   export function by<Value>(thisArg: any, ...tokens: InjectionToken<Value>[]): Value {
     const context = useInjectionContext();
     assert(context, ErrorMessage.InjectOutsideOfContext);
-    const {resolution} = context;
-    const currentFrame = resolution.stack.peek();
+    const currentFrame = context.resolution.stack.peek();
     assert(currentFrame, ErrorMessage.InvariantViolation);
-    resolution.dependents.set(currentFrame.token, thisArg);
+    context.resolution.dependents.set(currentFrame.provider, thisArg);
     try {
       return inject(...tokens);
     }
     finally {
-      resolution.dependents.delete(currentFrame.token);
+      context.resolution.dependents.delete(currentFrame.provider);
     }
   }
+}
+
+export function injectAll<Values extends unknown[]>(...tokens: InjectionTokens<Values>): Values[number][];
+export function injectAll<Value>(...tokens: InjectionToken<Value>[]): Value[] {
+  const context = useInjectionContext();
+  assert(context, ErrorMessage.InjectOutsideOfContext);
+  return context.container.resolveAll(...tokens);
 }

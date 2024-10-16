@@ -4,8 +4,7 @@ export type {ClassDecorator, ClassFieldDecorator, ClassFieldInitializer} from ".
 export {Inject, Injectable, Scoped} from "./decorators";
 export {ErrorMessage} from "./errors";
 export {inject} from "./inject";
-export type {ClassProvider, FactoryProvider, InjectionConfig, InjectionProvider, ValueProvider} from "./provider";
-export {defineProvider} from "./provider";
+export type {ClassProvider, FactoryProvider, InjectionOptions, InjectionProvider, ValueProvider} from "./provider";
 export type {InstanceCache, Registration, Registry} from "./registry";
 export {Build, Value} from "./registry";
 export {InjectionScope} from "./scope";

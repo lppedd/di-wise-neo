@@ -7,18 +7,23 @@ export interface Constructor<Instance extends object> {
   new (...args: []): Instance;
 }
 
-export interface Type<Value> {
-  readonly name: string;
-  inter<I>(typeName: string, I: Type<I>): Type<Value & I>;
-  union<U>(typeName: string, U: Type<U>): Type<Value | U>;
+export interface Type<T> {
+  name: string;
+  inter<I>(typeName: string, I: Type<I>): Type<T & I>;
+  union<U>(typeName: string, U: Type<U>): Type<T | U>;
 }
 
-export function Type<Value>(typeName: string): Type<Value> {
-  return {
-    name: typeName,
+export function Type<T>(typeName: string): Type<T> {
+  const name = `Type<${typeName}>`;
+  const type = {
+    name,
     inter: Type,
     union: Type,
+    toString() {
+      return this.name;
+    },
   };
+  return type;
 }
 
 export namespace Type {

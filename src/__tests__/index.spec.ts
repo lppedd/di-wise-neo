@@ -82,8 +82,7 @@ describe("Features", () => {
     }
 
     const parent = new Container();
-    parent.register({
-      token: A,
+    parent.register(A, {
       useClass: AImpl,
     });
 
@@ -112,8 +111,7 @@ describe("Features", () => {
       content!: {value: string};
     }
 
-    container.register({
-      token: B,
+    container.register(B, {
       useValue: {value: "B"},
     });
 

@@ -1,43 +1,34 @@
+import {getMetadata} from "./metadata";
 import type {InjectionScope} from "./scope";
-import {type Constructor, type InjectionToken, Type} from "./token";
+import type {Constructor} from "./token";
 
 export type InjectionProvider<Value = any> =
   | ClassProvider<Value & object>
   | FactoryProvider<Value>
   | ValueProvider<Value>;
 
-export interface InjectionConfig<Value> {
+export interface InjectionOptions {
   scope?: InjectionScope;
-  token: InjectionToken<Value>;
 }
 
-export interface ClassProvider<Instance extends object> extends InjectionConfig<Instance> {
+export interface ClassProvider<Instance extends object> extends InjectionOptions {
   useClass: Constructor<Instance>;
 }
 
-export interface FactoryProvider<Value> extends InjectionConfig<Value> {
+export interface FactoryProvider<Value> extends InjectionOptions {
   useFactory: (...args: []) => Value;
 }
 
-export interface ValueProvider<T> extends InjectionConfig<T> {
+export interface ValueProvider<T> extends InjectionOptions {
   useValue: T;
-}
-
-export function defineProvider<Value>(provider: InjectionProvider<Value>): InjectionProvider<Value> {
-  return provider;
+  scope?: undefined;
 }
 
 // @internal
-export const NullProvider = defineProvider({
-  token: Type.Null,
-  useValue: null,
-});
+export const NullProvider = {useValue: null};
 
 // @internal
-export const UndefinedProvider = defineProvider({
-  token: Type.Undefined,
-  useValue: undefined,
-});
+export const UndefinedProvider = {useValue: undefined};
 
 // @internal
 export function isClassProvider<T>(provider: InjectionProvider<T>) {
@@ -52,4 +43,28 @@ export function isFactoryProvider<T>(provider: InjectionProvider<T>) {
 // @internal
 export function isValueProvider<T>(provider: InjectionProvider<T>) {
   return "useValue" in provider;
+}
+
+class ProviderRegistry {
+  private map = new WeakMap<Constructor<object>, InjectionProvider>();
+
+  ensure<T extends object>(Class: Constructor<T>): InjectionProvider<T> {
+    let provider = this.map.get(Class);
+    if (!provider) {
+      const metadata = getMetadata(Class);
+      provider = {
+        useClass: Class,
+        scope: metadata?.scope,
+      };
+      this.map.set(Class, provider);
+    }
+    return provider;
+  }
+}
+
+const providerRegistry = new ProviderRegistry();
+
+// @internal
+export function getProvider<T extends object>(Class: Constructor<T>): InjectionProvider<T> {
+  return providerRegistry.ensure(Class);
 }

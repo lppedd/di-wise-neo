@@ -71,8 +71,7 @@ describe("inject", () => {
       return inject(BImpl);
     }
 
-    container.register({
-      token: B,
+    container.register(B, {
       useFactory: createB,
     });
 
