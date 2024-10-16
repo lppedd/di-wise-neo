@@ -77,6 +77,11 @@ export class Container {
     return this;
   }
 
+  unregister<Value>(token: InjectionToken<Value>): this {
+    this.registry.delete(token);
+    return this;
+  }
+
   resolve<Values extends unknown[]>(...tokens: InjectionTokens<Values>): Values[number];
   resolve<Value>(...tokens: InjectionToken<Value>[]): Value {
     for (const token of tokens) {
@@ -130,7 +135,7 @@ export class Container {
   private resolveScopedInstance<T>(registration: Registration<T>, instantiate: () => T): T {
     const context = useInjectionContext();
 
-    if (!context || context.container != this) {
+    if (!context || context.container !== this) {
       return withInjectionContext({
         container: this,
         resolution: {

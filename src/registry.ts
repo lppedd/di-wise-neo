@@ -26,6 +26,10 @@ export class Registry {
     this.map.clear();
   }
 
+  delete<T>(token: InjectionToken<T>): void {
+    this.map.delete(token);
+  }
+
   get<T>(token: InjectionToken<T>): Registration<T> | undefined {
     return (
       internals.get(token)
@@ -72,7 +76,7 @@ export class Registry {
     );
   }
 
-  set<T>(token: InjectionToken<T>, registration: Registration<T>): this {
+  set<T>(token: InjectionToken<T>, registration: Registration<T>): void {
     assert(!internals.has(token), ErrorMessage.ReservedToken, token.name);
     let registrations = this.map.get(token);
     if (!registrations) {
@@ -84,7 +88,6 @@ export class Registry {
         provider !== registration.provider)) {
       registrations.push(registration);
     }
-    return this;
   }
 
   values(): IterableIterator<Registration[]> {
