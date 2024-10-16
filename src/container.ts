@@ -8,7 +8,7 @@ import {
   isFactoryProvider,
   isValueProvider,
 } from "./provider";
-import {type Registration, Registry} from "./registry";
+import {type Registration, type RegistrationOptions, Registry} from "./registry";
 import {InjectionScope} from "./scope";
 import {type Constructor, type InjectionToken, type InjectionTokens, isConstructor} from "./token";
 import {Stack} from "./utils/stack";
@@ -62,24 +62,39 @@ export class Container {
   }
 
   register<Instance extends object>(Class: Constructor<Instance>): this;
-  register<Value>(token: InjectionToken<Value>, provider: InjectionProvider<Value>): this;
+  register<Value>(
+    token: InjectionToken<Value>,
+    provider: InjectionProvider<Value>,
+    options?: RegistrationOptions,
+  ): this;
   register<Value>(
     ...args:
-      | [Class: Constructor<Value & object>]
-      | [token: InjectionToken<Value>, provider: InjectionProvider<Value>]
+      | [Constructor<Value & object>]
+      | [InjectionToken<Value>, InjectionProvider<Value>, RegistrationOptions?]
   ): this {
     if (args.length == 1) {
       const [Class] = args;
       const metadata = getMetadata(Class);
+      const provider = getProvider(Class);
+      const options = {scope: metadata?.scope};
       const tokens = [Class, ...(metadata?.tokens || [])];
       tokens.forEach((token) => {
-        const provider = getProvider(Class);
-        this.registry.set(token, {provider});
+        this.registry.set(token, {provider, options});
       });
     }
     else {
-      const [token, provider] = args;
-      this.registry.set(token, {provider});
+      const [token] = args;
+      let [, provider, options] = args;
+      if (isClassProvider(provider)) {
+        const Class = provider.useClass;
+        const metadata = getMetadata(Class);
+        provider = getProvider(Class);
+        options = {
+          scope: metadata?.scope,
+          ...options,
+        };
+      }
+      this.registry.set(token, {provider, options});
     }
     return this;
   }
@@ -104,7 +119,8 @@ export class Container {
           return this.resolve(Class);
         }
         const provider = getProvider(Class);
-        return this.resolveValue({provider});
+        const options = {scope: metadata?.scope};
+        return this.resolveValue({provider, options});
       }
     }
     this.throwUnresolvableError(tokens);
@@ -127,7 +143,8 @@ export class Container {
           return [this.resolve(Class)];
         }
         const provider = getProvider(Class);
-        return [this.resolveValue({provider})];
+        const options = {scope: metadata?.scope};
+        return [this.resolveValue({provider, options})];
       }
     }
     this.throwUnresolvableError(tokens);
@@ -170,7 +187,7 @@ export class Container {
       assert(false, ErrorMessage.CircularDependency);
     }
 
-    let resolvedScope = registration.provider.scope || this.defaultScope;
+    let resolvedScope = registration.options?.scope || this.defaultScope;
     if (resolvedScope == InjectionScope.Inherited) {
       const dependentFrame = context.resolution.stack.peek();
       resolvedScope = dependentFrame?.scope || InjectionScope.Transient;

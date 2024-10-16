@@ -1,5 +1,3 @@
-import {getMetadata} from "./metadata";
-import type {InjectionScope} from "./scope";
 import type {Constructor} from "./token";
 
 export type InjectionProvider<Value = any> =
@@ -7,21 +5,16 @@ export type InjectionProvider<Value = any> =
   | FactoryProvider<Value>
   | ValueProvider<Value>;
 
-export interface InjectionOptions {
-  scope?: InjectionScope;
-}
-
-export interface ClassProvider<Instance extends object> extends InjectionOptions {
+export interface ClassProvider<Instance extends object> {
   useClass: Constructor<Instance>;
 }
 
-export interface FactoryProvider<Value> extends InjectionOptions {
+export interface FactoryProvider<Value> {
   useFactory: (...args: []) => Value;
 }
 
-export interface ValueProvider<T> extends InjectionOptions {
+export interface ValueProvider<T> {
   useValue: T;
-  scope?: undefined;
 }
 
 // @internal
@@ -45,17 +38,14 @@ export function isValueProvider<T>(provider: InjectionProvider<T>) {
   return "useValue" in provider;
 }
 
+// TODO: merge with metadata registry
 class ProviderRegistry {
   private map = new WeakMap<Constructor<object>, InjectionProvider>();
 
   ensure<T extends object>(Class: Constructor<T>): InjectionProvider<T> {
     let provider = this.map.get(Class);
     if (!provider) {
-      const metadata = getMetadata(Class);
-      provider = {
-        useClass: Class,
-        scope: metadata?.scope,
-      };
+      provider = {useClass: Class};
       this.map.set(Class, provider);
     }
     return provider;

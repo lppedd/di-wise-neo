@@ -6,11 +6,16 @@ import {type InjectionToken, Type} from "./token";
 
 export interface Registration<T = any> {
   cache?: InstanceCache<T>;
+  options?: RegistrationOptions;
   provider: InjectionProvider<T>;
 }
 
 export interface InstanceCache<T> {
   current: T;
+}
+
+export interface RegistrationOptions {
+  scope?: InjectionScope;
 }
 
 export class Registry {
@@ -83,9 +88,16 @@ export class Registry {
       registrations = [];
       this.map.set(token, registrations);
     }
-    if (
-      registrations.every(({provider}) =>
-        provider !== registration.provider)) {
+    const existing = registrations.find(
+      ({provider}) => provider === registration.provider,
+    );
+    if (existing) {
+      existing.options = {
+        ...existing.options,
+        ...registration.options,
+      };
+    }
+    else {
       registrations.push(registration);
     }
   }
