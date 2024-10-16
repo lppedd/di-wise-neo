@@ -5,6 +5,7 @@ import type {Constructor, InjectionToken} from "./token";
 Symbol.metadata ||= Symbol("Symbol.metadata");
 
 export interface InjectionMetadata<This extends object = any> {
+  autoRegister?: boolean;
   scope?: InjectionScope;
   tokens: InjectionToken<This>[];
 }

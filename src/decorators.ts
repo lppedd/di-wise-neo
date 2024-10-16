@@ -32,6 +32,13 @@ export function Scoped<This extends object>(scope: InjectionScope): ClassDecorat
   };
 }
 
+export function AutoRegister<This extends object>(enable = true): ClassDecorator<Constructor<This>> {
+  return (_value, context) => {
+    const metadata = metadataRegistry.ensure<This>(context.metadata);
+    metadata.autoRegister = enable;
+  };
+}
+
 export function Inject<Values extends unknown[]>(...tokens: InjectionTokens<Values>): ClassFieldDecorator<Values[number]>;
 export function Inject<Value>(...tokens: InjectionToken<Value>[]): ClassFieldDecorator<Value> {
   return (_value, _context) =>

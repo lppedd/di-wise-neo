@@ -27,7 +27,6 @@ export function Type<T>(typeName: string): Type<T> {
 }
 
 export namespace Type {
-  export const Any: Type<any> = Type("any");
   export const Null: Type<null> = Type("null");
   export const Undefined: Type<undefined> = Type("undefined");
 }

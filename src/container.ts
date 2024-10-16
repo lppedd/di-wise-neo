@@ -15,6 +15,7 @@ import {Stack} from "./utils/stack";
 
 export interface ContainerOptions {
   parent?: Container;
+  autoRegister?: boolean;
   defaultScope?: InjectionScope;
 }
 
@@ -22,12 +23,18 @@ export class Container {
   readonly parent?: Container;
   readonly registry: Registry;
 
+  autoRegister: boolean;
   defaultScope: InjectionScope;
 
   constructor(options?: ContainerOptions);
-  constructor({parent, defaultScope = InjectionScope.Inherited}: ContainerOptions = {}) {
+  constructor({
+    parent,
+    autoRegister = false,
+    defaultScope = InjectionScope.Inherited,
+  }: ContainerOptions = {}) {
     this.parent = parent;
     this.registry = new Registry(parent?.registry);
+    this.autoRegister = autoRegister;
     this.defaultScope = defaultScope;
   }
 
@@ -91,6 +98,11 @@ export class Container {
       }
       if (isConstructor(token)) {
         const Class = token;
+        const metadata = getMetadata(Class);
+        if (metadata?.autoRegister ?? this.autoRegister) {
+          this.register(Class);
+          return this.resolve(Class);
+        }
         const provider = getProvider(Class);
         return this.resolveValue({provider});
       }
@@ -109,6 +121,11 @@ export class Container {
       }
       if (isConstructor(token)) {
         const Class = token;
+        const metadata = getMetadata(Class);
+        if (metadata?.autoRegister ?? this.autoRegister) {
+          this.register(Class);
+          return [this.resolve(Class)];
+        }
         const provider = getProvider(Class);
         return [this.resolveValue({provider})];
       }
