@@ -46,8 +46,8 @@ export class Container {
 
   clearCache(): void {
     for (const registrations of this.registry.values()) {
-      registrations.forEach(({provider}, i) => {
-        registrations[i] = {provider};
+      registrations.forEach(({instance, ...registration}, i) => {
+        registrations[i] = registration;
       });
     }
   }
@@ -197,11 +197,11 @@ export class Container {
     });
     try {
       if (resolvedScope == Scope.Container) {
-        if (registration.cache) {
-          return registration.cache.current;
+        if (registration.instance) {
+          return registration.instance.current;
         }
         const instance = instantiate();
-        registration.cache = {current: instance};
+        registration.instance = {current: instance};
         return instance;
       }
       else if (resolvedScope == Scope.Resolution) {

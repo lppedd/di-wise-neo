@@ -7,7 +7,7 @@ import {type Token, Type} from "./token";
 
 export interface Registration<T = any> {
   options?: RegistrationOptions;
-  cache?: InstanceRef<T>;
+  instance?: InstanceRef<T>;
   provider: Provider<T>;
 }
 

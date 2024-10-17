@@ -8,7 +8,7 @@ export interface Constructor<Instance extends object> {
 }
 
 export interface Type<T> {
-  name: string;
+  readonly name: string;
   inter<I>(typeName: string, I: Type<I>): Type<T & I>;
   union<U>(typeName: string, U: Type<U>): Type<T | U>;
 }
