@@ -107,21 +107,21 @@ export class Registry {
 export function Build<Value>(factory: (...args: []) => Value): Type<Value> {
   const typeName = getTypeName(factory);
   const token = Type<Value>(`Build<${typeName}>`);
-  const provider = {
-    useFactory: factory,
-    scope: Scope.Transient,
+  const registration = {
+    provider: {useFactory: factory},
+    options: {scope: Scope.Transient},
   };
-  internals.set(token, {provider});
+  internals.set(token, registration);
   return token;
 }
 
 export function Value<T>(value: T): Type<T> {
   const typeName = getTypeName(value);
   const token = Type<T>(`Value<${typeName}>`);
-  const provider = {
-    useValue: value,
+  const registration = {
+    provider: {useValue: value},
   };
-  internals.set(token, {provider});
+  internals.set(token, registration);
   return token;
 }
 
