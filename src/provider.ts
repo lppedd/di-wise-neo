@@ -37,24 +37,3 @@ export function isFactoryProvider<T>(provider: InjectionProvider<T>) {
 export function isValueProvider<T>(provider: InjectionProvider<T>) {
   return "useValue" in provider;
 }
-
-// TODO: merge with metadata registry
-class ProviderRegistry {
-  private map = new WeakMap<Constructor<object>, InjectionProvider>();
-
-  ensure<T extends object>(Class: Constructor<T>): InjectionProvider<T> {
-    let provider = this.map.get(Class);
-    if (!provider) {
-      provider = {useClass: Class};
-      this.map.set(Class, provider);
-    }
-    return provider;
-  }
-}
-
-const providerRegistry = new ProviderRegistry();
-
-// @internal
-export function getProvider<T extends object>(Class: Constructor<T>): InjectionProvider<T> {
-  return providerRegistry.ensure(Class);
-}

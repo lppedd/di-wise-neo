@@ -1,5 +1,5 @@
 import {inject, injectAll} from "./inject";
-import {metadataRegistry} from "./metadata";
+import {getMetadata} from "./metadata";
 import type {InjectionScope} from "./scope";
 import type {Constructor, InjectionToken, InjectionTokens} from "./token";
 
@@ -19,22 +19,22 @@ export type ClassFieldInitializer<This extends object, Value> = (
 ) => Value;
 
 export function Injectable<This extends object>(...tokens: InjectionToken<This>[]): ClassDecorator<Constructor<This>> {
-  return (_value, context) => {
-    const metadata = metadataRegistry.ensure<This>(context.metadata);
+  return (Class, _context) => {
+    const metadata = getMetadata(Class);
     metadata.tokens.push(...tokens);
   };
 }
 
 export function Scoped<This extends object>(scope: InjectionScope): ClassDecorator<Constructor<This>> {
-  return (_value, context) => {
-    const metadata = metadataRegistry.ensure<This>(context.metadata);
+  return (Class, _context) => {
+    const metadata = getMetadata(Class);
     metadata.scope = scope;
   };
 }
 
 export function AutoRegister<This extends object>(enable = true): ClassDecorator<Constructor<This>> {
-  return (_value, context) => {
-    const metadata = metadataRegistry.ensure<This>(context.metadata);
+  return (Class, _context) => {
+    const metadata = getMetadata(Class);
     metadata.autoRegister = enable;
   };
 }

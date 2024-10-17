@@ -1,38 +1,42 @@
+import type {InjectionProvider} from "./provider";
+import type {Registration} from "./registry";
 import type {InjectionScope} from "./scope";
 import type {Constructor, InjectionToken} from "./token";
-
-// @ts-expect-error: readonly property
-Symbol.metadata ||= Symbol("Symbol.metadata");
 
 export interface InjectionMetadata<This extends object = any> {
   autoRegister?: boolean;
   scope?: InjectionScope;
   tokens: InjectionToken<This>[];
+  provider: InjectionProvider<This>;
 }
 
-// @internal
-export class InjectionMetadataRegistry {
-  private map = new WeakMap<DecoratorMetadata, InjectionMetadata>();
+class InjectionMetadataRegistry {
+  private map = new WeakMap<Constructor<object>, InjectionMetadata>();
 
-  get<T extends object>(key: DecoratorMetadata): InjectionMetadata<T> | undefined {
-    return this.map.get(key);
-  }
-
-  ensure<T extends object>(key: DecoratorMetadata): InjectionMetadata<T> {
-    let metadata = this.map.get(key);
+  ensure<T extends object>(Class: Constructor<T>): InjectionMetadata<T> {
+    let metadata = this.map.get(Class);
     if (!metadata) {
-      metadata = {tokens: []};
-      this.map.set(key, metadata);
+      metadata = {
+        tokens: [],
+        provider: {useClass: Class},
+      };
+      this.map.set(Class, metadata);
     }
     return metadata;
   }
 }
 
-// @internal
-export const metadataRegistry = new InjectionMetadataRegistry();
+const metadataRegistry = new InjectionMetadataRegistry();
 
 // @internal
 export function getMetadata<T extends object>(Class: Constructor<T>) {
-  const decoratorMetadata = Class[Symbol.metadata];
-  return decoratorMetadata && metadataRegistry.get<T>(decoratorMetadata);
+  return metadataRegistry.ensure<T>(Class);
+}
+
+// @internal
+export function getRegistration<T extends object>(metadata: InjectionMetadata<T>): Registration<T> {
+  return {
+    provider: metadata.provider,
+    options: {scope: metadata.scope},
+  };
 }

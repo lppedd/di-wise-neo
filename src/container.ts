@@ -1,8 +1,7 @@
 import {assert, ErrorMessage, expectNever} from "./errors";
 import {useInjectionContext, withInjectionContext} from "./injection-context";
-import {getMetadata} from "./metadata";
+import {getMetadata, getRegistration} from "./metadata";
 import {
-  getProvider,
   type InjectionProvider,
   isClassProvider,
   isFactoryProvider,
@@ -75,11 +74,10 @@ export class Container {
     if (args.length == 1) {
       const [Class] = args;
       const metadata = getMetadata(Class);
-      const provider = getProvider(Class);
-      const options = {scope: metadata?.scope};
-      const tokens = [Class, ...(metadata?.tokens || [])];
+      const tokens = [Class, ...(metadata.tokens || [])];
       tokens.forEach((token) => {
-        this.registry.set(token, {provider, options});
+        const registration = getRegistration(metadata);
+        this.registry.set(token, registration);
       });
     }
     else {
@@ -88,9 +86,9 @@ export class Container {
       if (isClassProvider(provider)) {
         const Class = provider.useClass;
         const metadata = getMetadata(Class);
-        provider = getProvider(Class);
+        provider = metadata.provider;
         options = {
-          scope: metadata?.scope,
+          scope: metadata.scope,
           ...options,
         };
       }
@@ -114,13 +112,12 @@ export class Container {
       if (isConstructor(token)) {
         const Class = token;
         const metadata = getMetadata(Class);
-        if (metadata?.autoRegister ?? this.autoRegister) {
+        if (metadata.autoRegister ?? this.autoRegister) {
           this.register(Class);
           return this.resolve(Class);
         }
-        const provider = getProvider(Class);
-        const options = {scope: metadata?.scope};
-        return this.resolveValue({provider, options});
+        const registration = getRegistration(metadata);
+        return this.resolveValue(registration);
       }
     }
     this.throwUnresolvableError(tokens);
@@ -138,13 +135,12 @@ export class Container {
       if (isConstructor(token)) {
         const Class = token;
         const metadata = getMetadata(Class);
-        if (metadata?.autoRegister ?? this.autoRegister) {
+        if (metadata.autoRegister ?? this.autoRegister) {
           this.register(Class);
           return [this.resolve(Class)];
         }
-        const provider = getProvider(Class);
-        const options = {scope: metadata?.scope};
-        return [this.resolveValue({provider, options})];
+        const registration = getRegistration(metadata);
+        return [this.resolveValue(registration)];
       }
     }
     this.throwUnresolvableError(tokens);
