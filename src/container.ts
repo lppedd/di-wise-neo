@@ -10,7 +10,7 @@ import {
 import {type Options, type Registration, Registry} from "./registry";
 import {Scope} from "./scope";
 import {type Constructor, isConstructor, type Token, type TokenList} from "./token";
-import {Stack} from "./utils/stack";
+import {KeyedStack} from "./utils/keyed-stack";
 
 export interface ContainerOptions {
   parent?: Container;
@@ -165,7 +165,7 @@ export class Container {
       return withInjectionContext({
         container: this,
         resolution: {
-          stack: new Stack(),
+          stack: new KeyedStack(),
           instances: new Map(),
           dependents: new Map(),
         },

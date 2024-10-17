@@ -2,7 +2,7 @@ import type {Container} from "./container";
 import type {Provider} from "./provider";
 import type {Scope} from "./scope";
 import {createContext} from "./utils/context";
-import type {Stack} from "./utils/stack";
+import type {KeyedStack} from "./utils/keyed-stack";
 
 export interface InjectionContext {
   container: Container;
@@ -10,7 +10,7 @@ export interface InjectionContext {
 }
 
 export interface Resolution {
-  stack: Stack<Provider, Frame>;
+  stack: KeyedStack<Provider, Frame>;
   instances: Map<Provider, any>;
   dependents: Map<Provider, any>;
 }

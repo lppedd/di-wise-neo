@@ -1,5 +1,5 @@
 // @internal
-export class Stack<K, V> {
+export class KeyedStack<K, V> {
   private entries = new Array<{key: K; value: V}>();
   private keys = new Set<K>();
 
