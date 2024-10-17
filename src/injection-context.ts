@@ -1,4 +1,5 @@
 import type {Container} from "./container";
+import type {InstanceRef} from "./instance";
 import type {Provider} from "./provider";
 import type {Scope} from "./scope";
 import {createContext} from "./utils/context";
@@ -10,12 +11,12 @@ export interface InjectionContext {
 }
 
 export interface Resolution {
-  stack: KeyedStack<Provider, Frame>;
-  instances: Map<Provider, any>;
-  dependents: Map<Provider, any>;
+  stack: KeyedStack<Provider, ResolutionFrame>;
+  instances: Map<Provider, InstanceRef>;
+  dependents: Map<Provider, InstanceRef>;
 }
 
-export interface Frame {
+export interface ResolutionFrame {
   scope: ResolvedScope;
   provider: Provider;
 }

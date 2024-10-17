@@ -1,20 +1,17 @@
 import {assert} from "./errors";
 import {ErrorMessage} from "./errors";
+import type {InstanceRef} from "./instance";
 import {NullProvider, type Provider, UndefinedProvider} from "./provider";
 import {Scope} from "./scope";
 import {type Token, Type} from "./token";
 
 export interface Registration<T = any> {
-  cache?: Cache<T>;
-  options?: Options;
+  options?: RegistrationOptions;
+  cache?: InstanceRef<T>;
   provider: Provider<T>;
 }
 
-export interface Cache<T> {
-  current: T;
-}
-
-export interface Options {
+export interface RegistrationOptions {
   scope?: Scope;
 }
 

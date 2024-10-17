@@ -7,7 +7,7 @@ import {
   isValueProvider,
   type Provider,
 } from "./provider";
-import {type Options, type Registration, Registry} from "./registry";
+import {type Registration, type RegistrationOptions, Registry} from "./registry";
 import {Scope} from "./scope";
 import {type Constructor, isConstructor, type Token, type TokenList} from "./token";
 import {KeyedStack} from "./utils/keyed-stack";
@@ -22,8 +22,8 @@ export class Container {
   readonly parent?: Container;
   readonly registry: Registry;
 
-  defaultScope: Scope;
   autoRegister: boolean;
+  defaultScope: Scope;
 
   constructor(options?: ContainerOptions);
   constructor({
@@ -61,11 +61,15 @@ export class Container {
   }
 
   register<Instance extends object>(Class: Constructor<Instance>): this;
-  register<Value>(token: Token<Value>, provider: Provider<Value>, options?: Options): this;
+  register<Value>(
+    token: Token<Value>,
+    provider: Provider<Value>,
+    options?: RegistrationOptions,
+  ): this;
   register<Value>(
     ...args:
       | [Constructor<Value & object>]
-      | [Token<Value>, Provider<Value>, Options?]
+      | [Token<Value>, Provider<Value>, RegistrationOptions?]
   ): this {
     if (args.length == 1) {
       const [Class] = args;
@@ -83,10 +87,7 @@ export class Container {
         const Class = provider.useClass;
         const metadata = getMetadata(Class);
         provider = metadata.provider;
-        options = {
-          scope: metadata.scope,
-          ...options,
-        };
+        options = {scope: metadata.scope, ...options};
       }
       this.registry.set(token, {provider, options});
     }
@@ -143,19 +144,20 @@ export class Container {
   }
 
   private resolveValue<Value>(registration: Registration<Value>): Value {
-    if (isClassProvider(registration.provider)) {
-      const Class = registration.provider.useClass;
+    const provider = registration.provider;
+    if (isClassProvider(provider)) {
+      const Class = provider.useClass;
       return this.resolveScopedInstance(registration, () => new Class());
     }
-    else if (isFactoryProvider(registration.provider)) {
-      const factory = registration.provider.useFactory;
+    else if (isFactoryProvider(provider)) {
+      const factory = provider.useFactory;
       return this.resolveScopedInstance(registration, factory);
     }
-    else if (isValueProvider(registration.provider)) {
-      const value = registration.provider.useValue;
+    else if (isValueProvider(provider)) {
+      const value = provider.useValue;
       return value;
     }
-    expectNever(registration.provider);
+    expectNever(provider);
   }
 
   private resolveScopedInstance<T>(registration: Registration<T>, instantiate: () => T): T {
@@ -172,21 +174,25 @@ export class Container {
       }, () => this.resolveScopedInstance(registration, instantiate));
     }
 
-    if (context.resolution.stack.has(registration.provider)) {
-      if (context.resolution.dependents.has(registration.provider)) {
-        return context.resolution.dependents.get(registration.provider);
+    const provider = registration.provider;
+    const options = registration.options;
+
+    if (context.resolution.stack.has(provider)) {
+      const dependentRef = context.resolution.dependents.get(provider);
+      if (dependentRef) {
+        return dependentRef.current;
       }
       assert(false, ErrorMessage.CircularDependency);
     }
 
-    let resolvedScope = registration.options?.scope || this.defaultScope;
+    let resolvedScope = options?.scope || this.defaultScope;
     if (resolvedScope == Scope.Inherited) {
       const dependentFrame = context.resolution.stack.peek();
       resolvedScope = dependentFrame?.scope || Scope.Transient;
     }
 
-    context.resolution.stack.push(registration.provider, {
-      provider: registration.provider,
+    context.resolution.stack.push(provider, {
+      provider,
       scope: resolvedScope,
     });
     try {
@@ -199,11 +205,12 @@ export class Container {
         return instance;
       }
       else if (resolvedScope == Scope.Resolution) {
-        if (context.resolution.instances.has(registration.provider)) {
-          return context.resolution.instances.get(registration.provider);
+        const instanceRef = context.resolution.instances.get(provider);
+        if (instanceRef) {
+          return instanceRef.current;
         }
         const instance = instantiate();
-        context.resolution.instances.set(registration.provider, instance);
+        context.resolution.instances.set(provider, {current: instance});
         return instance;
       }
       else if (resolvedScope == Scope.Transient) {

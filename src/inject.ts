@@ -16,12 +16,13 @@ export namespace inject {
     assert(context, ErrorMessage.InjectOutsideOfContext);
     const currentFrame = context.resolution.stack.peek();
     assert(currentFrame, ErrorMessage.InvariantViolation);
-    context.resolution.dependents.set(currentFrame.provider, thisArg);
+    const provider = currentFrame.provider;
+    context.resolution.dependents.set(provider, {current: thisArg});
     try {
       return inject(...tokens);
     }
     finally {
-      context.resolution.dependents.delete(currentFrame.provider);
+      context.resolution.dependents.delete(provider);
     }
   }
 }
