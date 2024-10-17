@@ -2,34 +2,34 @@ import {assert, ErrorMessage, expectNever} from "./errors";
 import {useInjectionContext, withInjectionContext} from "./injection-context";
 import {getMetadata, getRegistration} from "./metadata";
 import {
-  type InjectionProvider,
   isClassProvider,
   isFactoryProvider,
   isValueProvider,
+  type Provider,
 } from "./provider";
-import {type Registration, type RegistrationOptions, Registry} from "./registry";
-import {InjectionScope} from "./scope";
-import {type Constructor, type InjectionToken, type InjectionTokens, isConstructor} from "./token";
+import {type Options, type Registration, Registry} from "./registry";
+import {Scope} from "./scope";
+import {type Constructor, isConstructor, type Token, type TokenList} from "./token";
 import {Stack} from "./utils/stack";
 
 export interface ContainerOptions {
   parent?: Container;
+  defaultScope?: Scope;
   autoRegister?: boolean;
-  defaultScope?: InjectionScope;
 }
 
 export class Container {
   readonly parent?: Container;
   readonly registry: Registry;
 
+  defaultScope: Scope;
   autoRegister: boolean;
-  defaultScope: InjectionScope;
 
   constructor(options?: ContainerOptions);
   constructor({
     parent,
     autoRegister = false,
-    defaultScope = InjectionScope.Inherited,
+    defaultScope = Scope.Inherited,
   }: ContainerOptions = {}) {
     this.parent = parent;
     this.registry = new Registry(parent?.registry);
@@ -56,20 +56,16 @@ export class Container {
     this.registry.clear();
   }
 
-  isRegistered<Value>(token: InjectionToken<Value>): boolean {
+  isRegistered<Value>(token: Token<Value>): boolean {
     return this.registry.has(token);
   }
 
   register<Instance extends object>(Class: Constructor<Instance>): this;
-  register<Value>(
-    token: InjectionToken<Value>,
-    provider: InjectionProvider<Value>,
-    options?: RegistrationOptions,
-  ): this;
+  register<Value>(token: Token<Value>, provider: Provider<Value>, options?: Options): this;
   register<Value>(
     ...args:
       | [Constructor<Value & object>]
-      | [InjectionToken<Value>, InjectionProvider<Value>, RegistrationOptions?]
+      | [Token<Value>, Provider<Value>, Options?]
   ): this {
     if (args.length == 1) {
       const [Class] = args;
@@ -97,13 +93,13 @@ export class Container {
     return this;
   }
 
-  unregister<Value>(token: InjectionToken<Value>): this {
+  unregister<Value>(token: Token<Value>): this {
     this.registry.delete(token);
     return this;
   }
 
-  resolve<Values extends unknown[]>(...tokens: InjectionTokens<Values>): Values[number];
-  resolve<Value>(...tokens: InjectionToken<Value>[]): Value {
+  resolve<Values extends unknown[]>(...tokens: TokenList<Values>): Values[number];
+  resolve<Value>(...tokens: Token<Value>[]): Value {
     for (const token of tokens) {
       const registration = this.registry.get(token);
       if (registration) {
@@ -123,8 +119,8 @@ export class Container {
     this.throwUnresolvableError(tokens);
   }
 
-  resolveAll<Values extends unknown[]>(...tokens: InjectionTokens<Values>): Values[number][];
-  resolveAll<Value>(...tokens: InjectionToken<Value>[]): Value[] {
+  resolveAll<Values extends unknown[]>(...tokens: TokenList<Values>): Values[number][];
+  resolveAll<Value>(...tokens: Token<Value>[]): Value[] {
     for (const token of tokens) {
       const registrations = this.registry.getAll(token);
       if (registrations) {
@@ -184,9 +180,9 @@ export class Container {
     }
 
     let resolvedScope = registration.options?.scope || this.defaultScope;
-    if (resolvedScope == InjectionScope.Inherited) {
+    if (resolvedScope == Scope.Inherited) {
       const dependentFrame = context.resolution.stack.peek();
-      resolvedScope = dependentFrame?.scope || InjectionScope.Transient;
+      resolvedScope = dependentFrame?.scope || Scope.Transient;
     }
 
     context.resolution.stack.push(registration.provider, {
@@ -194,7 +190,7 @@ export class Container {
       scope: resolvedScope,
     });
     try {
-      if (resolvedScope == InjectionScope.Container) {
+      if (resolvedScope == Scope.Container) {
         if (registration.cache) {
           return registration.cache.current;
         }
@@ -202,7 +198,7 @@ export class Container {
         registration.cache = {current: instance};
         return instance;
       }
-      else if (resolvedScope == InjectionScope.Resolution) {
+      else if (resolvedScope == Scope.Resolution) {
         if (context.resolution.instances.has(registration.provider)) {
           return context.resolution.instances.get(registration.provider);
         }
@@ -210,7 +206,7 @@ export class Container {
         context.resolution.instances.set(registration.provider, instance);
         return instance;
       }
-      else if (resolvedScope == InjectionScope.Transient) {
+      else if (resolvedScope == Scope.Transient) {
         return instantiate();
       }
       expectNever(resolvedScope);
@@ -220,7 +216,7 @@ export class Container {
     }
   }
 
-  private throwUnresolvableError(tokens: InjectionToken<any>[]): never {
+  private throwUnresolvableError(tokens: Token[]): never {
     const tokenNames = tokens.map((token) => token.name);
     const formatter = new Intl.ListFormat("en", {style: "narrow"});
     assert(false, ErrorMessage.UnresolvableToken, formatter.format(tokenNames));

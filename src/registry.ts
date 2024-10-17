@@ -1,25 +1,25 @@
 import {assert} from "./errors";
 import {ErrorMessage} from "./errors";
-import {type InjectionProvider, NullProvider, UndefinedProvider} from "./provider";
-import {InjectionScope} from "./scope";
-import {type InjectionToken, Type} from "./token";
+import {NullProvider, type Provider, UndefinedProvider} from "./provider";
+import {Scope} from "./scope";
+import {type Token, Type} from "./token";
 
 export interface Registration<T = any> {
-  cache?: InstanceCache<T>;
-  options?: RegistrationOptions;
-  provider: InjectionProvider<T>;
+  cache?: Cache<T>;
+  options?: Options;
+  provider: Provider<T>;
 }
 
-export interface InstanceCache<T> {
+export interface Cache<T> {
   current: T;
 }
 
-export interface RegistrationOptions {
-  scope?: InjectionScope;
+export interface Options {
+  scope?: Scope;
 }
 
 export class Registry {
-  private map = new Map<InjectionToken, Registration[]>();
+  private map = new Map<Token, Registration[]>();
 
   private parent?: Registry;
 
@@ -31,18 +31,18 @@ export class Registry {
     this.map.clear();
   }
 
-  delete<T>(token: InjectionToken<T>): void {
+  delete<T>(token: Token<T>): void {
     this.map.delete(token);
   }
 
-  get<T>(token: InjectionToken<T>): Registration<T> | undefined {
+  get<T>(token: Token<T>): Registration<T> | undefined {
     return (
       internals.get(token)
       || this.getRecursive(token)
     );
   }
 
-  private getRecursive<T>(token: InjectionToken<T>): Registration<T> | undefined {
+  private getRecursive<T>(token: Token<T>): Registration<T> | undefined {
     const registrations = this.map.get(token);
     return (
       registrations?.at(-1)
@@ -50,7 +50,7 @@ export class Registry {
     );
   }
 
-  getAll<T>(token: InjectionToken<T>): Registration<T>[] | undefined {
+  getAll<T>(token: Token<T>): Registration<T>[] | undefined {
     const internal = internals.get(token);
     return (
       (internal && [internal])
@@ -58,7 +58,7 @@ export class Registry {
     );
   }
 
-  private getAllRecursive<T>(token: InjectionToken<T>): Registration<T>[] | undefined {
+  private getAllRecursive<T>(token: Token<T>): Registration<T>[] | undefined {
     const registrations = this.map.get(token);
     return (
       registrations
@@ -66,14 +66,14 @@ export class Registry {
     );
   }
 
-  has(token: InjectionToken): boolean {
+  has(token: Token): boolean {
     return (
       internals.has(token)
       || this.hasRecursive(token)
     );
   }
 
-  private hasRecursive(token: InjectionToken): boolean {
+  private hasRecursive(token: Token): boolean {
     const registrations = this.map.get(token);
     return Boolean(
       registrations?.length
@@ -81,7 +81,7 @@ export class Registry {
     );
   }
 
-  set<T>(token: InjectionToken<T>, registration: Registration<T>): void {
+  set<T>(token: Token<T>, registration: Registration<T>): void {
     assert(!internals.has(token), ErrorMessage.ReservedToken, token.name);
     let registrations = this.map.get(token);
     if (!registrations) {
@@ -112,7 +112,7 @@ export function Build<Value>(factory: (...args: []) => Value): Type<Value> {
   const token = Type<Value>(`Build<${typeName}>`);
   const provider = {
     useFactory: factory,
-    scope: InjectionScope.Transient,
+    scope: Scope.Transient,
   };
   internals.set(token, {provider});
   return token;
@@ -152,7 +152,7 @@ function getTypeName(value: unknown): string {
   return String(value);
 }
 
-const internals = new WeakMap<InjectionToken, Registration>([
+const internals = new WeakMap<Token, Registration>([
   [Type.Null, {provider: NullProvider}],
   [Type.Undefined, {provider: UndefinedProvider}],
 ]);

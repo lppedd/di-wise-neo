@@ -1,6 +1,6 @@
 import type {Container} from "./container";
-import type {InjectionProvider} from "./provider";
-import type {InjectionScope} from "./scope";
+import type {Provider} from "./provider";
+import type {Scope} from "./scope";
 import {createContext} from "./utils/context";
 import type {Stack} from "./utils/stack";
 
@@ -10,20 +10,17 @@ export interface InjectionContext {
 }
 
 export interface Resolution {
-  stack: Stack<InjectionProvider, ResolutionFrame>;
-  instances: Map<InjectionProvider, any>;
-  dependents: Map<InjectionProvider, any>;
+  stack: Stack<Provider, Frame>;
+  instances: Map<Provider, any>;
+  dependents: Map<Provider, any>;
 }
 
-export interface ResolutionFrame {
+export interface Frame {
   scope: ResolvedScope;
-  provider: InjectionProvider;
+  provider: Provider;
 }
 
-export type ResolvedScope = Exclude<
-  InjectionScope,
-  typeof InjectionScope.Inherited
->;
+export type ResolvedScope = Exclude<Scope, typeof Scope.Inherited>;
 
 // @internal
 export const [withInjectionContext, useInjectionContext] = createContext<InjectionContext>();

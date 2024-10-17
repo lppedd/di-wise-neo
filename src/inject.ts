@@ -1,17 +1,17 @@
 import {assert, ErrorMessage} from "./errors";
 import {useInjectionContext} from "./injection-context";
-import type {InjectionToken, InjectionTokens} from "./token";
+import type {Token, TokenList} from "./token";
 
-export function inject<Values extends unknown[]>(...tokens: InjectionTokens<Values>): Values[number];
-export function inject<Value>(...tokens: InjectionToken<Value>[]): Value {
+export function inject<Values extends unknown[]>(...tokens: TokenList<Values>): Values[number];
+export function inject<Value>(...tokens: Token<Value>[]): Value {
   const context = useInjectionContext();
   assert(context, ErrorMessage.InjectOutsideOfContext);
   return context.container.resolve(...tokens);
 }
 
 export namespace inject {
-  export function by<Values extends unknown[]>(thisArg: any, ...tokens: InjectionTokens<Values>): Values[number];
-  export function by<Value>(thisArg: any, ...tokens: InjectionToken<Value>[]): Value {
+  export function by<Values extends unknown[]>(thisArg: any, ...tokens: TokenList<Values>): Values[number];
+  export function by<Value>(thisArg: any, ...tokens: Token<Value>[]): Value {
     const context = useInjectionContext();
     assert(context, ErrorMessage.InjectOutsideOfContext);
     const currentFrame = context.resolution.stack.peek();
@@ -26,8 +26,8 @@ export namespace inject {
   }
 }
 
-export function injectAll<Values extends unknown[]>(...tokens: InjectionTokens<Values>): Values[number][];
-export function injectAll<Value>(...tokens: InjectionToken<Value>[]): Value[] {
+export function injectAll<Values extends unknown[]>(...tokens: TokenList<Values>): Values[number][];
+export function injectAll<Value>(...tokens: Token<Value>[]): Value[] {
   const context = useInjectionContext();
   assert(context, ErrorMessage.InjectOutsideOfContext);
   return context.container.resolveAll(...tokens);

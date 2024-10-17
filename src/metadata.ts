@@ -1,19 +1,19 @@
-import type {InjectionProvider} from "./provider";
+import type {Provider} from "./provider";
 import type {Registration} from "./registry";
-import type {InjectionScope} from "./scope";
-import type {Constructor, InjectionToken} from "./token";
+import type {Scope} from "./scope";
+import type {Constructor, Token} from "./token";
 
-export interface InjectionMetadata<This extends object = any> {
+export interface Metadata<This extends object = any> {
   autoRegister?: boolean;
-  scope?: InjectionScope;
-  tokens: InjectionToken<This>[];
-  provider: InjectionProvider<This>;
+  scope?: Scope;
+  tokens: Token<This>[];
+  provider: Provider<This>;
 }
 
-class InjectionMetadataRegistry {
-  private map = new WeakMap<Constructor<object>, InjectionMetadata>();
+class MetadataRegistry {
+  private map = new WeakMap<Constructor<object>, Metadata>();
 
-  ensure<T extends object>(Class: Constructor<T>): InjectionMetadata<T> {
+  ensure<T extends object>(Class: Constructor<T>): Metadata<T> {
     let metadata = this.map.get(Class);
     if (!metadata) {
       metadata = {
@@ -26,7 +26,7 @@ class InjectionMetadataRegistry {
   }
 }
 
-const metadataRegistry = new InjectionMetadataRegistry();
+const metadataRegistry = new MetadataRegistry();
 
 // @internal
 export function getMetadata<T extends object>(Class: Constructor<T>) {
@@ -34,7 +34,7 @@ export function getMetadata<T extends object>(Class: Constructor<T>) {
 }
 
 // @internal
-export function getRegistration<T extends object>(metadata: InjectionMetadata<T>): Registration<T> {
+export function getRegistration<T extends object>(metadata: Metadata<T>): Registration<T> {
   return {
     provider: metadata.provider,
     options: {scope: metadata.scope},

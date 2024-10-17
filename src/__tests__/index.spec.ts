@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {Container, Inject, Injectable, InjectionScope, Scoped, Type} from "..";
+import {Container, Inject, Injectable, Scope, Scoped, Type} from "..";
 
 describe("Features", () => {
   it("should handle circular dependencies", () => {
@@ -48,7 +48,7 @@ describe("Features", () => {
   it("should handle resolution scope", () => {
     const container = new Container();
 
-    @Scoped(InjectionScope.Resolution)
+    @Scoped(Scope.Resolution)
     class A {}
 
     class B {

@@ -1,8 +1,8 @@
-export const InjectionScope = {
+export const Scope = {
   Inherited: "Inherited",
   Transient: "Transient",
   Resolution: "Resolution",
   Container: "Container",
 } as const;
 
-export type InjectionScope = typeof InjectionScope[keyof typeof InjectionScope];
+export type Scope = typeof Scope[keyof typeof Scope];

@@ -1,7 +1,7 @@
 import {inject, injectAll} from "./inject";
 import {getMetadata} from "./metadata";
-import type {InjectionScope} from "./scope";
-import type {Constructor, InjectionToken, InjectionTokens} from "./token";
+import type {Scope} from "./scope";
+import type {Constructor, Token, TokenList} from "./token";
 
 export type ClassDecorator<Class extends Constructor<object>> = (
   value: Class,
@@ -18,14 +18,14 @@ export type ClassFieldInitializer<This extends object, Value> = (
   initialValue: Value,
 ) => Value;
 
-export function Injectable<This extends object>(...tokens: InjectionToken<This>[]): ClassDecorator<Constructor<This>> {
+export function Injectable<This extends object>(...tokens: Token<This>[]): ClassDecorator<Constructor<This>> {
   return (Class, _context) => {
     const metadata = getMetadata(Class);
     metadata.tokens.push(...tokens);
   };
 }
 
-export function Scoped<This extends object>(scope: InjectionScope): ClassDecorator<Constructor<This>> {
+export function Scoped<This extends object>(scope: Scope): ClassDecorator<Constructor<This>> {
   return (Class, _context) => {
     const metadata = getMetadata(Class);
     metadata.scope = scope;
@@ -39,16 +39,16 @@ export function AutoRegister<This extends object>(enable = true): ClassDecorator
   };
 }
 
-export function Inject<Values extends unknown[]>(...tokens: InjectionTokens<Values>): ClassFieldDecorator<Values[number]>;
-export function Inject<Value>(...tokens: InjectionToken<Value>[]): ClassFieldDecorator<Value> {
+export function Inject<Values extends unknown[]>(...tokens: TokenList<Values>): ClassFieldDecorator<Values[number]>;
+export function Inject<Value>(...tokens: Token<Value>[]): ClassFieldDecorator<Value> {
   return (_value, _context) =>
     function (this, _initialValue) {
       return inject.by(this, ...tokens);
     };
 }
 
-export function InjectAll<Values extends unknown[]>(...tokens: InjectionTokens<Values>): ClassFieldDecorator<Values[number][]>;
-export function InjectAll<Value>(...tokens: InjectionToken<Value>[]): ClassFieldDecorator<Value[]> {
+export function InjectAll<Values extends unknown[]>(...tokens: TokenList<Values>): ClassFieldDecorator<Values[number][]>;
+export function InjectAll<Value>(...tokens: Token<Value>[]): ClassFieldDecorator<Value[]> {
   return (_value, _context) =>
     function (_initialValue) {
       return injectAll(...tokens);

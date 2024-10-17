@@ -1,7 +1,7 @@
-export type InjectionTokens<Values extends unknown[]> =
-  {[Index in keyof Values]: InjectionToken<Values[Index]>};
+export type TokenList<Values extends unknown[]> =
+  {[Index in keyof Values]: Token<Values[Index]>};
 
-export type InjectionToken<Value = any> = Constructor<Value & object> | Type<Value>;
+export type Token<Value = any> = Constructor<Value & object> | Type<Value>;
 
 export interface Constructor<Instance extends object> {
   new (...args: []): Instance;
