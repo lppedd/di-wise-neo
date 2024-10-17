@@ -33,6 +33,9 @@ export class Container {
   }: ContainerOptions = {}) {
     this.parent = parent;
     this.registry = new Registry(parent?.registry);
+    this.registry.set(Container, {
+      provider: {useValue: this},
+    });
     this.autoRegister = autoRegister;
     this.defaultScope = defaultScope;
   }
@@ -54,6 +57,9 @@ export class Container {
 
   resetRegistry(): void {
     this.registry.clear();
+    this.registry.set(Container, {
+      provider: {useValue: this},
+    });
   }
 
   isRegistered<Value>(token: Token<Value>): boolean {
