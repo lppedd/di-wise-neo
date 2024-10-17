@@ -9,8 +9,7 @@ export const ErrorMessage = {
 // @internal
 export function assert(condition: unknown, ...args: any[]): asserts condition {
   if (!condition) {
-    const formatter = new Intl.ListFormat("en", {style: "narrow", type: "unit"});
-    throw new Error(formatter.format(args));
+    throw new Error(args.join(" "));
   }
 }
 

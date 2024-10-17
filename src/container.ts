@@ -225,7 +225,6 @@ export class Container {
 
   private throwUnresolvableError(tokens: Token[]): never {
     const tokenNames = tokens.map((token) => token.name);
-    const formatter = new Intl.ListFormat("en", {style: "narrow"});
-    assert(false, ErrorMessage.UnresolvableToken, formatter.format(tokenNames));
+    assert(false, ErrorMessage.UnresolvableToken, tokenNames.join(", "));
   }
 }
