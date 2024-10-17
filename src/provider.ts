@@ -6,15 +6,15 @@ export type Provider<Value = any> =
   | ValueProvider<Value>;
 
 export interface ClassProvider<Instance extends object> {
-  useClass: Constructor<Instance>;
+  readonly useClass: Constructor<Instance>;
 }
 
 export interface FactoryProvider<Value> {
-  useFactory: (...args: []) => Value;
+  readonly useFactory: (...args: []) => Value;
 }
 
 export interface ValueProvider<T> {
-  useValue: T;
+  readonly useValue: T;
 }
 
 // @internal
