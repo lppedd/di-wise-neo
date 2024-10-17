@@ -104,7 +104,7 @@ export class Container {
     for (const token of tokens) {
       const registration = this.registry.get(token);
       if (registration) {
-        return this.resolveValue(registration);
+        return this.createInstance(registration);
       }
       if (isConstructor(token)) {
         const Class = token;
@@ -114,7 +114,7 @@ export class Container {
           return this.resolve(Class);
         }
         const registration = getRegistration(metadata);
-        return this.resolveValue(registration);
+        return this.createInstance(registration);
       }
     }
     this.throwUnresolvableError(tokens);
@@ -126,8 +126,8 @@ export class Container {
       const registrations = this.registry.getAll(token);
       if (registrations) {
         return registrations
-          .map((registration) => this.resolveValue(registration))
-          .filter((value) => value != null);
+          .map((registration) => this.createInstance(registration))
+          .filter((instance) => instance != null);
       }
       if (isConstructor(token)) {
         const Class = token;
@@ -137,21 +137,21 @@ export class Container {
           return [this.resolve(Class)];
         }
         const registration = getRegistration(metadata);
-        return [this.resolveValue(registration)];
+        return [this.createInstance(registration)];
       }
     }
     this.throwUnresolvableError(tokens);
   }
 
-  private resolveValue<Value>(registration: Registration<Value>): Value {
+  private createInstance<T>(registration: Registration<T>): T {
     const provider = registration.provider;
     if (isClassProvider(provider)) {
       const Class = provider.useClass;
-      return this.resolveScopedInstance(registration, () => new Class());
+      return this.getScopedInstance(registration, () => new Class());
     }
     else if (isFactoryProvider(provider)) {
       const factory = provider.useFactory;
-      return this.resolveScopedInstance(registration, factory);
+      return this.getScopedInstance(registration, factory);
     }
     else if (isValueProvider(provider)) {
       const value = provider.useValue;
@@ -160,7 +160,7 @@ export class Container {
     expectNever(provider);
   }
 
-  private resolveScopedInstance<T>(registration: Registration<T>, instantiate: () => T): T {
+  private getScopedInstance<T>(registration: Registration<T>, instantiate: () => T): T {
     const context = useInjectionContext();
 
     if (!context || context.container !== this) {
@@ -171,7 +171,7 @@ export class Container {
           instances: new Map(),
           dependents: new Map(),
         },
-      }, () => this.resolveScopedInstance(registration, instantiate));
+      }, () => this.getScopedInstance(registration, instantiate));
     }
 
     const provider = registration.provider;
