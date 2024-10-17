@@ -120,14 +120,14 @@ export class Container {
     this.throwUnresolvableError(tokens);
   }
 
-  resolveAll<Values extends unknown[]>(...tokens: TokenList<Values>): Values[number][];
-  resolveAll<Value>(...tokens: Token<Value>[]): Value[] {
+  resolveAll<Values extends unknown[]>(...tokens: TokenList<Values>): NonNullable<Values[number]>[];
+  resolveAll<Value>(...tokens: Token<Value>[]): NonNullable<Value>[] {
     for (const token of tokens) {
       const registrations = this.registry.getAll(token);
       if (registrations) {
-        return registrations.map((registration) =>
-          this.resolveValue(registration),
-        );
+        return registrations
+          .map((registration) => this.resolveValue(registration))
+          .filter((value) => value != null);
       }
       if (isConstructor(token)) {
         const Class = token;

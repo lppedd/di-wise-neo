@@ -27,8 +27,8 @@ export namespace inject {
   }
 }
 
-export function injectAll<Values extends unknown[]>(...tokens: TokenList<Values>): Values[number][];
-export function injectAll<Value>(...tokens: Token<Value>[]): Value[] {
+export function injectAll<Values extends unknown[]>(...tokens: TokenList<Values>): NonNullable<Values[number]>[];
+export function injectAll<Value>(...tokens: Token<Value>[]): NonNullable<Value>[] {
   const context = useInjectionContext();
   assert(context, ErrorMessage.InjectOutsideOfContext);
   return context.container.resolveAll(...tokens);

@@ -47,8 +47,8 @@ export function Inject<Value>(...tokens: Token<Value>[]): ClassFieldDecorator<Va
     };
 }
 
-export function InjectAll<Values extends unknown[]>(...tokens: TokenList<Values>): ClassFieldDecorator<Values[number][]>;
-export function InjectAll<Value>(...tokens: Token<Value>[]): ClassFieldDecorator<Value[]> {
+export function InjectAll<Values extends unknown[]>(...tokens: TokenList<Values>): ClassFieldDecorator<NonNullable<Values[number]>[]>;
+export function InjectAll<Value>(...tokens: Token<Value>[]): ClassFieldDecorator<NonNullable<Value>[]> {
   return (_value, _context) =>
     function (_initialValue) {
       return injectAll(...tokens);
