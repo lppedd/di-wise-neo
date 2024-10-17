@@ -92,7 +92,7 @@ pnpm add di-wise
    wizard.wand.activate(); // => 🔥
    ```
 
-2. Flexible token-based injection:
+1. Flexible token-based injection:
 
    - Use multiple tokens for resolving, with inferred type as a union ✨
    - Special tokens `Type.Null` and `Type.Undefined` for optional dependencies
@@ -110,7 +110,7 @@ pnpm add di-wise
    }
    ```
 
-3. Various injection scopes:
+1. Various injection scopes:
 
    - `Inherited` (default), `Transient`, `Resolution`, and `Container`
    - Customizable default scope for containers
@@ -130,7 +130,7 @@ pnpm add di-wise
 
    `Resolution` is similar to `Transient`, but the same instance will be reused during a single resolution tree.
 
-4. Automatic circular dependency resolution with `@Inject()` or `inject.by()`:
+1. Automatic circular dependency resolution with `@Inject()` or `inject.by()`:
 
    ```ts
    import {Container, Inject, inject} from "di-wise";
@@ -153,7 +153,7 @@ pnpm add di-wise
    expect(wizard.wand.owner).toBe(wizard);
    ```
 
-5. Multiple provider types:
+1. Multiple provider types:
 
    - `ClassProvider`, `FactoryProvider`, `ValueProvider`
    - Helper functions `Build()` and `Value()` for registering one-off providers
