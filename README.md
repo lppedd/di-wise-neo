@@ -40,8 +40,8 @@ pnpm add di-wise
 1. Context-based DI system inspired by Angular:
 
    - Use decorators `@Injectable()`, `@Scoped()`, `@AutoRegister()` on classes to define providers
-   - Use decorators `@Inject()`, `@InjectAll()` on class fields or parameters to inject dependencies
-   - Or use functions `inject()`, `injectAll()` (with type inference ✨) anywhere during construction
+   - Use decorators `@Inject()`, `@InjectAll()` on class fields to inject dependencies
+   - Or use functions `inject()`, `injectAll()` with full type inference ✨
 
    Usage of decorators is optional:
 
@@ -72,6 +72,7 @@ pnpm add di-wise
      wand = inject(Wand);
 
      constructor(spell = inject(Spell)) {
+       // inject() can be used anywhere during construction
        this.wand.store(spell);
      }
    }
