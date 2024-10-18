@@ -10,27 +10,19 @@ export interface Metadata<This extends object = any> {
   provider: Provider<This>;
 }
 
-class MetadataRegistry {
-  private map = new WeakMap<Constructor<object>, Metadata>();
-
-  ensure<T extends object>(Class: Constructor<T>): Metadata<T> {
-    let metadata = this.map.get(Class);
-    if (!metadata) {
-      metadata = {
-        tokens: [],
-        provider: {useClass: Class},
-      };
-      this.map.set(Class, metadata);
-    }
-    return metadata;
-  }
-}
-
-const metadataRegistry = new MetadataRegistry();
+const metadataRegistry = new WeakMap<Constructor<object>, Metadata>();
 
 // @internal
-export function getMetadata<T extends object>(Class: Constructor<T>) {
-  return metadataRegistry.ensure<T>(Class);
+export function getMetadata<T extends object>(Class: Constructor<T>): Metadata<T> {
+  let metadata = metadataRegistry.get(Class);
+  if (!metadata) {
+    metadata = {
+      tokens: [],
+      provider: {useClass: Class},
+    };
+    metadataRegistry.set(Class, metadata);
+  }
+  return metadata;
 }
 
 // @internal
