@@ -185,10 +185,8 @@ export class Container {
 
     if (context.resolution.stack.has(provider)) {
       const dependentRef = context.resolution.dependents.get(provider);
-      if (dependentRef) {
-        return dependentRef.current;
-      }
-      assert(false, ErrorMessage.CircularDependency);
+      assert(dependentRef, ErrorMessage.CircularDependency);
+      return dependentRef.current;
     }
 
     let resolvedScope = options?.scope || this.defaultScope;
@@ -203,8 +201,9 @@ export class Container {
     });
     try {
       if (resolvedScope == Scope.Container) {
-        if (registration.instance) {
-          return registration.instance.current;
+        const instanceRef = registration.instance;
+        if (instanceRef) {
+          return instanceRef.current;
         }
         const instance = instantiate();
         registration.instance = {current: instance};

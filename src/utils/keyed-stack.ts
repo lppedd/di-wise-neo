@@ -1,11 +1,18 @@
+import {invariant} from "./invariant";
+
 // @internal
 export class KeyedStack<K, V> {
   private entries = new Array<{key: K; value: V}>();
+
   private keys = new Set<K>();
 
-  push(key: K, value: V) {
-    this.entries.push({key, value});
-    this.keys.add(key);
+  has(key: K) {
+    return this.keys.has(key);
+  }
+
+  peek() {
+    const entry = this.entries.at(-1);
+    return entry?.value;
   }
 
   pop() {
@@ -16,12 +23,9 @@ export class KeyedStack<K, V> {
     }
   }
 
-  peek() {
-    const entry = this.entries.at(-1);
-    return entry?.value;
-  }
-
-  has(key: K) {
-    return this.keys.has(key);
+  push(key: K, value: V) {
+    invariant(!this.keys.has(key));
+    this.keys.add(key);
+    this.entries.push({key, value});
   }
 }

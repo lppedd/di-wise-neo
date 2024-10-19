@@ -1,4 +1,5 @@
 import type {Container} from "./container";
+import {assert, ErrorMessage} from "./errors";
 import type {InstanceRef} from "./instance";
 import type {Provider} from "./provider";
 import type {Scope} from "./scope";
@@ -25,3 +26,10 @@ export type ResolvedScope = Exclude<Scope, typeof Scope.Inherited>;
 
 // @internal
 export const [withInjectionContext, useInjectionContext] = createContext<InjectionContext>();
+
+// @internal
+export function ensureInjectionContext() {
+  const context = useInjectionContext();
+  assert(context, ErrorMessage.InjectOutsideOfContext);
+  return context;
+}
