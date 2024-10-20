@@ -5,6 +5,11 @@ import {NullProvider, type Provider, UndefinedProvider} from "./provider";
 import {Scope} from "./scope";
 import {type Token, Type} from "./token";
 
+export type RegistrationMap = Omit<
+  Map<Token, Registration[]>,
+  keyof Registry
+>;
+
 export interface Registration<T = any> {
   options?: RegistrationOptions;
   instance?: InstanceRef<T>;
@@ -16,34 +21,28 @@ export interface RegistrationOptions {
 }
 
 export class Registry {
-  private map = new Map<Token, Registration[]>();
+  private _map = new Map<Token, Registration[]>();
 
-  private parent?: Registry;
+  readonly map: RegistrationMap = this._map;
+
+  readonly parent?: Registry;
 
   constructor(parent?: Registry) {
     this.parent = parent;
   }
 
-  clear(): void {
-    this.map.clear();
-  }
-
-  delete<T>(token: Token<T>): void {
-    this.map.delete(token);
-  }
-
   get<T>(token: Token<T>): Registration<T> | undefined {
     return (
       internals.get(token)
-      || this.getRecursive(token)
+      || this._get(token)
     );
   }
 
-  private getRecursive<T>(token: Token<T>): Registration<T> | undefined {
-    const registrations = this.map.get(token);
+  private _get<T>(token: Token<T>): Registration<T> | undefined {
+    const registrations = this._map.get(token);
     return (
       registrations?.at(-1)
-      || this.parent?.getRecursive(token)
+      || this.parent?._get(token)
     );
   }
 
@@ -51,39 +50,39 @@ export class Registry {
     const internal = internals.get(token);
     return (
       (internal && [internal])
-      || this.getAllRecursive(token)
+      || this._getAll(token)
     );
   }
 
-  private getAllRecursive<T>(token: Token<T>): Registration<T>[] | undefined {
-    const registrations = this.map.get(token);
+  private _getAll<T>(token: Token<T>): Registration<T>[] | undefined {
+    const registrations = this._map.get(token);
     return (
       registrations
-      || this.parent?.getAllRecursive(token)
+      || this.parent?._getAll(token)
     );
   }
 
   has(token: Token): boolean {
     return (
       internals.has(token)
-      || this.hasRecursive(token)
+      || this._has(token)
     );
   }
 
-  private hasRecursive(token: Token): boolean {
-    const registrations = this.map.get(token);
+  private _has(token: Token): boolean {
+    const registrations = this._map.get(token);
     return Boolean(
       registrations?.length
-      || this.parent?.hasRecursive(token),
+      || this.parent?._has(token),
     );
   }
 
   set<T>(token: Token<T>, registration: Registration<T>): void {
     assert(!internals.has(token), ErrorMessage.ReservedToken, token.name);
-    let registrations = this.map.get(token);
+    let registrations = this._map.get(token);
     if (!registrations) {
       registrations = [];
-      this.map.set(token, registrations);
+      this._map.set(token, registrations);
     }
     const existing = registrations.find(
       ({provider}) => provider === registration.provider,
@@ -97,10 +96,6 @@ export class Registry {
     else {
       registrations.push(registration);
     }
-  }
-
-  values(): IterableIterator<Registration[]> {
-    return this.map.values();
   }
 }
 

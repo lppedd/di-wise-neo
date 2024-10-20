@@ -48,7 +48,7 @@ export class Container {
   }
 
   clearCache(): void {
-    for (const registrations of this.registry.values()) {
+    for (const registrations of this.registry.map.values()) {
       registrations.forEach(({instance, ...registration}, i) => {
         registrations[i] = registration;
       });
@@ -56,7 +56,7 @@ export class Container {
   }
 
   resetRegistry(): void {
-    this.registry.clear();
+    this.registry.map.clear();
     this.registry.set(Container, {
       provider: {useValue: this},
     });
@@ -101,7 +101,7 @@ export class Container {
   }
 
   unregister<Value>(token: Token<Value>): this {
-    this.registry.delete(token);
+    this.registry.map.delete(token);
     return this;
   }
 
