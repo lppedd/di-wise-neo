@@ -123,7 +123,7 @@ export class Container {
         return this.createInstance(registration);
       }
     }
-    this.throwUnresolvableError(tokens);
+    this.throwUnregisteredError(tokens);
   }
 
   resolveAll<Values extends unknown[]>(...tokens: TokenList<Values>): NonNullable<Values[number]>[];
@@ -146,7 +146,7 @@ export class Container {
         return [this.createInstance(registration)];
       }
     }
-    this.throwUnresolvableError(tokens);
+    this.throwUnregisteredError(tokens);
   }
 
   private createInstance<T>(registration: Registration<T>): T {
@@ -228,8 +228,8 @@ export class Container {
     }
   }
 
-  private throwUnresolvableError(tokens: Token[]): never {
+  private throwUnregisteredError(tokens: Token[]): never {
     const tokenNames = tokens.map((token) => token.name);
-    assert(false, ErrorMessage.UnresolvableToken, tokenNames.join(", "));
+    assert(false, ErrorMessage.UnregisteredToken, tokenNames.join(", "));
   }
 }

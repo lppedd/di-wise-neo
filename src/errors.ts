@@ -1,6 +1,6 @@
 export const ErrorMessage = {
   ReservedToken: "reserved token",
-  UnresolvableToken: "unresolvable token",
+  UnregisteredToken: "unregistered token",
   CircularDependency: "circular dependency",
   InjectOutsideOfContext: "inject outside of context",
 } as const;
