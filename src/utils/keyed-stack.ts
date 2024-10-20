@@ -1,5 +1,3 @@
-import {invariant} from "./invariant";
-
 // @internal
 export class KeyedStack<K, V> {
   private entries = new Array<{key: K; value: V}>();
@@ -23,8 +21,10 @@ export class KeyedStack<K, V> {
     }
   }
 
+  /**
+   * @invariant `!this.has(key)`
+   */
   push(key: K, value: V) {
-    invariant(!this.keys.has(key));
     this.keys.add(key);
     this.entries.push({key, value});
   }
