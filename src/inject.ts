@@ -4,14 +4,14 @@ import {invariant} from "./utils/invariant";
 
 export function inject<Values extends unknown[]>(...tokens: TokenList<Values>): Values[number];
 export function inject<Value>(...tokens: Token<Value>[]): Value {
-  const context = ensureInjectionContext();
+  const context = ensureInjectionContext(inject);
   return context.container.resolve(...tokens);
 }
 
 export namespace inject {
   export function by<Values extends unknown[]>(thisArg: any, ...tokens: TokenList<Values>): Values[number];
   export function by<Value>(thisArg: any, ...tokens: Token<Value>[]): Value {
-    const context = ensureInjectionContext();
+    const context = ensureInjectionContext(inject);
     const currentFrame = context.resolution.stack.peek();
     invariant(currentFrame);
     const provider = currentFrame.provider;
@@ -27,6 +27,6 @@ export namespace inject {
 
 export function injectAll<Values extends unknown[]>(...tokens: TokenList<Values>): NonNullable<Values[number]>[];
 export function injectAll<Value>(...tokens: Token<Value>[]): NonNullable<Value>[] {
-  const context = ensureInjectionContext();
+  const context = ensureInjectionContext(injectAll);
   return context.container.resolveAll(...tokens);
 }

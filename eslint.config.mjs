@@ -68,6 +68,7 @@ export default tseslint.config(
       "@typescript-eslint/no-namespace": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-function-type": "off",
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/restrict-plus-operands": "off",
     },

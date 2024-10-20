@@ -52,7 +52,7 @@ describe("inject", () => {
     expect(() => {
       container.resolve(A);
       vi.runAllTimers();
-    }).toThrowErrorMatchingInlineSnapshot(`[Error: inject outside of context]`);
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: inject missing injection context]`);
   });
 
   it("should inject in factory function", () => {

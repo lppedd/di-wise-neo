@@ -2,7 +2,7 @@ export const ErrorMessage = {
   ReservedToken: "reserved token",
   UnregisteredToken: "unregistered token",
   CircularDependency: "circular dependency",
-  InjectOutsideOfContext: "inject outside of context",
+  MissingInjectionContext: "missing injection context",
 } as const;
 
 // @internal

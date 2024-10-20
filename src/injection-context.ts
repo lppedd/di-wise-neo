@@ -28,8 +28,8 @@ export type ResolvedScope = Exclude<Scope, typeof Scope.Inherited>;
 export const [withInjectionContext, useInjectionContext] = createContext<InjectionContext>();
 
 // @internal
-export function ensureInjectionContext() {
+export function ensureInjectionContext(fn: Function) {
   const context = useInjectionContext();
-  assert(context, ErrorMessage.InjectOutsideOfContext);
+  assert(context, fn.name, ErrorMessage.MissingInjectionContext);
   return context;
 }
