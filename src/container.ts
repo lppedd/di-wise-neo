@@ -1,4 +1,4 @@
-import {assert, ErrorMessage, expectNever} from "./errors";
+import {assert, expectNever} from "./errors";
 import {useInjectionContext, withInjectionContext} from "./injection-context";
 import {getMetadata, getRegistration} from "./metadata";
 import {
@@ -123,7 +123,7 @@ export class Container {
         return this.createInstance(registration);
       }
     }
-    this.throwUnregisteredError(tokens);
+    throwUnregisteredError(tokens);
   }
 
   resolveAll<Values extends unknown[]>(...tokens: TokenList<Values>): NonNullable<Values[number]>[];
@@ -146,7 +146,7 @@ export class Container {
         return [this.createInstance(registration)];
       }
     }
-    this.throwUnregisteredError(tokens);
+    throwUnregisteredError(tokens);
   }
 
   private createInstance<T>(registration: Registration<T>): T {
@@ -185,7 +185,7 @@ export class Container {
 
     if (context.resolution.stack.has(provider)) {
       const dependentRef = context.resolution.dependents.get(provider);
-      assert(dependentRef, ErrorMessage.CircularDependency);
+      assert(dependentRef, "circular dependency detected");
       return dependentRef.current;
     }
 
@@ -227,9 +227,9 @@ export class Container {
       context.resolution.stack.pop();
     }
   }
+}
 
-  private throwUnregisteredError(tokens: Token[]): never {
-    const tokenNames = tokens.map((token) => token.name);
-    assert(false, ErrorMessage.UnregisteredToken, tokenNames.join(", "));
-  }
+function throwUnregisteredError(tokens: Token[]): never {
+  const tokenNames = tokens.map((token) => token.name);
+  assert(false, `unregistered token ${tokenNames.join(", ")}`);
 }

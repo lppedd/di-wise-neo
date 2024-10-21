@@ -2,7 +2,6 @@ export type {ContainerOptions} from "./container";
 export {Container} from "./container";
 export type {ClassDecorator, ClassFieldDecorator, ClassFieldInitializer} from "./decorators";
 export {AutoRegister, Inject, Injectable, InjectAll, Scoped} from "./decorators";
-export {ErrorMessage} from "./errors";
 export {inject, injectAll} from "./inject";
 export type {InstanceRef} from "./instance";
 export type {ClassProvider, FactoryProvider, Provider, ValueProvider} from "./provider";

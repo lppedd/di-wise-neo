@@ -1,5 +1,4 @@
 import {assert} from "./errors";
-import {ErrorMessage} from "./errors";
 import type {InstanceRef} from "./instance";
 import {NullProvider, type Provider, UndefinedProvider} from "./provider";
 import {Scope} from "./scope";
@@ -78,7 +77,7 @@ export class Registry {
   }
 
   set<T>(token: Token<T>, registration: Registration<T>): void {
-    assert(!internals.has(token), ErrorMessage.ReservedToken, token.name);
+    assert(!internals.has(token), `cannot register reserved token ${token.name}`);
     let registrations = this._map.get(token);
     if (!registrations) {
       registrations = [];

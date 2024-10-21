@@ -1,5 +1,5 @@
 import type {Container} from "./container";
-import {assert, ErrorMessage} from "./errors";
+import {assert} from "./errors";
 import type {InstanceRef} from "./instance";
 import type {Provider} from "./provider";
 import type {Scope} from "./scope";
@@ -30,6 +30,6 @@ export const [withInjectionContext, useInjectionContext] = createContext<Injecti
 // @internal
 export function ensureInjectionContext(fn: Function) {
   const context = useInjectionContext();
-  assert(context, fn.name, ErrorMessage.MissingInjectionContext);
+  assert(context, `${fn.name}() can only be used within an injection context`);
   return context;
 }
