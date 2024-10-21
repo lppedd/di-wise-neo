@@ -8,20 +8,24 @@ export function inject<Value>(...tokens: Token<Value>[]): Value {
   return context.container.resolve(...tokens);
 }
 
-export namespace inject {
-  export function by<Values extends unknown[]>(thisArg: any, ...tokens: TokenList<Values>): Values[number];
-  export function by<Value>(thisArg: any, ...tokens: Token<Value>[]): Value {
-    const context = ensureInjectionContext(inject);
-    const currentFrame = context.resolution.stack.peek();
-    invariant(currentFrame);
-    const provider = currentFrame.provider;
-    context.resolution.dependents.set(provider, {current: thisArg});
-    try {
-      return inject(...tokens);
-    }
-    finally {
-      context.resolution.dependents.delete(provider);
-    }
+export declare namespace inject {
+  export var by: typeof injectBy;
+}
+
+inject.by = injectBy;
+
+export function injectBy<Values extends unknown[]>(thisArg: any, ...tokens: TokenList<Values>): Values[number];
+export function injectBy<Value>(thisArg: any, ...tokens: Token<Value>[]): Value {
+  const context = ensureInjectionContext(injectBy);
+  const currentFrame = context.resolution.stack.peek();
+  invariant(currentFrame);
+  const provider = currentFrame.provider;
+  context.resolution.dependents.set(provider, {current: thisArg});
+  try {
+    return inject(...tokens);
+  }
+  finally {
+    context.resolution.dependents.delete(provider);
   }
 }
 

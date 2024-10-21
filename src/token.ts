@@ -24,10 +24,13 @@ export function Type<T>(typeName: string): Type<T> {
   return type;
 }
 
-export namespace Type {
-  export const Null: Type<null> = Type("null");
-  export const Undefined: Type<undefined> = Type("undefined");
+export declare namespace Type {
+  export var Null: Type<null>;
+  export var Undefined: Type<undefined>;
 }
+
+Type.Null = Type("null");
+Type.Undefined = Type("undefined");
 
 export interface Constructor<Instance extends object> {
   new (...args: []): Instance;
