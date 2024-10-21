@@ -52,7 +52,7 @@ describe("inject", () => {
     expect(() => {
       container.resolve(A);
       vi.runAllTimers();
-    }).toThrowErrorMatchingInlineSnapshot(`[Error: inject missing injection context]`);
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: inject() can only be used within an injection context]`);
   });
 
   it("should inject in factory function", () => {
