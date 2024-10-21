@@ -3,6 +3,7 @@ import type {InstanceRef} from "./instance";
 import {NullProvider, type Provider, UndefinedProvider} from "./provider";
 import {Scope} from "./scope";
 import {type Token, Type} from "./token";
+import {getTypeName} from "./utils/type-name";
 
 export type RegistrationMap = Omit<
   Map<Token, Registration[]>,
@@ -117,30 +118,6 @@ export function Value<T>(value: T): Type<T> {
   };
   internals.set(token, registration);
   return token;
-}
-
-function getTypeName(value: unknown): string {
-  if (typeof value == "string") {
-    return `"${value}"`;
-  }
-  if (typeof value == "function") {
-    return (value.name && `typeof ${value.name}`) || "Function";
-  }
-  if (typeof value == "object") {
-    if (value === null) {
-      return "null";
-    }
-    const proto: object = Object.getPrototypeOf(value);
-    if (proto === null) {
-      return "Object";
-    }
-    const constructor: unknown = proto.constructor;
-    if (typeof constructor == "function" && constructor.name) {
-      return constructor.name;
-    }
-    return "(anonymous)";
-  }
-  return String(value);
 }
 
 const internals = new WeakMap<Token, Registration>([
