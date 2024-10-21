@@ -1,6 +1,6 @@
 import {assert, expectNever} from "./errors";
-import {useInjectionContext, withInjectionContext} from "./injection-context";
-import {getMetadata, getRegistration} from "./metadata";
+import {type ResolvedScope, useInjectionContext, withInjectionContext} from "./injection-context";
+import {getMetadata} from "./metadata";
 import {
   isClassProvider,
   isFactoryProvider,
@@ -82,8 +82,9 @@ export class Container {
       const metadata = getMetadata(Class);
       const tokens = [Class, ...(metadata.tokens || [])];
       tokens.forEach((token) => {
-        const registration = getRegistration(metadata);
-        this.registry.set(token, registration);
+        const provider = metadata.provider;
+        const options = {scope: metadata.scope};
+        this.registry.set(token, {provider, options});
       });
     }
     else {
@@ -119,8 +120,7 @@ export class Container {
           this.register(Class);
           return this.resolve(Class);
         }
-        const registration = getRegistration(metadata);
-        return this.createInstance(registration);
+        return this.construct(Class);
       }
     }
     throwUnregisteredError(tokens);
@@ -142,11 +142,21 @@ export class Container {
           this.register(Class);
           return [this.resolve(Class)];
         }
-        const registration = getRegistration(metadata);
-        return [this.createInstance(registration)];
+        return [this.construct(Class)];
       }
     }
     throwUnregisteredError(tokens);
+  }
+
+  private construct<T extends object>(Class: Constructor<T>): T {
+    const metadata = getMetadata(Class);
+    const provider = metadata.provider;
+    const resolvedScope = this.resolveScope(metadata.scope);
+    if (resolvedScope == Scope.Container) {
+      throw new Error(`unregistered token ${Class.name} cannot be resolved in container scope`);
+    }
+    const options = {scope: resolvedScope};
+    return this.getScopedInstance({provider, options}, () => new Class());
   }
 
   private createInstance<T>(registration: Registration<T>): T {
@@ -189,11 +199,7 @@ export class Container {
       return dependentRef.current;
     }
 
-    let resolvedScope = options?.scope || this.defaultScope;
-    if (resolvedScope == Scope.Inherited) {
-      const dependentFrame = context.resolution.stack.peek();
-      resolvedScope = dependentFrame?.scope || Scope.Transient;
-    }
+    const resolvedScope = this.resolveScope(options?.scope);
 
     context.resolution.stack.push(provider, {
       provider,
@@ -226,6 +232,16 @@ export class Container {
     finally {
       context.resolution.stack.pop();
     }
+  }
+
+  private resolveScope(scope = this.defaultScope): ResolvedScope {
+    let resolvedScope = scope;
+    if (resolvedScope == Scope.Inherited) {
+      const context = useInjectionContext();
+      const dependentFrame = context?.resolution.stack.peek();
+      resolvedScope = dependentFrame?.scope || Scope.Transient;
+    }
+    return resolvedScope;
   }
 }
 
