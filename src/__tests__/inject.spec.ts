@@ -1,81 +1,69 @@
-import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
+import {afterEach, describe, expect, it, vi} from "vitest";
 
-import {Container, inject, Type} from "..";
+import {Container, Inject, inject, injectAll} from "..";
 
 describe("inject", () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
+  const container = new Container();
 
   afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it("should inject fields", () => {
-    const container = new Container();
-
-    class A {
-      value = inject(B);
-    }
-
-    class B {}
-
-    const a = container.resolve(A);
-    expect(a).toBeInstanceOf(A);
-    expect(a.value).toBeInstanceOf(B);
-  });
-
-  it("should inject constructor parameters", () => {
-    const container = new Container();
-
-    class A {
-      constructor(public value = inject(B)) {}
-    }
-
-    class B {}
-
-    const a = container.resolve(A);
-    expect(a.value).toBeInstanceOf(B);
+    container.resetRegistry();
   });
 
   it("should error if outside context", () => {
-    const container = new Container();
+    vi.useFakeTimers();
 
-    class A {
-      constructor() {
-        setTimeout(() => inject(B));
-      }
-    }
-
-    class B {}
+    class Wand {}
 
     expect(() => {
-      container.resolve(A);
+      container.resolve(class Wizard {
+        constructor() {
+          setTimeout(() => inject(Wand));
+        }
+      });
       vi.runAllTimers();
-    }).toThrowErrorMatchingInlineSnapshot(`[Error: inject() can only be used within an injection context]`);
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: inject() can only be used within an injection context]`,
+    );
+
+    expect(() => {
+      container.resolve(class Wizard {
+        constructor() {
+          setTimeout(() => inject.by(Wand));
+        }
+      });
+      vi.runAllTimers();
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: injectBy() can only be used within an injection context]`,
+    );
+
+    expect(() => {
+      container.resolve(class Wizard {
+        constructor() {
+          setTimeout(() => injectAll(Wand));
+        }
+      });
+      vi.runAllTimers();
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: injectAll() can only be used within an injection context]`,
+    );
+
+    vi.restoreAllMocks();
   });
 
-  it("should inject in factory function", () => {
-    const container = new Container();
-
-    interface B {}
-    const B = Type<B>("B");
-
-    class A {
-      value = inject(B);
+  it("should handle circular dependencies", () => {
+    class Wand {
+      owner = inject(Wizard);
     }
 
-    class BImpl implements B {}
+    class Wizard {
+      wand1 = inject.by(this, Wand);
 
-    function createB() {
-      return inject(BImpl);
+      @Inject(Wand)
+      wand2!: Wand;
     }
 
-    container.register(B, {
-      useFactory: createB,
-    });
-
-    const a = container.resolve(A);
-    expect(a.value).toBeInstanceOf(BImpl);
+    const wizard = container.resolve(Wizard);
+    expect(wizard.wand1.owner).toBe(wizard);
+    expect(wizard.wand2.owner).toBe(wizard);
   });
 });
