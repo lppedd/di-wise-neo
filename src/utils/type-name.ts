@@ -20,5 +20,5 @@ export function getTypeName(value: unknown) {
     }
     return "(anonymous)";
   }
-  return String(value);
+  return typeof value;
 }

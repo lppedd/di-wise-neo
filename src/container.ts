@@ -1,12 +1,7 @@
 import {assert, expectNever} from "./errors";
 import {type ResolvedScope, useInjectionContext, withInjectionContext} from "./injection-context";
 import {getMetadata} from "./metadata";
-import {
-  isClassProvider,
-  isFactoryProvider,
-  isValueProvider,
-  type Provider,
-} from "./provider";
+import {isClassProvider, isFactoryProvider, isValueProvider, type Provider} from "./provider";
 import {type Registration, type RegistrationOptions, Registry} from "./registry";
 import {Scope} from "./scope";
 import {type Constructor, isConstructor, type Token, type TokenList} from "./token";
@@ -80,7 +75,7 @@ export class Container {
     if (args.length == 1) {
       const [Class] = args;
       const metadata = getMetadata(Class);
-      const tokens = [Class, ...(metadata.tokens || [])];
+      const tokens = [Class, ...metadata.tokens];
       tokens.forEach((token) => {
         const provider = metadata.provider;
         const options = {scope: metadata.scope};
@@ -165,11 +160,11 @@ export class Container {
       const Class = provider.useClass;
       return this.getScopedInstance(registration, () => new Class());
     }
-    else if (isFactoryProvider(provider)) {
+    if (isFactoryProvider(provider)) {
       const factory = provider.useFactory;
       return this.getScopedInstance(registration, factory);
     }
-    else if (isValueProvider(provider)) {
+    if (isValueProvider(provider)) {
       const value = provider.useValue;
       return value;
     }
@@ -215,7 +210,7 @@ export class Container {
         registration.instance = {current: instance};
         return instance;
       }
-      else if (resolvedScope == Scope.Resolution) {
+      if (resolvedScope == Scope.Resolution) {
         const instanceRef = context.resolution.instances.get(provider);
         if (instanceRef) {
           return instanceRef.current;
@@ -224,7 +219,7 @@ export class Container {
         context.resolution.instances.set(provider, {current: instance});
         return instance;
       }
-      else if (resolvedScope == Scope.Transient) {
+      if (resolvedScope == Scope.Transient) {
         return instantiate();
       }
       expectNever(resolvedScope);
