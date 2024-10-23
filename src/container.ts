@@ -146,11 +146,10 @@ export class Container {
   private construct<T extends object>(Class: Constructor<T>): T {
     const metadata = getMetadata(Class);
     const provider = metadata.provider;
-    const resolvedScope = this.resolveScope(metadata.scope);
-    if (resolvedScope == Scope.Container) {
+    const options = {scope: this.resolveScope(metadata.scope)};
+    if (options.scope == Scope.Container) {
       throw new Error(`unregistered token ${Class.name} cannot be resolved in container scope`);
     }
-    const options = {scope: resolvedScope};
     return this.getScopedInstance({provider, options}, () => new Class());
   }
 
@@ -194,14 +193,11 @@ export class Container {
       return dependentRef.current;
     }
 
-    const resolvedScope = this.resolveScope(options?.scope);
+    const scope = this.resolveScope(options?.scope);
 
-    context.resolution.stack.push(provider, {
-      provider,
-      scope: resolvedScope,
-    });
+    context.resolution.stack.push(provider, {provider, scope});
     try {
-      if (resolvedScope == Scope.Container) {
+      if (scope == Scope.Container) {
         const instanceRef = registration.instance;
         if (instanceRef) {
           return instanceRef.current;
@@ -210,7 +206,7 @@ export class Container {
         registration.instance = {current: instance};
         return instance;
       }
-      if (resolvedScope == Scope.Resolution) {
+      if (scope == Scope.Resolution) {
         const instanceRef = context.resolution.instances.get(provider);
         if (instanceRef) {
           return instanceRef.current;
@@ -219,10 +215,10 @@ export class Container {
         context.resolution.instances.set(provider, {current: instance});
         return instance;
       }
-      if (resolvedScope == Scope.Transient) {
+      if (scope == Scope.Transient) {
         return instantiate();
       }
-      expectNever(resolvedScope);
+      expectNever(scope);
     }
     finally {
       context.resolution.stack.pop();
