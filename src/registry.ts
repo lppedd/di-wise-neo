@@ -99,6 +99,7 @@ export class Registry {
   }
 }
 
+/*@__NO_SIDE_EFFECTS__*/
 export function Build<Value>(factory: (...args: []) => Value): Type<Value> {
   const typeName = getTypeName(factory);
   const token = Type<Value>(`Build<${typeName}>`);
@@ -110,6 +111,7 @@ export function Build<Value>(factory: (...args: []) => Value): Type<Value> {
   return token;
 }
 
+/*@__NO_SIDE_EFFECTS__*/
 export function Value<T>(value: T): Type<T> {
   const typeName = getTypeName(value);
   const token = Type<T>(`Value<${typeName}>`);

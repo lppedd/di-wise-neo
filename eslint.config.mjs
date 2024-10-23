@@ -99,6 +99,9 @@ export default tseslint.config(
     ],
     rules: {
       "@stylistic/object-curly-spacing": ["error", "never"],
+      "@stylistic/spaced-comment": ["error", "always", {
+        exceptions: ["@__PURE__", "@__NO_SIDE_EFFECTS__"],
+      }],
     },
   },
 );

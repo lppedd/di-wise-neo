@@ -11,6 +11,7 @@ export interface Type<T> {
   union<U>(typeName: string, U: Type<U>): Type<T | U>;
 }
 
+/*@__NO_SIDE_EFFECTS__*/
 export function Type<T>(typeName: string): Type<T> {
   const name = `Type<${typeName}>`;
   const type = {

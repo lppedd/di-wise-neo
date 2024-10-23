@@ -18,6 +18,7 @@ export type ClassFieldInitializer<This extends object, Value> = (
   initialValue: Value,
 ) => Value;
 
+/*@__NO_SIDE_EFFECTS__*/
 export function Injectable<This extends object>(...tokens: Token<This>[]): ClassDecorator<Constructor<This>> {
   return (Class, _context) => {
     const metadata = getMetadata(Class);
@@ -25,6 +26,7 @@ export function Injectable<This extends object>(...tokens: Token<This>[]): Class
   };
 }
 
+/*@__NO_SIDE_EFFECTS__*/
 export function Scoped<This extends object>(scope: Scope): ClassDecorator<Constructor<This>> {
   return (Class, _context) => {
     const metadata = getMetadata(Class);
@@ -32,6 +34,7 @@ export function Scoped<This extends object>(scope: Scope): ClassDecorator<Constr
   };
 }
 
+/*@__NO_SIDE_EFFECTS__*/
 export function AutoRegister<This extends object>(enable = true): ClassDecorator<Constructor<This>> {
   return (Class, _context) => {
     const metadata = getMetadata(Class);
