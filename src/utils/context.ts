@@ -1,20 +1,20 @@
 // @internal
 export function createContext<T extends {}>() {
-  let contextValue: T | null = null;
+  let current: T | null = null;
 
-  function provide<R>(value: T, callback: () => R) {
-    const currentValue = contextValue;
-    contextValue = value;
+  function provide<R>(next: T, fn: () => R) {
+    const prev = current;
     try {
-      return callback();
+      current = next;
+      return fn();
     }
     finally {
-      contextValue = currentValue;
+      current = prev;
     }
   }
 
   function use() {
-    return contextValue;
+    return current;
   }
 
   return <const>[
