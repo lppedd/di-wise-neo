@@ -40,10 +40,11 @@ describe("Container", () => {
     );
 
     const wizard = container.resolve(Wizard);
-    expect(container.resolve(Wizard)).toBe(wizard);
+    expect(container.getCached(Wizard)).toBe(wizard);
 
     container.clearCache();
     expect(container.isRegistered(Wizard)).toBe(true);
+    expect(container.getCached(Wizard)).toBeUndefined();
     expect(container.resolve(Wizard)).not.toBe(wizard);
   });
 

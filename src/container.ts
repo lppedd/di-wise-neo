@@ -42,6 +42,14 @@ export class Container {
     });
   }
 
+  getCached<Value>(token: Token<Value>): Value | undefined {
+    const registration = this.registry.get(token);
+    const instanceRef = registration?.instance;
+    if (instanceRef) {
+      return instanceRef.current;
+    }
+  }
+
   clearCache(): void {
     for (const registrations of this.registry.map.values()) {
       registrations.forEach(({instance, ...registration}, i) => {
