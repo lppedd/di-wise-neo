@@ -4,6 +4,6 @@
   "version": "0.1.1",
   "exports": "./src/index.ts",
   "publish": {
-    "include": ["src", "!src/__tests__"]
+    "include": ["src", "!src/__tests__", "README.md"]
   }
 }
