@@ -13,53 +13,53 @@ describe("Type", () => {
 
   describe("Value", () => {
     it("should get type of string", () => {
-      expect(String(Value("foo"))).toBe("Type<Value<\"foo\">>");
+      expect(Value("foo")).toMatchObject({name: "Type<Value<\"foo\">>"});
     });
 
     it("should get type of named function", () => {
       function foo() {}
-      expect(String(Value(foo))).toBe("Type<Value<typeof foo>>");
+      expect(Value(foo)).toMatchObject({name: "Type<Value<typeof foo>>"});
     });
 
     it("should get type of anonymous function", () => {
-      expect(String(Value(() => {}))).toBe("Type<Value<Function>>");
+      expect(Value(() => {})).toMatchObject({name: "Type<Value<Function>>"});
     });
 
     it("should get type of null", () => {
-      expect(String(Value(null))).toBe("Type<Value<null>>");
+      expect(Value(null)).toMatchObject({name: "Type<Value<null>>"});
     });
 
     it("should get type of object", () => {
-      expect(String(Value({}))).toBe("Type<Value<Object>>");
+      expect(Value({})).toMatchObject({name: "Type<Value<Object>>"});
     });
 
     it("should get type of null prototype", () => {
-      expect(String(Value(Object.create(null)))).toBe("Type<Value<Object>>");
+      expect(Value(Object.create(null))).toMatchObject({name: "Type<Value<Object>>"});
     });
 
     it("should get type of named class", () => {
       class Foo {}
-      expect(String(Value(new Foo()))).toBe("Type<Value<Foo>>");
+      expect(Value(new Foo())).toMatchObject({name: "Type<Value<Foo>>"});
     });
 
     it("should get type of anonymous class", () => {
-      expect(String(Value(new class {}()))).toBe("Type<Value<(anonymous)>>");
+      expect(Value(new class {}())).toMatchObject({name: "Type<Value<(anonymous)>>"});
     });
 
     it("should get type of boolean", () => {
-      expect(String(Value(true))).toBe("Type<Value<boolean>>");
+      expect(Value(true)).toMatchObject({name: "Type<Value<boolean>>"});
     });
 
     it("should get type of number", () => {
-      expect(String(Value(1))).toBe("Type<Value<number>>");
+      expect(Value(1)).toMatchObject({name: "Type<Value<number>>"});
     });
 
     it("should get type of symbol", () => {
-      expect(String(Value(Symbol()))).toBe("Type<Value<symbol>>");
+      expect(Value(Symbol())).toMatchObject({name: "Type<Value<symbol>>"});
     });
 
     it("should get type of undefined", () => {
-      expect(String(Value(undefined))).toBe("Type<Value<undefined>>");
+      expect(Value(undefined)).toMatchObject({name: "Type<Value<undefined>>"});
     });
   });
 });
