@@ -29,9 +29,8 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
-          check-latest: true
           cache: "yarn"
+          node-version-file: ".nvmrc"
       - run: yarn install
       - run: yarn typedoc
       - uses: actions/upload-pages-artifact@v3

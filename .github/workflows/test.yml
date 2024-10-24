@@ -15,9 +15,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
-          check-latest: true
           cache: "yarn"
+          node-version-file: ".nvmrc"
       - run: yarn install
       - run: yarn test
       - uses: codecov/codecov-action@v4
