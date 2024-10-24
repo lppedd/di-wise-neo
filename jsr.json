@@ -4,9 +4,6 @@
   "version": "0.1.0",
   "exports": "./src/index.ts",
   "publish": {
-    "include": [
-      "src",
-      "!src/__tests__"
-    ]
+    "include": ["src", "!src/__tests__"]
   }
 }
