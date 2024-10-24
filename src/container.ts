@@ -38,6 +38,7 @@ export class Container {
     return new Container({
       parent: this,
       defaultScope: this.defaultScope,
+      autoRegister: this.autoRegister,
     });
   }
 

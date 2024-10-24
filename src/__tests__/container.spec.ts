@@ -21,10 +21,18 @@ describe("Container", () => {
   });
 
   it("should handle hierarchical injection", () => {
+    const container = new Container({
+      defaultScope: Scope.Container,
+      autoRegister: true,
+    });
+
     const Env = Type<string>("Env");
     container.register(Env, {useValue: "production"});
 
     const child = container.createChild();
+    expect(child.autoRegister).toBeTruthy();
+    expect(child.defaultScope).toBe(Scope.Container);
+
     expect(child.isRegistered(Env)).toBe(true);
     expect(child.resolve(Env)).toBe("production");
     expect(child.resolveAll(Env)).toEqual(["production"]);
