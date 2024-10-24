@@ -26,12 +26,15 @@ export function Type<T>(typeName: string): Type<T> {
 }
 
 export declare namespace Type {
-  export var Null: Type<null>;
-  export var Undefined: Type<undefined>;
+  export var Null: typeof TypeNull;
+  export var Undefined: typeof TypeUndefined;
 }
 
-Type.Null = Type("null");
-Type.Undefined = Type("undefined");
+export const TypeNull: Type<null> = Type("null");
+export const TypeUndefined: Type<undefined> = Type("undefined");
+
+Type.Null = TypeNull;
+Type.Undefined = TypeUndefined;
 
 export interface Constructor<Instance extends object> {
   new (...args: []): Instance;

@@ -9,4 +9,4 @@ export type {Registration, RegistrationMap, RegistrationOptions, Registry} from 
 export {Build, Value} from "./registry";
 export {Scope} from "./scope";
 export type {Constructor, Token, TokenList} from "./token";
-export {Type} from "./token";
+export {Type, TypeNull, TypeUndefined} from "./token";
