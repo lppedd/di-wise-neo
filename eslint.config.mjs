@@ -55,6 +55,9 @@ export default tseslint.config(
         fixStyle: "inline-type-imports",
       }],
       "@typescript-eslint/no-import-type-side-effects": "error",
+      "@typescript-eslint/no-namespace": ["error", {
+        allowDeclarations: true,
+      }],
       "@typescript-eslint/no-unused-expressions": ["error", {
         allowShortCircuit: true,
       }],
@@ -65,7 +68,6 @@ export default tseslint.config(
       }],
       "@typescript-eslint/no-empty-object-type": "off",
       "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-namespace": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-unsafe-function-type": "off",
       "@typescript-eslint/no-unsafe-return": "off",
