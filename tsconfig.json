@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
     // Type Checking
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
     "strict": true,
 
@@ -11,11 +9,9 @@
     "moduleResolution": "Bundler",
 
     // Emit
-    "noEmit": true,
     "stripInternal": true,
 
     // Interop Constraints
-    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "isolatedDeclarations": true,
     "verbatimModuleSyntax": true,
