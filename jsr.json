@@ -4,6 +4,6 @@
   "version": "0.1.2",
   "exports": "./src/index.ts",
   "publish": {
-    "include": ["src", "!src/__tests__", "README.md"]
+    "include": ["src", "!src/__tests__", "LICENSE", "README.md", "tsconfig.json"]
   }
 }
