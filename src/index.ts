@@ -1,5 +1,11 @@
-export type {ContainerOptions} from "./container";
-export {Container} from "./container";
+/**
+ * This module provides all public APIs of `di-wise`.
+ *
+ * @module di-wise
+ */
+
+export type {Container, ContainerOptions} from "./container";
+export {createContainer} from "./container";
 export type {ClassDecorator, ClassFieldDecorator, ClassFieldInitializer} from "./decorators";
 export {AutoRegister, Inject, Injectable, InjectAll, Scoped} from "./decorators";
 export {inject, injectAll, injectBy, Injector} from "./inject";

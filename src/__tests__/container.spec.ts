@@ -1,27 +1,17 @@
 import {afterEach, describe, expect, it} from "vitest";
 
-import {AutoRegister, Build, Container, inject, Injectable, InjectAll, Scope, Scoped, Type, Value} from "..";
+import {AutoRegister, Build, createContainer, inject, Injectable, InjectAll, Scope, Scoped, Type, Value} from "..";
 import {useInjectionContext} from "../injection-context";
 
 describe("Container", () => {
-  const container = new Container();
+  const container = createContainer();
 
   afterEach(() => {
     container.resetRegistry();
   });
 
-  it("should resolve Container for dynamic injection", () => {
-    expect(container.resolve(Container)).toBe(container);
-
-    container.resetRegistry();
-    expect(container.resolve(Container)).toBe(container);
-
-    const child = container.createChild();
-    expect(child.resolve(Container)).toBe(child);
-  });
-
   it("should handle hierarchical injection", () => {
-    const container = new Container({
+    const container = createContainer({
       defaultScope: Scope.Container,
       autoRegister: true,
     });
@@ -30,9 +20,6 @@ describe("Container", () => {
     container.register(Env, {useValue: "production"});
 
     const child = container.createChild();
-    expect(child.autoRegister).toBeTruthy();
-    expect(child.defaultScope).toBe(Scope.Container);
-
     expect(child.isRegistered(Env)).toBe(true);
     expect(child.resolve(Env)).toBe("production");
     expect(child.resolveAll(Env)).toEqual(["production"]);
@@ -57,7 +44,7 @@ describe("Container", () => {
   });
 
   it("should reset registry", () => {
-    const container = new Container({
+    const container = createContainer({
       defaultScope: Scope.Container,
       autoRegister: true,
     });
@@ -137,10 +124,10 @@ describe("Container", () => {
     class Wizard {}
 
     expect(() => container.resolve(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: unregistered token Wizard cannot be resolved in container scope]`,
+      `[Error: unregistered class Wizard cannot be resolved in container scope]`,
     );
     expect(() => container.resolveAll(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: unregistered token Wizard cannot be resolved in container scope]`,
+      `[Error: unregistered class Wizard cannot be resolved in container scope]`,
     );
   });
 
@@ -177,7 +164,7 @@ describe("Container", () => {
   });
 
   it("should resolve all tokens with a class fallback", () => {
-    const container = new Container({
+    const container = createContainer({
       defaultScope: Scope.Container,
       autoRegister: true,
     });
