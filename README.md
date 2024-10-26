@@ -30,7 +30,7 @@ pnpm add di-wise
 ### Modern decorator implementation
 
 - Uses ECMAScript Stage 3 proposal Decorators: [tc39/proposal-decorators](https://github.com/tc39/proposal-decorators)
-- Supported by modern transpilers and runtimes (TypeScript [5.0+](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators), swc [v1.3.47+](https://swc.rs/docs/configuration/compilation#jsctransformdecoratorversion), esbuild [v0.21.0+](https://github.com/evanw/esbuild/releases/tag/v0.21.0))
+- Supported by modern transpilers and runtimes (TypeScript [5.0+](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators), swc [1.3.47+](https://swc.rs/docs/configuration/compilation#jsctransformdecoratorversion), esbuild [0.21.0+](https://github.com/evanw/esbuild/releases/tag/v0.21.0))
 
 ### Full control over registration and caching
 
@@ -129,7 +129,7 @@ export const singletons = new Container({
 
 `Inherited` will be resolved as `Transient` for a top-level dependent.
 
-`Resolution` is similar to `Transient`, but the same instance will be reused during a single resolution tree.
+`Resolution` is similar to `Transient`, but the instance will be reused in a single resolution graph.
 
 ### Automatic circular dependency resolution with @Inject() or inject.by()
 
