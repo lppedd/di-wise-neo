@@ -1,3 +1,5 @@
+import {invariant} from "./invariant";
+
 // @internal
 export class KeyedStack<K extends object, V> {
   private entries = new Array<{key: K; value: V}>();
@@ -13,10 +15,8 @@ export class KeyedStack<K extends object, V> {
     return entry?.value;
   }
 
-  /**
-   * @invariant `!this.has(key)`
-   */
   push(key: K, value: V) {
+    invariant(!this.has(key));
     this.keys.add(key);
     this.entries.push({key, value});
     return () => {
