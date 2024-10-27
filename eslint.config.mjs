@@ -11,11 +11,7 @@ export default tseslint.config(
     name: "exuanbo/languages",
     languageOptions: {
       ecmaVersion: 2022,
-      globals: {
-        ...globals.browser,
-        ...globals.es2022,
-        ...globals.node,
-      },
+      globals: globals.es2022,
     },
   },
   {
