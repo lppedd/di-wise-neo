@@ -99,26 +99,26 @@ export class Registry {
   }
 }
 
+// @internal
+export function isBuilder(provider: Provider) {
+  return builders.has(provider);
+}
+
 /*@__NO_SIDE_EFFECTS__*/
 export function Build<Value>(factory: (...args: []) => Value): Type<Value> {
-  const typeName = getTypeName(factory);
-  const token = Type<Value>(`Build<${typeName}>`);
-  const registration = {
-    provider: {useFactory: factory},
-    options: {scope: Scope.Transient},
-  };
-  internals.set(token, registration);
+  const token = Type<Value>(`Build<${getTypeName(factory)}>`);
+  const provider = {useFactory: factory};
+  const options = {scope: Scope.Transient};
+  internals.set(token, {provider, options});
+  builders.add(provider);
   return token;
 }
 
 /*@__NO_SIDE_EFFECTS__*/
 export function Value<T>(value: T): Type<T> {
-  const typeName = getTypeName(value);
-  const token = Type<T>(`Value<${typeName}>`);
-  const registration = {
-    provider: {useValue: value},
-  };
-  internals.set(token, registration);
+  const token = Type<T>(`Value<${getTypeName(value)}>`);
+  const provider = {useValue: value};
+  internals.set(token, {provider});
   return token;
 }
 
@@ -126,3 +126,5 @@ const internals = new WeakMap<Token, Registration>([
   [Type.Null, {provider: NullProvider}],
   [Type.Undefined, {provider: UndefinedProvider}],
 ]);
+
+const builders = new WeakSet<Provider>();

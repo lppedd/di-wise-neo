@@ -1,7 +1,6 @@
 import {ensureInjectionContext, provideInjectionContext, useInjectionContext} from "./injection-context";
 import {Build} from "./registry";
 import type {Token, TokenList, Type} from "./token";
-import {invariant} from "./utils/invariant";
 
 export function inject<Values extends unknown[]>(...tokens: TokenList<Values>): Values[number];
 export function inject<Value>(...tokens: Token<Value>[]): Value {
@@ -20,10 +19,12 @@ export function injectBy<Value>(thisArg: any, ...tokens: Token<Value>[]): Value 
   const context = ensureInjectionContext(injectBy);
 
   const currentFrame = context.resolution.stack.peek();
-  invariant(currentFrame);
+  if (!currentFrame) {
+    return inject(...tokens);
+  }
 
-  const currentProvider = currentFrame.provider;
-  const cleanup = context.resolution.dependents.set(currentProvider, {current: thisArg});
+  const currentRef = {current: thisArg};
+  const cleanup = context.resolution.dependents.set(currentFrame.provider, currentRef);
   try {
     return inject(...tokens);
   }
@@ -46,11 +47,8 @@ export interface Injector {
 export const Injector: Type<Injector> = /*@__PURE__*/ Build(function Injector() {
   const context = ensureInjectionContext(Injector);
 
-  const dependentFrame = context.resolution.stack.peek(1);
-  invariant(dependentFrame);
-
-  const dependentProvider = dependentFrame.provider;
-  const dependentRef = context.resolution.dependents.get(dependentProvider);
+  const dependentFrame = context.resolution.stack.peek();
+  const dependentRef = dependentFrame && context.resolution.dependents.get(dependentFrame.provider);
 
   const withCurrentContext = <R>(fn: () => R) => {
     if (useInjectionContext()) {
@@ -58,8 +56,8 @@ export const Injector: Type<Injector> = /*@__PURE__*/ Build(function Injector() 
     }
     const cleanups = [
       provideInjectionContext(context),
-      context.resolution.stack.push(dependentProvider, dependentFrame),
-      dependentRef && context.resolution.dependents.set(dependentProvider, dependentRef),
+      dependentFrame && context.resolution.stack.push(dependentFrame.provider, dependentFrame),
+      dependentRef && context.resolution.dependents.set(dependentFrame.provider, dependentRef),
     ];
     try {
       return fn();

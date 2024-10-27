@@ -2,7 +2,7 @@ import {assert, expectNever} from "./errors";
 import {createResolution, provideInjectionContext, useInjectionContext} from "./injection-context";
 import {getMetadata} from "./metadata";
 import {isClassProvider, isFactoryProvider, isValueProvider, type Provider} from "./provider";
-import {type Registration, type RegistrationOptions, Registry} from "./registry";
+import {isBuilder, type Registration, type RegistrationOptions, Registry} from "./registry";
 import {Scope} from "./scope";
 import {type Constructor, isConstructor, type Token, type TokenList} from "./token";
 
@@ -302,7 +302,7 @@ export function createContainer({
 
     const cleanups = [
       provideInjectionContext(context),
-      context.resolution.stack.push(provider, {provider, scope}),
+      !isBuilder(provider) && context.resolution.stack.push(provider, {provider, scope}),
     ];
     try {
       if (scope == Scope.Container) {
@@ -329,7 +329,7 @@ export function createContainer({
       expectNever(scope);
     }
     finally {
-      cleanups.reverse().forEach((cleanup) => cleanup());
+      cleanups.reverse().forEach((cleanup) => cleanup && cleanup());
     }
   }
 

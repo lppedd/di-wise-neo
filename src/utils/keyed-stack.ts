@@ -10,8 +10,8 @@ export class KeyedStack<K extends object, V> {
     return this.keys.has(key);
   }
 
-  peek(n = 0) {
-    const entry = this.entries.at(-(n + 1));
+  peek() {
+    const entry = this.entries.at(-1);
     return entry?.value;
   }
 

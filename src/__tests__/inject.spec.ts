@@ -68,6 +68,20 @@ describe("inject", () => {
     expect(wizard.wand2.owner).toBe(wizard);
   });
 
+  it("should fallback to inject if no dependent", () => {
+    class Wand {
+      owner = inject(Wizard);
+    }
+
+    class Wizard {
+      wand = inject.by(this, Wand);
+    }
+
+    expect(() => container.resolve(Build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(
+      `[Error: circular dependency detected]`,
+    );
+  });
+
   describe("Injector", () => {
     it("should inject injector", () => {
       class Wizard {
