@@ -1,5 +1,5 @@
 import {assert, expectNever} from "./errors";
-import {createResolution, useInjectionContext, withInjectionContext} from "./injection-context";
+import {createResolution, provideInjectionContext, useInjectionContext} from "./injection-context";
 import {getMetadata} from "./metadata";
 import {isClassProvider, isFactoryProvider, isValueProvider, type Provider} from "./provider";
 import {type Registration, type RegistrationOptions, Registry} from "./registry";
@@ -280,13 +280,13 @@ export function createContainer({
   }
 
   function resolveScopedInstance<T>(registration: Registration<T>, instantiate: () => T): T {
-    const context = useInjectionContext();
+    let context = useInjectionContext();
 
     if (!context || context.container !== container) {
-      return withInjectionContext({
+      context = {
         container,
         resolution: createResolution(),
-      }, () => resolveScopedInstance(registration, instantiate));
+      };
     }
 
     const provider = registration.provider;
@@ -298,9 +298,12 @@ export function createContainer({
       return dependentRef.current;
     }
 
-    const scope = resolveScope(options?.scope);
+    const scope = resolveScope(options?.scope, context);
 
-    context.resolution.stack.push(provider, {provider, scope});
+    const cleanups = [
+      provideInjectionContext(context),
+      context.resolution.stack.push(provider, {provider, scope}),
+    ];
     try {
       if (scope == Scope.Container) {
         const instanceRef = registration.instance;
@@ -326,14 +329,13 @@ export function createContainer({
       expectNever(scope);
     }
     finally {
-      context.resolution.stack.pop();
+      cleanups.reverse().forEach((cleanup) => cleanup());
     }
   }
 
-  function resolveScope(scope = defaultScope) {
+  function resolveScope(scope = defaultScope, context = useInjectionContext()) {
     let resolvedScope = scope;
     if (resolvedScope == Scope.Inherited) {
-      const context = useInjectionContext();
       const dependentFrame = context?.resolution.stack.peek();
       resolvedScope = dependentFrame?.scope || Scope.Transient;
     }

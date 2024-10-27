@@ -2,15 +2,10 @@
 export function createContext<T extends {}>() {
   let current: T | null = null;
 
-  function provide<R>(next: T, fn: () => R) {
+  function provide(next: T) {
     const prev = current;
-    try {
-      current = next;
-      return fn();
-    }
-    finally {
-      current = prev;
-    }
+    current = next;
+    return () => current = prev;
   }
 
   function use() {

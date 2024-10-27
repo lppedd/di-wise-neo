@@ -1,4 +1,4 @@
-import {ensureInjectionContext, useInjectionContext, withInjectionContext} from "./injection-context";
+import {ensureInjectionContext, provideInjectionContext, useInjectionContext} from "./injection-context";
 import {Build} from "./registry";
 import type {Token, TokenList, Type} from "./token";
 import {invariant} from "./utils/invariant";
@@ -23,12 +23,12 @@ export function injectBy<Value>(thisArg: any, ...tokens: Token<Value>[]): Value 
   invariant(currentFrame);
 
   const currentProvider = currentFrame.provider;
-  context.resolution.dependents.set(currentProvider, {current: thisArg});
+  const cleanup = context.resolution.dependents.set(currentProvider, {current: thisArg});
   try {
     return inject(...tokens);
   }
   finally {
-    context.resolution.dependents.delete(currentProvider);
+    cleanup();
   }
 }
 
@@ -56,18 +56,17 @@ export const Injector: Type<Injector> = /*@__PURE__*/ Build(function Injector() 
     if (useInjectionContext()) {
       return fn();
     }
-    return withInjectionContext(context, () => {
-      context.resolution.stack.push(dependentProvider, dependentFrame);
-      if (dependentRef)
-        context.resolution.dependents.set(dependentProvider, dependentRef);
-      try {
-        return fn();
-      }
-      finally {
-        context.resolution.dependents.delete(dependentProvider);
-        context.resolution.stack.pop();
-      }
-    });
+    const cleanups = [
+      provideInjectionContext(context),
+      context.resolution.stack.push(dependentProvider, dependentFrame),
+      dependentRef && context.resolution.dependents.set(dependentProvider, dependentRef),
+    ];
+    try {
+      return fn();
+    }
+    finally {
+      cleanups.reverse().forEach((cleanup) => cleanup?.());
+    }
   };
 
   return {

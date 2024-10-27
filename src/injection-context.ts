@@ -33,7 +33,7 @@ export function createResolution(): Resolution {
 }
 
 // @internal
-export const [withInjectionContext, useInjectionContext] = createContext<InjectionContext>();
+export const [provideInjectionContext, useInjectionContext] = createContext<InjectionContext>();
 
 // @internal
 export function ensureInjectionContext(fn: Function) {
