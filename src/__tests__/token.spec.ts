@@ -30,11 +30,11 @@ describe("Type", () => {
     });
 
     it("should get type of object", () => {
-      expect(Value({})).toMatchObject({name: "Type<Value<Object>>"});
+      expect(Value({})).toMatchObject({name: "Type<Value<object>>"});
     });
 
     it("should get type of null prototype", () => {
-      expect(Value(Object.create(null))).toMatchObject({name: "Type<Value<Object>>"});
+      expect(Value(Object.create(null))).toMatchObject({name: "Type<Value<object>>"});
     });
 
     it("should get type of named class", () => {
@@ -43,7 +43,7 @@ describe("Type", () => {
     });
 
     it("should get type of anonymous class", () => {
-      expect(Value(new class {}())).toMatchObject({name: "Type<Value<(anonymous)>>"});
+      expect(Value(new class {}())).toMatchObject({name: "Type<Value<object>>"});
     });
 
     it("should get type of boolean", () => {
