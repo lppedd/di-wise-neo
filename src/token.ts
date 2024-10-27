@@ -13,9 +13,8 @@ export interface Type<T> {
 
 /*@__NO_SIDE_EFFECTS__*/
 export function Type<T>(typeName: string): Type<T> {
-  const name = `Type<${typeName}>`;
   const type = {
-    name,
+    name: `Type<${typeName}>`,
     inter: Type,
     union: Type,
     toString() {
