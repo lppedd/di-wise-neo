@@ -9,5 +9,5 @@ export type {ClassProvider, FactoryProvider, Provider, ValueProvider} from "./pr
 export type {RegistrationOptions} from "./registry";
 export {Build, Value} from "./registry";
 export {Scope} from "./scope";
-export type {Constructor, Token} from "./token";
+export type {Constructor, Token, TokenList} from "./token";
 export {Type} from "./token";
