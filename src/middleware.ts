@@ -28,13 +28,11 @@ export interface Middleware {
 export interface MiddlewareComposer {
   /**
    * Add a middleware function to the composer.
-   *
-   * @template Key - The key of the container method to wrap.
    */
-  use<Key extends keyof Container>(
-    key: Key,
-    wrap: Container[Key] extends Function
-      ? (next: Container[Key]) => Container[Key]
+  use<MethodKey extends keyof Container>(
+    key: MethodKey,
+    wrap: Container[MethodKey] extends Function
+      ? (next: Container[MethodKey]) => Container[MethodKey]
       : never
   ): MiddlewareComposer;
 }
@@ -62,9 +60,7 @@ export interface MiddlewareComposer {
  *
  * This allows outer middlewares to wrap and control the behavior of inner middlewares.
  */
-export function applyMiddleware(container: Container, middlewares: Middleware[]): Container;
-
-export function applyMiddleware(container: Container, middlewares: Middleware[]) {
+export function applyMiddleware(container: Container, middlewares: Middleware[]): Container {
   const composer: MiddlewareComposer = {
     use(key, wrap) {
       container[key] = wrap(container[key]);

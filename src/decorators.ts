@@ -3,22 +3,47 @@ import {getMetadata} from "./metadata";
 import type {Scope} from "./scope";
 import type {Constructor, Token, TokenList} from "./token";
 
+/**
+ * Decorator API for classes.
+ *
+ * @see {@link https://github.com/tc39/proposal-decorators?tab=readme-ov-file#classes}
+ */
 export type ClassDecorator<Class extends Constructor<object>> = (
   value: Class,
   context: ClassDecoratorContext<Class>,
 ) => Class | void;
 
+/**
+ * Decorator API for class fields.
+ *
+ * @see {@link https://github.com/tc39/proposal-decorators?tab=readme-ov-file#class-fields}
+ */
 export type ClassFieldDecorator<Value> = <This extends object>(
   value: undefined,
   context: ClassFieldDecoratorContext<This, Value>,
-) => ClassFieldInitializer<This, Value> | void;
+) => ((this: This, initialValue: Value) => Value) | void;
 
-export type ClassFieldInitializer<This extends object, Value> = (
-  this: This,
-  initialValue: Value,
-) => Value;
-
-/*@__NO_SIDE_EFFECTS__*/
+/**
+ * Decorator for adding additional tokens to a class when registering.
+ *
+ * @example
+ * ```ts
+ * ⁤@Injectable(Weapon)
+ * class Wand {}
+ *
+ * container.register(Wand);
+ *
+ * // under the hood
+ * [Wand, Weapon].forEach((token) => {
+ *   container.register(
+ *     token,
+ *     {useClass: Wand},
+ *   );
+ * });
+ * ```
+ *
+ * @__NO_SIDE_EFFECTS__
+ */
 export function Injectable<This extends object>(...tokens: Token<This>[]): ClassDecorator<Constructor<This>> {
   return (Class, _context) => {
     const metadata = getMetadata(Class);
@@ -26,7 +51,26 @@ export function Injectable<This extends object>(...tokens: Token<This>[]): Class
   };
 }
 
-/*@__NO_SIDE_EFFECTS__*/
+/**
+ * Decorator for setting the scope of a class when registering.
+ *
+ * @example
+ * ```ts
+ * ⁤@Scoped(Scope.Container)
+ * class Wizard {}
+ *
+ * container.register(Wizard);
+ *
+ * // under the hood
+ * container.register(
+ *   Wizard,
+ *   {useClass: Wizard},
+ *   {scope: Scope.Container},
+ * );
+ * ```
+ *
+ * @__NO_SIDE_EFFECTS__
+ */
 export function Scoped<This extends object>(scope: Scope): ClassDecorator<Constructor<This>> {
   return (Class, _context) => {
     const metadata = getMetadata(Class);
@@ -34,7 +78,20 @@ export function Scoped<This extends object>(scope: Scope): ClassDecorator<Constr
   };
 }
 
-/*@__NO_SIDE_EFFECTS__*/
+/**
+ * Decorator for enabling auto-registration of a class.
+ *
+ * @example
+ * ```ts
+ * ⁤@AutoRegister()
+ * class Wizard {}
+ *
+ * const wizard = container.resolve(Wizard);
+ * container.isRegistered(Wizard); // => true
+ * ```
+ *
+ * @__NO_SIDE_EFFECTS__
+ */
 export function AutoRegister<This extends object>(enable = true): ClassDecorator<Constructor<This>> {
   return (Class, _context) => {
     const metadata = getMetadata(Class);
@@ -42,7 +99,16 @@ export function AutoRegister<This extends object>(enable = true): ClassDecorator
   };
 }
 
+/**
+ * Decorator for injecting an instance of a token.
+ */
+export function Inject<Value>(token: Token<Value>): ClassFieldDecorator<Value>;
+
+/**
+ * Decorator for injecting an instance of a token, by checking each token in order until a registered one is found.
+ */
 export function Inject<Values extends unknown[]>(...tokens: TokenList<Values>): ClassFieldDecorator<Values[number]>;
+
 export function Inject<Value>(...tokens: Token<Value>[]): ClassFieldDecorator<Value> {
   return (_value, _context) =>
     function (this, _initialValue) {
@@ -50,7 +116,20 @@ export function Inject<Value>(...tokens: Token<Value>[]): ClassFieldDecorator<Va
     };
 }
 
+/**
+ * Decorator for injecting instances of a token with all registered providers.
+ *
+ * The returned array will not contain `null` or `undefined` values.
+ */
+export function InjectAll<Value>(token: Token<Value>): ClassFieldDecorator<NonNullable<Value>[]>;
+
+/**
+ * Decorator for injecting instances of a token with all registered providers, by checking each token in order until a registered one is found.
+ *
+ * The returned array will not contain `null` or `undefined` values.
+ */
 export function InjectAll<Values extends unknown[]>(...tokens: TokenList<Values>): ClassFieldDecorator<NonNullable<Values[number]>[]>;
+
 export function InjectAll<Value>(...tokens: Token<Value>[]): ClassFieldDecorator<NonNullable<Value>[]> {
   return (_value, _context) =>
     function (_initialValue) {

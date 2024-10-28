@@ -25,111 +25,91 @@ export interface ContainerOptions {
   defaultScope?: Scope;
 
   /**
-   * The parent container.
-   *
-   * @default undefined
+   * @internal
    */
   parent?: Container;
 }
 
 /**
- * The public API of a container.
+ * Container API.
  */
 export interface Container {
   /**
-   * The internal registry for testing and debugging.
+   * The underlying registry.
    */
   get registry(): Registry;
 
   /**
-   * Clears the cached instances with container scope.
+   * Clear the cached instances with container scope.
    *
    * The registered constants with `ValueProvider` are not affected.
    */
   clearCache(): void;
 
   /**
-   * Creates a child container with the same configuration.
+   * Create a child container with the same configuration.
    */
   createChild(): Container;
 
   /**
-   * Gets the cached instance with container scope.
-   *
-   * @template Value - The type of the token.
+   * Get the cached instance with container scope.
    */
   getCached<Value>(token: Token<Value>): Value | undefined;
 
   /**
-   * Checks if a token is registered in the container or its ancestors.
-   *
-   * @template Value - The type of the token.
+   * Check if a token is registered in the container or its ancestors.
    */
   isRegistered<Value>(token: Token<Value>): boolean;
 
   /**
-   * Registers a `ClassProvider` with the token of the class itself.
+   * Register a `ClassProvider` with the token of the class itself.
    *
    * All the tokens specified in the `@Injectable` decorator are also registered.
-   *
-   * @template Instance - The type of the instance.
    */
   register<Instance extends object>(Class: Constructor<Instance>): this;
 
   /**
-   * Registers a provider with a token.
-   *
-   * @template Value - The type of the token and the provider.
+   * Register a provider with a token.
    */
   register<Value>(token: Token<Value>, provider: Provider<Value>, options?: RegistrationOptions): this;
 
   /**
-   * Removes all registrations from the internal registry.
+   * Remove all registrations from the internal registry.
    */
   resetRegistry(): void;
 
   /**
-   * Resolves a token to an instance.
-   *
-   * @template Value - The type of the token.
+   * Resolve a token to an instance.
    */
   resolve<Value>(token: Token<Value>): Value;
 
   /**
-   * Resolves tokens to an instance by checking each token in order until a registered one is found.
-   *
-   * @template Values - Tuple type representing the possible value types
+   * Resolve a token to an instance, by checking each token in order until a registered one is found.
    */
   resolve<Values extends unknown[]>(...tokens: TokenList<Values>): Values[number];
 
   /**
-   * Resolves a token to instances of all registered providers.
+   * Resolve a token to instances with all registered providers.
    *
    * The returned array will not contain `null` or `undefined` values.
-   *
-   * @template Value - The type of the token.
    */
   resolveAll<Value>(token: Token<Value>): NonNullable<Value>[];
 
   /**
-   * Resolves tokens to instances of all registered providers by checking each token in order until a registered one is found.
+   * Resolve a token to instances with all registered providers, by checking each token in order until a registered one is found.
    *
    * The returned array will not contain `null` or `undefined` values.
-   *
-   * @template Values - Tuple type representing the possible value types
    */
   resolveAll<Values extends unknown[]>(...tokens: TokenList<Values>): NonNullable<Values[number]>[];
 
   /**
-   * Removes a registration from the internal registry.
-   *
-   * @template Value - The type of the token.
+   * Remove a registration from the internal registry.
    */
   unregister<Value>(token: Token<Value>): this;
 }
 
 /**
- * Creates a new container.
+ * Create a new container.
  */
 export function createContainer(options?: ContainerOptions): Container;
 

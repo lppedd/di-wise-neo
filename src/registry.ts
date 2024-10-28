@@ -16,7 +16,15 @@ export interface Registration<T = any> {
   provider: Provider<T>;
 }
 
+/**
+ * Registration options.
+ */
 export interface RegistrationOptions {
+  /**
+   * The scope of the registration.
+   *
+   * @default Scope.Inherited - "Inherited"
+   */
   readonly scope?: Scope;
 }
 
@@ -25,11 +33,9 @@ export class Registry {
 
   map: RegistrationMap = this._map;
 
-  parent?: Registry;
-
-  constructor(parent?: Registry) {
-    this.parent = parent;
-  }
+  constructor(
+    private parent: Registry | undefined,
+  ) {}
 
   get<T>(token: Token<T>): Registration<T> | undefined {
     return (
@@ -104,7 +110,25 @@ export function isBuilder(provider: Provider) {
   return builders.has(provider);
 }
 
-/*@__NO_SIDE_EFFECTS__*/
+/**
+ * Create a one-off type token from a factory function.
+ *
+ * @example
+ * ```ts
+ * class Wizard {
+ *   wand = inject(
+ *     Build(() => {
+ *       const wand = inject(Wand);
+ *       wand.owner = this;
+ *       // ...
+ *       return wand;
+ *     }),
+ *   );
+ * }
+ * ```
+ *
+ * @__NO_SIDE_EFFECTS__
+ */
 export function Build<Value>(factory: (...args: []) => Value): Type<Value> {
   const token = Type<Value>(`Build<${getTypeName(factory)}>`);
   const provider = {useFactory: factory};
@@ -114,7 +138,23 @@ export function Build<Value>(factory: (...args: []) => Value): Type<Value> {
   return token;
 }
 
-/*@__NO_SIDE_EFFECTS__*/
+/**
+ * Create a one-off type token from a value.
+ *
+ * Used for providing default values.
+ *
+ * @example
+ * ```ts
+ * class Wizard {
+ *   name = inject(Name, Value("Harry"));
+ * }
+ *
+ * const wizard = container.resolve(Wizard);
+ * wizard.name; // => "Harry"
+ * ```
+ *
+ * @__NO_SIDE_EFFECTS__
+ */
 export function Value<T>(value: T): Type<T> {
   const token = Type<T>(`Value<${getTypeName(value)}>`);
   const provider = {useValue: value};
