@@ -20,7 +20,7 @@ export interface ContainerOptions {
   /**
    * The default scope for registrations.
    *
-   * @default Scope.Inherited - "Inherited"
+   * @default Scope.Inherited // "Inherited"
    */
   defaultScope?: Scope;
 

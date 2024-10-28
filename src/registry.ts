@@ -22,8 +22,6 @@ export interface Registration<T = any> {
 export interface RegistrationOptions {
   /**
    * The scope of the registration.
-   *
-   * @default Scope.Inherited - "Inherited"
    */
   readonly scope?: Scope;
 }
