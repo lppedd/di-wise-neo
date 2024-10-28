@@ -162,6 +162,7 @@ wizard.equipment.activate(); // => 👻
 
 Example:
 
+<!-- prettier-ignore -->
 ```ts
 import {createContainer, inject, Injectable, Type} from "di-wise";
 
@@ -376,6 +377,7 @@ See [API documentation](https://exuanbo.github.io/di-wise/modules.html).
 ## Credits
 
 Inspired by:
+
 - [jeffijoe/awilix](https://github.com/jeffijoe/awilix)
 - [inversify/InversifyJS](https://github.com/inversify/InversifyJS)
 - [microsoft/tsyringe](https://github.com/microsoft/tsyringe)
