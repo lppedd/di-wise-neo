@@ -50,7 +50,7 @@ export const Injector: Type<Injector> = /*@__PURE__*/ Build(function Injector() 
   const dependentFrame = context.resolution.stack.peek();
   const dependentRef = dependentFrame && context.resolution.dependents.get(dependentFrame.provider);
 
-  const withCurrentContext = <R>(fn: () => R) => {
+  function withCurrentContext<R>(fn: () => R) {
     if (useInjectionContext()) {
       return fn();
     }
@@ -65,7 +65,7 @@ export const Injector: Type<Injector> = /*@__PURE__*/ Build(function Injector() 
     finally {
       cleanups.reverse().forEach((cleanup) => cleanup?.());
     }
-  };
+  }
 
   return {
     inject: (...tokens) => withCurrentContext(() => inject(...tokens)),
