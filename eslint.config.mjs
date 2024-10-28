@@ -54,6 +54,10 @@ export default tseslint.config(
       "@typescript-eslint/no-namespace": ["error", {
         allowDeclarations: true,
       }],
+      // HACK: https://github.com/jsr-io/jsr/issues/780
+      "@typescript-eslint/no-unnecessary-type-assertion": ["error", {
+        typesToIgnore: ["Type<null>", "Type<undefined>"],
+      }],
       "@typescript-eslint/no-unused-expressions": ["error", {
         allowShortCircuit: true,
       }],

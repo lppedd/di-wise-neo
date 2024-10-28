@@ -29,8 +29,8 @@ export declare namespace Type {
   export var Undefined: Type<undefined>;
 }
 
-Type.Null = Type("null");
-Type.Undefined = Type("undefined");
+Type.Null = Type("null") as Type<null>;
+Type.Undefined = Type("undefined") as Type<undefined>;
 
 export interface Constructor<Instance extends object> {
   new (...args: []): Instance;
