@@ -1,7 +1,7 @@
 # di-wise 🧙‍♀️
 
-[![npm](https://img.shields.io/npm/v/di-wise.svg?labelColor=red&color=grey)](https://www.npmjs.com/package/di-wise)
-[![JSR Version](https://img.shields.io/jsr/v/%40exuanbo/di-wise.svg?labelColor=yellow&color=grey)](https://jsr.io/@exuanbo/di-wise)
+[![npm](https://img.shields.io/npm/v/di-wise.svg?labelColor=red&color=black)](https://www.npmjs.com/package/di-wise)
+[![JSR Version](https://img.shields.io/jsr/v/%40exuanbo/di-wise.svg?labelColor=rgb(247%2C223%2C30)&color=rgb(8%2C51%2C68))](https://jsr.io/@exuanbo/di-wise)
 [![npm bundle size](https://img.shields.io/bundlephobia/minzip/di-wise@latest.svg?label=bundle%20size)](https://bundlephobia.com/package/di-wise)
 [![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/exuanbo/di-wise/test.yml.svg?branch=main)](https://github.com/exuanbo/di-wise/actions)
 [![Codecov (with branch)](https://img.shields.io/codecov/c/gh/exuanbo/di-wise/main.svg?token=65EfrU4Qnl)](https://app.codecov.io/gh/exuanbo/di-wise/tree/main/src)
