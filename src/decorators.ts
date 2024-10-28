@@ -33,7 +33,7 @@ export type ClassFieldDecorator<Value> = <This extends object>(
  *
  * container.register(Wand);
  *
- * // under the hood
+ * // Under the hood
  * [Wand, Weapon].forEach((token) => {
  *   container.register(
  *     token,
@@ -61,7 +61,7 @@ export function Injectable<This extends object>(...tokens: Token<This>[]): Class
  *
  * container.register(Wizard);
  *
- * // under the hood
+ * // Under the hood
  * container.register(
  *   Wizard,
  *   {useClass: Wizard},

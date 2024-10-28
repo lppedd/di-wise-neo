@@ -113,7 +113,7 @@ export interface Injector {
  *   private wand?: Wand;
  *
  *   getWand() {
- *     return this.wand ??= this.injector.inject(Wand);
+ *     return (this.wand ??= this.injector.inject(Wand));
  *   }
  * }
  *
