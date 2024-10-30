@@ -60,7 +60,7 @@ export function Type<T>(typeName: string): Type<T> {
     inter: Type,
     union: Type,
     toString() {
-      return this.name;
+      return type.name;
     },
   };
   return type;
