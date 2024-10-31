@@ -13,14 +13,14 @@ export interface ContainerOptions {
   /**
    * Whether to automatically register a class when resolving it as a token.
    *
-   * @default false
+   * @defaultValue false
    */
   autoRegister?: boolean;
 
   /**
    * The default scope for registrations.
    *
-   * @default Scope.Inherited // "Inherited"
+   * @defaultValue Scope.Inherited
    */
   defaultScope?: Scope;
 
