@@ -177,21 +177,25 @@ export function createContainer({
         const metadata = getMetadata(Class);
         const tokens = [Class, ...metadata.tokens];
         tokens.forEach((token) => {
-          const provider = metadata.provider;
-          const options = {scope: metadata.scope};
-          registry.set(token, {provider, options});
+          registry.set(token, {
+            provider: metadata.provider,
+            options: {scope: metadata.scope},
+          });
         });
       }
       else {
-        const [token] = args;
-        let [, provider, options] = args;
+        const [token, provider, options] = args;
         if (isClassProvider(provider)) {
           const Class = provider.useClass;
           const metadata = getMetadata(Class);
-          provider = metadata.provider;
-          options = {scope: metadata.scope, ...options};
+          registry.set(token, {
+            provider: metadata.provider,
+            options: {scope: metadata.scope, ...options},
+          });
         }
-        registry.set(token, {provider, options});
+        else {
+          registry.set(token, {provider, options});
+        }
       }
       return container;
     },

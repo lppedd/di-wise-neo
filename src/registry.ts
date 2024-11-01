@@ -130,8 +130,10 @@ export function isBuilder(provider: Provider) {
 export function Build<Value>(factory: (...args: []) => Value): Type<Value> {
   const token = Type<Value>(`Build<${getTypeName(factory)}>`);
   const provider = {useFactory: factory};
-  const options = {scope: Scope.Transient};
-  internals.set(token, {provider, options});
+  internals.set(token, {
+    provider,
+    options: {scope: Scope.Transient},
+  });
   builders.add(provider);
   return token;
 }
