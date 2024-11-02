@@ -8,6 +8,7 @@ describe("Type", () => {
   });
 
   it("should have toString", () => {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     expect(String(Type("foo"))).toBe("Type<foo>");
   });
 
