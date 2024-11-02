@@ -278,11 +278,13 @@ export function createContainer({
       };
     }
 
+    const resolution = context.resolution;
+
     const provider = registration.provider;
     const options = registration.options;
 
-    if (context.resolution.stack.has(provider)) {
-      const dependentRef = context.resolution.dependents.get(provider);
+    if (resolution.stack.has(provider)) {
+      const dependentRef = resolution.dependents.get(provider);
       assert(dependentRef, "circular dependency detected");
       return dependentRef.current;
     }
@@ -291,7 +293,7 @@ export function createContainer({
 
     const cleanups = [
       provideInjectionContext(context),
-      !isBuilder(provider) && context.resolution.stack.push(provider, {provider, scope}),
+      !isBuilder(provider) && resolution.stack.push(provider, {provider, scope}),
     ];
     try {
       if (scope == Scope.Container) {
@@ -304,12 +306,12 @@ export function createContainer({
         return instance;
       }
       if (scope == Scope.Resolution) {
-        const instanceRef = context.resolution.instances.get(provider);
+        const instanceRef = resolution.instances.get(provider);
         if (instanceRef) {
           return instanceRef.current;
         }
         const instance = instantiate();
-        context.resolution.instances.set(provider, {current: instance});
+        resolution.instances.set(provider, {current: instance});
         return instance;
       }
       if (scope == Scope.Transient) {

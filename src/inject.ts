@@ -39,14 +39,15 @@ export function injectBy<Values extends unknown[]>(thisArg: any, ...tokens: Toke
 
 export function injectBy<Value>(thisArg: any, ...tokens: Token<Value>[]): Value {
   const context = ensureInjectionContext(injectBy);
+  const resolution = context.resolution;
 
-  const currentFrame = context.resolution.stack.peek();
+  const currentFrame = resolution.stack.peek();
   if (!currentFrame) {
     return inject(...tokens);
   }
 
   const currentRef = {current: thisArg};
-  const cleanup = context.resolution.dependents.set(currentFrame.provider, currentRef);
+  const cleanup = resolution.dependents.set(currentFrame.provider, currentRef);
   try {
     return inject(...tokens);
   }
@@ -123,9 +124,10 @@ export interface Injector {
  */
 export const Injector: Type<Injector> = /*@__PURE__*/ Build(function Injector() {
   const context = ensureInjectionContext(Injector);
+  const resolution = context.resolution;
 
-  const dependentFrame = context.resolution.stack.peek();
-  const dependentRef = dependentFrame && context.resolution.dependents.get(dependentFrame.provider);
+  const dependentFrame = resolution.stack.peek();
+  const dependentRef = dependentFrame && resolution.dependents.get(dependentFrame.provider);
 
   function withCurrentContext<R>(fn: () => R) {
     if (useInjectionContext()) {
@@ -133,8 +135,8 @@ export const Injector: Type<Injector> = /*@__PURE__*/ Build(function Injector() 
     }
     const cleanups = [
       provideInjectionContext(context),
-      dependentFrame && context.resolution.stack.push(dependentFrame.provider, dependentFrame),
-      dependentRef && context.resolution.dependents.set(dependentFrame.provider, dependentRef),
+      dependentFrame && resolution.stack.push(dependentFrame.provider, dependentFrame),
+      dependentRef && resolution.dependents.set(dependentFrame.provider, dependentRef),
     ];
     try {
       return fn();
