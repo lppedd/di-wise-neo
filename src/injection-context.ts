@@ -5,7 +5,7 @@ import type {Provider} from "./provider";
 import type {Scope} from "./scope";
 import {createContext} from "./utils/context";
 import {KeyedStack} from "./utils/keyed-stack";
-import {WeakValueMap} from "./utils/weak-value-map";
+import {WeakRefMap} from "./utils/weak-ref-map";
 
 export interface InjectionContext {
   container: Container;
@@ -14,8 +14,8 @@ export interface InjectionContext {
 
 export interface Resolution {
   stack: KeyedStack<Provider, ResolutionFrame>;
-  instances: WeakValueMap<Provider, InstanceRef>;
-  dependents: WeakValueMap<Provider, InstanceRef>;
+  instances: WeakRefMap<Provider, InstanceRef>;
+  dependents: WeakRefMap<Provider, InstanceRef>;
 }
 
 export interface ResolutionFrame {
@@ -27,8 +27,8 @@ export interface ResolutionFrame {
 export function createResolution(): Resolution {
   return {
     stack: new KeyedStack(),
-    instances: new WeakValueMap(),
-    dependents: new WeakValueMap(),
+    instances: new WeakRefMap(),
+    dependents: new WeakRefMap(),
   };
 }
 

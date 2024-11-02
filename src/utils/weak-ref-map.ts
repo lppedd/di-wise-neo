@@ -1,7 +1,7 @@
 import {invariant} from "./invariant";
 
 // @internal
-export class WeakValueMap<K, V extends object> {
+export class WeakRefMap<K, V extends object> {
   private map = new Map<K, WeakRef<V>>();
 
   get(key: K) {
