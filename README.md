@@ -1,6 +1,6 @@
 # di-wise 🧙‍♀️
 
-[![npm](https://img.shields.io/npm/v/di-wise.svg?color=blue)](https://www.npmjs.com/package/di-wise)
+[![NPM Version](https://img.shields.io/npm/v/di-wise.svg?color=blue&logo=npm)](https://www.npmjs.com/package/di-wise)
 [![npm package minimized gzipped size](https://img.shields.io/bundlejs/size/di-wise@latest.svg?label=bundle%20size)](https://bundlejs.com/?q=di-wise)
 [![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/exuanbo/di-wise/test.yml.svg?branch=main)](https://github.com/exuanbo/di-wise/actions)
 [![Codecov (with branch)](https://img.shields.io/codecov/c/gh/exuanbo/di-wise/main.svg?token=65EfrU4Qnl)](https://app.codecov.io/gh/exuanbo/di-wise/tree/main/src)
