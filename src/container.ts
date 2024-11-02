@@ -323,12 +323,11 @@ export function createContainer({
   }
 
   function resolveScope(scope = defaultScope, context = useInjectionContext()) {
-    let resolvedScope = scope;
-    if (resolvedScope == Scope.Inherited) {
+    if (scope == Scope.Inherited) {
       const dependentFrame = context?.resolution.stack.peek();
-      resolvedScope = dependentFrame?.scope || Scope.Transient;
+      return dependentFrame?.scope || Scope.Transient;
     }
-    return resolvedScope;
+    return scope;
   }
 }
 
