@@ -322,7 +322,9 @@ export function createContainer({
       expectNever(scope);
     }
     finally {
-      cleanups.reverse().forEach((cleanup) => cleanup && cleanup());
+      cleanups
+        .reverse()
+        .forEach((cleanup) => cleanup && cleanup());
     }
   }
 
