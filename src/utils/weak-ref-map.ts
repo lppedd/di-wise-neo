@@ -1,8 +1,8 @@
 import {invariant} from "./invariant";
 
 // @internal
-export class WeakRefMap<K, V extends object> {
-  private map = new Map<K, WeakRef<V>>();
+export class WeakRefMap<K extends WeakKey, V extends object> {
+  private map = new WeakMap<K, WeakRef<V>>();
 
   get(key: K) {
     const ref = this.map.get(key);
