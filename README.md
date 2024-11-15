@@ -27,6 +27,7 @@ Lightweight and flexible dependency injection library for JavaScript and TypeScr
     - [Flexible token-based injection](#flexible-token-based-injection)
     - [Automatic circular dependency resolution](#automatic-circular-dependency-resolution)
     - [Dynamic injection](#dynamic-injection)
+    - [Constructor Injection](#constructor-injection)
     - [Middleware](#middleware)
   - [Usage](#usage)
   - [API](#api)
@@ -391,6 +392,10 @@ const wizard = container.resolve(Wizard);
 const wand = wizard.getWand();
 expect(wand.owner).toBe(wizard);
 ```
+
+### Constructor Injection
+
+See discussion [Does di-wise support constructor injection? #12](https://github.com/exuanbo/di-wise/discussions/12#discussioncomment-11202986)
 
 ### Middleware
 
