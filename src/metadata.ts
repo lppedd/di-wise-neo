@@ -13,11 +13,10 @@ export interface Metadata<This extends object = any> {
 export function getMetadata<T extends object>(Class: Constructor<T>): Metadata<T> {
   let metadata = metadataRegistry.get(Class);
   if (!metadata) {
-    metadata = {
+    metadataRegistry.set(Class, metadata = {
       tokens: [],
       provider: {useClass: Class},
-    };
-    metadataRegistry.set(Class, metadata);
+    });
   }
   return metadata;
 }

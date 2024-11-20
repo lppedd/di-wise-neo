@@ -61,8 +61,7 @@ export class Registry {
     assert(!internals.has(token), `cannot register reserved token ${token.name}`);
     let registrations = this._map.get(token);
     if (!registrations) {
-      registrations = [];
-      this._map.set(token, registrations);
+      this._map.set(token, registrations = []);
     }
     registrations.push(registration);
   }
