@@ -304,6 +304,10 @@ import {inject, Type} from "di-wise";
 class Wizard {
   wand = inject(Wand, Type.Null);
   // ^? (property) Wizard.wand: Wand | null
+
+  spells = injectAll(Spell, Type.Null);
+  // ^? (property) Wizard.spells: Spell[]
+  // => []
 }
 ```
 
