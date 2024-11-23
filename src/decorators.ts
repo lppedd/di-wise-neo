@@ -114,7 +114,7 @@ export function Inject<Value>(token: Token<Value>): ClassFieldDecorator<Value>;
  */
 export function Inject<Values extends unknown[]>(...tokens: TokenList<Values>): ClassFieldDecorator<Values[number]>;
 
-export function Inject<Value>(...tokens: Token<Value>[]): ClassFieldDecorator<Value> {
+export function Inject<T>(...tokens: Token<T>[]): ClassFieldDecorator<T> {
   return (_value, _context) =>
     function (this, _initialValue) {
       return inject.by(this, ...tokens);
@@ -140,7 +140,7 @@ export function InjectAll<Value>(token: Token<Value>): ClassFieldDecorator<NonNu
  */
 export function InjectAll<Values extends unknown[]>(...tokens: TokenList<Values>): ClassFieldDecorator<NonNullable<Values[number]>[]>;
 
-export function InjectAll<Value>(...tokens: Token<Value>[]): ClassFieldDecorator<NonNullable<Value>[]> {
+export function InjectAll<T>(...tokens: Token<T>[]): ClassFieldDecorator<NonNullable<T>[]> {
   return (_value, _context) =>
     function (_initialValue) {
       return injectAll(...tokens);

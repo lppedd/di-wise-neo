@@ -17,7 +17,7 @@ export function inject<Value>(token: Token<Value>): Value;
  */
 export function inject<Values extends unknown[]>(...tokens: TokenList<Values>): Values[number];
 
-export function inject<Value>(...tokens: Token<Value>[]): Value {
+export function inject<T>(...tokens: Token<T>[]): T {
   const context = ensureInjectionContext(inject);
   return context.container.resolve(...tokens);
 }
@@ -49,7 +49,7 @@ export function injectBy<Value>(thisArg: any, token: Token<Value>): Value;
  */
 export function injectBy<Values extends unknown[]>(thisArg: any, ...tokens: TokenList<Values>): Values[number];
 
-export function injectBy<Value>(thisArg: any, ...tokens: Token<Value>[]): Value {
+export function injectBy<T>(thisArg: any, ...tokens: Token<T>[]): T {
   const context = ensureInjectionContext(injectBy);
   const resolution = context.resolution;
 
@@ -87,7 +87,7 @@ export function injectAll<Value>(token: Token<Value>): NonNullable<Value>[];
  */
 export function injectAll<Values extends unknown[]>(...tokens: TokenList<Values>): NonNullable<Values[number]>[];
 
-export function injectAll<Value>(...tokens: Token<Value>[]): NonNullable<Value>[] {
+export function injectAll<T>(...tokens: Token<T>[]): NonNullable<T>[] {
   const context = ensureInjectionContext(injectAll);
   return context.container.resolveAll(...tokens);
 }
@@ -176,7 +176,7 @@ export const Injector: Type<Injector> = /*@__PURE__*/ Build(function Injector() 
   }
 
   return {
-    inject: <Value>(...tokens: Token<Value>[]) => withCurrentContext(() => inject(...tokens)),
-    injectAll: <Value>(...tokens: Token<Value>[]) => withCurrentContext(() => injectAll(...tokens)),
+    inject: <T>(...tokens: Token<T>[]) => withCurrentContext(() => inject(...tokens)),
+    injectAll: <T>(...tokens: Token<T>[]) => withCurrentContext(() => injectAll(...tokens)),
   };
 });

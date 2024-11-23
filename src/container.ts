@@ -197,10 +197,10 @@ export function createContainer({
       return container;
     },
 
-    register<Value>(
+    register<T>(
       ...args:
-        | [Constructor<Value & object>]
-        | [Token<Value>, Provider<Value>, RegistrationOptions?]
+        | [Constructor<T & object>]
+        | [Token<T>, Provider<T>, RegistrationOptions?]
     ) {
       if (args.length == 1) {
         const [Class] = args;
@@ -230,7 +230,7 @@ export function createContainer({
       return container;
     },
 
-    resolve<Value>(...tokens: Token<Value>[]): Value {
+    resolve<T>(...tokens: Token<T>[]): T {
       for (const token of tokens) {
         const registration = registry.get(token);
         if (registration) {
@@ -244,7 +244,7 @@ export function createContainer({
       throwUnregisteredError(tokens);
     },
 
-    resolveAll<Value>(...tokens: Token<Value>[]): NonNullable<Value>[] {
+    resolveAll<T>(...tokens: Token<T>[]): NonNullable<T>[] {
       for (const token of tokens) {
         const registrations = registry.getAll(token);
         if (registrations) {
