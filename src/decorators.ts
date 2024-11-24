@@ -45,7 +45,7 @@ export type ClassFieldDecorator<Value> = <This extends object>(
  * @__NO_SIDE_EFFECTS__
  */
 export function Injectable<This extends object>(...tokens: Token<This>[]): ClassDecorator<Constructor<This>> {
-  return (Class, _context) => {
+  return (Class) => {
     const metadata = getMetadata(Class);
     metadata.tokens.push(...tokens);
   };
@@ -72,7 +72,7 @@ export function Injectable<This extends object>(...tokens: Token<This>[]): Class
  * @__NO_SIDE_EFFECTS__
  */
 export function Scoped<This extends object>(scope: Scope): ClassDecorator<Constructor<This>> {
-  return (Class, _context) => {
+  return (Class) => {
     const metadata = getMetadata(Class);
     metadata.scope = scope;
   };
@@ -93,7 +93,7 @@ export function Scoped<This extends object>(scope: Scope): ClassDecorator<Constr
  * @__NO_SIDE_EFFECTS__
  */
 export function AutoRegister<This extends object>(enable = true): ClassDecorator<Constructor<This>> {
-  return (Class, _context) => {
+  return (Class) => {
     const metadata = getMetadata(Class);
     metadata.autoRegister = enable;
   };
@@ -115,10 +115,9 @@ export function Inject<Value>(token: Token<Value>): ClassFieldDecorator<Value>;
 export function Inject<Values extends unknown[]>(...tokens: TokenList<Values>): ClassFieldDecorator<Values[number]>;
 
 export function Inject<T>(...tokens: Token<T>[]): ClassFieldDecorator<T> {
-  return (_value, _context) =>
-    function (this, _initialValue) {
-      return inject.by(this, ...tokens);
-    };
+  return () => function (this) {
+    return inject.by(this, ...tokens);
+  };
 }
 
 /**
@@ -141,8 +140,7 @@ export function InjectAll<Value>(token: Token<Value>): ClassFieldDecorator<NonNu
 export function InjectAll<Values extends unknown[]>(...tokens: TokenList<Values>): ClassFieldDecorator<NonNullable<Values[number]>[]>;
 
 export function InjectAll<T>(...tokens: Token<T>[]): ClassFieldDecorator<NonNullable<T>[]> {
-  return (_value, _context) =>
-    function (_initialValue) {
-      return injectAll(...tokens);
-    };
+  return () => function () {
+    return injectAll(...tokens);
+  };
 }
