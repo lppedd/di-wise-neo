@@ -43,18 +43,12 @@ export class Registry {
 
   getAll<T>(token: Token<T>): Registration<T>[] | undefined {
     const internal = internals.get(token);
-    return (
-      (internal && [internal])
-      || this._getAll(token)
-    );
+    return (internal && [internal]) || this._getAll(token);
   }
 
   private _getAll<T>(token: Token<T>): Registration<T>[] | undefined {
     const registrations = this._map.get(token);
-    return (
-      registrations
-      || this.parent?._getAll(token)
-    );
+    return registrations || this.parent?._getAll(token);
   }
 
   set<T>(token: Token<T>, registration: Registration<T>): void {
