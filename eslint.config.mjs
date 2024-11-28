@@ -58,9 +58,6 @@ export default tseslint.config(
       "@typescript-eslint/no-unnecessary-type-assertion": ["error", {
         typesToIgnore: ["Type<null>", "Type<undefined>"],
       }],
-      "@typescript-eslint/no-unused-expressions": ["error", {
-        allowShortCircuit: true,
-      }],
       "@typescript-eslint/no-unused-vars": ["error", {
         argsIgnorePattern: "^_",
         varsIgnorePattern: "^_",
