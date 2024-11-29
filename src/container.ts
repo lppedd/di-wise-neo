@@ -178,10 +178,7 @@ export function createContainer({
 
     getCached(token) {
       const registration = registry.get(token);
-      const instanceRef = registration?.instance;
-      if (instanceRef) {
-        return instanceRef.current;
-      }
+      return registration?.instance?.current;
     },
 
     isRegistered(token) {
