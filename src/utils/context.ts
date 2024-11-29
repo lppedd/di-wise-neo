@@ -12,8 +12,5 @@ export function createContext<T extends {}>() {
     return current;
   }
 
-  return <const>[
-    provide,
-    use,
-  ];
+  return [provide, use] as const;
 }
