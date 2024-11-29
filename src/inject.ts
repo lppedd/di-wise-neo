@@ -169,9 +169,7 @@ export const Injector: Type<Injector> = /*@__PURE__*/ Build(function Injector() 
       return fn();
     }
     finally {
-      cleanups
-        .reverse()
-        .forEach((cleanup) => cleanup?.());
+      cleanups.forEach((cleanup) => cleanup?.());
     }
   }
 
