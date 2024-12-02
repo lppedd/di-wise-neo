@@ -11,9 +11,9 @@ export interface Metadata<This extends object = any> {
 
 // @internal
 export function getMetadata<T extends object>(Class: Constructor<T>): Metadata<T> {
-  let metadata = metadataRegistry.get(Class);
+  let metadata = metadataMap.get(Class);
   if (!metadata) {
-    metadataRegistry.set(Class, metadata = {
+    metadataMap.set(Class, metadata = {
       tokens: [],
       provider: {useClass: Class},
     });
@@ -21,4 +21,4 @@ export function getMetadata<T extends object>(Class: Constructor<T>): Metadata<T
   return metadata;
 }
 
-const metadataRegistry = new WeakMap<Constructor<object>, Metadata>();
+const metadataMap = new WeakMap<Constructor<object>, Metadata>();
