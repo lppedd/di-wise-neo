@@ -1,4 +1,4 @@
-import type {Constructor} from "./token";
+import type { Constructor } from "./token";
 
 /**
  * Provider type.
@@ -30,22 +30,22 @@ export interface ValueProvider<T> {
 }
 
 // @internal
-export const NullProvider = {useValue: null};
+export const NullProvider = { useValue: null };
 
 // @internal
-export const UndefinedProvider = {useValue: undefined};
+export const UndefinedProvider = { useValue: undefined };
 
 // @internal
-export function isClassProvider<T>(provider: Provider<T>) {
+export function isClassProvider<T>(provider: Provider<T>): provider is ClassProvider<T & object> {
   return "useClass" in provider;
 }
 
 // @internal
-export function isFactoryProvider<T>(provider: Provider<T>) {
+export function isFactoryProvider<T>(provider: Provider<T>): provider is FactoryProvider<T> {
   return "useFactory" in provider;
 }
 
 // @internal
-export function isValueProvider<T>(provider: Provider<T>) {
+export function isValueProvider<T>(provider: Provider<T>): provider is ValueProvider<T> {
   return "useValue" in provider;
 }

@@ -1,4 +1,4 @@
-import {type Middleware, type Token, Type} from "../index";
+import { type Middleware, type Token, Type } from "../index";
 
 /**
  * Middleware that makes `resolveAll` return an empty array for unregistered tokens instead of throwing.
@@ -16,7 +16,7 @@ import {type Middleware, type Token, Type} from "../index";
  * ```
  */
 export const resolveAllSafe: Middleware = (composer) => {
-  composer.use("resolveAll", (next) => <T>(...args: Token<T>[]) => {
+  composer.use("resolveAll", (next) => <T>(...args: Token<T>[]): (T & {})[] => {
     return next(...args, Type.Null);
   });
 };

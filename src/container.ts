@@ -1,44 +1,9 @@
-import {assert, expectNever} from "./errors";
-import {createResolution, provideInjectionContext, useInjectionContext} from "./injection-context";
-import {getMetadata} from "./metadata";
-import {
-  type ClassProvider,
-  type FactoryProvider,
-  isClassProvider,
-  isFactoryProvider,
-  isValueProvider,
-  type Provider,
-  type ValueProvider,
-} from "./provider";
-import {isBuilder, type Registration, type RegistrationOptions, Registry} from "./registry";
-import {Scope} from "./scope";
-import {type Constructor, isConstructor, type Token, type TokenList} from "./token";
-
-/**
- * Options for creating a container.
- */
-export interface ContainerOptions {
-  /**
-   * Whether to automatically register a class when resolving it as a token.
-   *
-   * @defaultValue false
-   */
-  autoRegister?: boolean;
-
-  /**
-   * The default scope for registrations.
-   *
-   * @defaultValue Scope.Inherited
-   */
-  defaultScope?: Scope;
-
-  /**
-   * The parent container.
-   *
-   * @defaultValue undefined
-   */
-  parent?: Container;
-}
+import type { ContainerOptions } from "./containerOptions";
+import { DefaultContainer } from "./defaultContainer";
+import type { ClassProvider, FactoryProvider, ValueProvider } from "./provider";
+import type { RegistrationOptions, Registry } from "./registry";
+import { Scope } from "./scope";
+import type { Constructor, Token, TokenList } from "./token";
 
 /**
  * Container API.
@@ -86,12 +51,20 @@ export interface Container {
   /**
    * Register a `ClassProvider` with a token.
    */
-  register<Instance extends object>(token: Token<Instance>, provider: ClassProvider<Instance>, options?: RegistrationOptions): this;
+  register<Instance extends object>(
+    token: Token<Instance>,
+    provider: ClassProvider<Instance>,
+    options?: RegistrationOptions,
+  ): this;
 
   /**
    * Register a `FactoryProvider` with a token.
    */
-  register<Value>(token: Token<Value>, provider: FactoryProvider<Value>, options?: RegistrationOptions): this;
+  register<Value>(
+    token: Token<Value>,
+    provider: FactoryProvider<Value>,
+    options?: RegistrationOptions,
+  ): this;
 
   /**
    * Register a `ValueProvider` with a token.
@@ -146,215 +119,12 @@ export interface Container {
 /**
  * Create a new container.
  */
-export function createContainer(options?: ContainerOptions): Container;
-
-export function createContainer({
-  autoRegister = false,
-  defaultScope = Scope.Inherited,
-  parent,
-}: ContainerOptions = {}) {
-  const registry = new Registry(parent?.registry);
-
-  const container: Container = {
-    get registry() {
-      return registry;
-    },
-
-    createChild() {
-      return createContainer({
-        autoRegister,
-        defaultScope,
-        parent: container,
-      });
-    },
-
-    clearCache() {
-      for (const registrations of registry.map.values()) {
-        registrations.forEach(({instance, ...registration}, i) => {
-          registrations[i] = registration;
-        });
-      }
-    },
-
-    getCached(token) {
-      const registration = registry.get(token);
-      return registration?.instance?.current;
-    },
-
-    isRegistered(token) {
-      return !!registry.get(token);
-    },
-
-    resetRegistry() {
-      registry.map.clear();
-    },
-
-    unregister(token) {
-      registry.map.delete(token);
-      return container;
-    },
-
-    register<T>(
-      ...args:
-        | [Constructor<T & object>]
-        | [Token<T>, Provider<T>, RegistrationOptions?]
-    ) {
-      if (args.length == 1) {
-        const [Class] = args;
-        const metadata = getMetadata(Class);
-        const tokens = [Class, ...metadata.tokens];
-        tokens.forEach((token) => {
-          registry.set(token, {
-            provider: metadata.provider,
-            options: {scope: metadata.scope},
-          });
-        });
-      }
-      else {
-        const [token, provider, options] = args;
-        if (isClassProvider(provider)) {
-          const Class = provider.useClass;
-          const metadata = getMetadata(Class);
-          registry.set(token, {
-            provider: metadata.provider,
-            options: {scope: metadata.scope, ...options},
-          });
-        }
-        else {
-          registry.set(token, {provider, options});
-        }
-      }
-      return container;
-    },
-
-    resolve<T>(...tokens: Token<T>[]): T {
-      for (const token of tokens) {
-        const registration = registry.get(token);
-        if (registration) {
-          return instantiateProvider(registration);
-        }
-        if (isConstructor(token)) {
-          const Class = token;
-          return instantiateClass(Class);
-        }
-      }
-      throwUnregisteredError(tokens);
-    },
-
-    resolveAll<T>(...tokens: Token<T>[]): NonNullable<T>[] {
-      for (const token of tokens) {
-        const registrations = registry.getAll(token);
-        if (registrations) {
-          return registrations
-            .map((registration) => instantiateProvider(registration))
-            .filter((instance) => instance != null);
-        }
-        if (isConstructor(token)) {
-          const Class = token;
-          return [instantiateClass(Class)];
-        }
-      }
-      throwUnregisteredError(tokens);
-    },
-  };
-
-  return container;
-
-  function instantiateClass<T extends object>(Class: Constructor<T>): T {
-    const metadata = getMetadata(Class);
-    if (metadata.autoRegister ?? autoRegister) {
-      container.register(Class);
-      return container.resolve(Class);
-    }
-    const provider = metadata.provider;
-    const options = {scope: resolveScope(metadata.scope)};
-    assert(options.scope != Scope.Container, `unregistered class ${Class.name} cannot be resolved in container scope`);
-    return resolveScopedInstance({provider, options}, () => new Class());
-  }
-
-  function instantiateProvider<T>(registration: Registration<T>): T {
-    const provider = registration.provider;
-    if (isClassProvider(provider)) {
-      const Class = provider.useClass;
-      return resolveScopedInstance(registration, () => new Class());
-    }
-    if (isFactoryProvider(provider)) {
-      const factory = provider.useFactory;
-      return resolveScopedInstance(registration, factory);
-    }
-    if (isValueProvider(provider)) {
-      const value = provider.useValue;
-      return value;
-    }
-    expectNever(provider);
-  }
-
-  function resolveScopedInstance<T>(registration: Registration<T>, instantiate: () => T): T {
-    let context = useInjectionContext();
-
-    if (!context || context.container !== container) {
-      context = {
-        container,
-        resolution: createResolution(),
-      };
-    }
-
-    const resolution = context.resolution;
-
-    const provider = registration.provider;
-    const options = registration.options;
-
-    if (resolution.stack.has(provider)) {
-      const dependentRef = resolution.dependents.get(provider);
-      assert(dependentRef, "circular dependency detected");
-      return dependentRef.current;
-    }
-
-    const scope = resolveScope(options?.scope, context);
-
-    const cleanups = [
-      provideInjectionContext(context),
-      !isBuilder(provider) && resolution.stack.push(provider, {provider, scope}),
-    ];
-    try {
-      if (scope == Scope.Container) {
-        const instanceRef = registration.instance;
-        if (instanceRef) {
-          return instanceRef.current;
-        }
-        const instance = instantiate();
-        registration.instance = {current: instance};
-        return instance;
-      }
-      if (scope == Scope.Resolution) {
-        const instanceRef = resolution.instances.get(provider);
-        if (instanceRef) {
-          return instanceRef.current;
-        }
-        const instance = instantiate();
-        resolution.instances.set(provider, {current: instance});
-        return instance;
-      }
-      if (scope == Scope.Transient) {
-        return instantiate();
-      }
-      expectNever(scope);
-    }
-    finally {
-      cleanups.forEach((cleanup) => cleanup && cleanup());
-    }
-  }
-
-  function resolveScope(scope = defaultScope, context = useInjectionContext()) {
-    if (scope == Scope.Inherited) {
-      const dependentFrame = context?.resolution.stack.peek();
-      return dependentFrame?.scope || Scope.Transient;
-    }
-    return scope;
-  }
-}
-
-function throwUnregisteredError(tokens: Token[]): never {
-  const tokenNames = tokens.map((token) => token.name);
-  assert(false, `unregistered token ${tokenNames.join(", ")}`);
+export function createContainer(
+  options: Partial<ContainerOptions> = {
+    autoRegister: false,
+    defaultScope: Scope.Inherited,
+    parent: undefined,
+  },
+): Container {
+  return new DefaultContainer(options);
 }

@@ -1,6 +1,6 @@
-import type {ClassProvider} from "./provider";
-import type {Scope} from "./scope";
-import type {Constructor, Token} from "./token";
+import type { ClassProvider } from "./provider";
+import type { Scope } from "./scope";
+import type { Constructor, Token } from "./token";
 
 export interface Metadata<This extends object = any> {
   autoRegister?: boolean;
@@ -12,12 +12,17 @@ export interface Metadata<This extends object = any> {
 // @internal
 export function getMetadata<T extends object>(Class: Constructor<T>): Metadata<T> {
   let metadata = metadataMap.get(Class);
+
   if (!metadata) {
-    metadataMap.set(Class, metadata = {
-      tokens: [],
-      provider: {useClass: Class},
-    });
+    metadataMap.set(
+      Class,
+      (metadata = {
+        tokens: [],
+        provider: { useClass: Class },
+      }),
+    );
   }
+
   return metadata;
 }
 

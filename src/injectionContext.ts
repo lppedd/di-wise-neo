@@ -1,11 +1,11 @@
-import type {Container} from "./container";
-import {assert} from "./errors";
-import type {InstanceRef} from "./instance";
-import type {Provider} from "./provider";
-import type {Scope} from "./scope";
-import {createContext} from "./utils/context";
-import {KeyedStack} from "./utils/keyed-stack";
-import {WeakRefMap} from "./utils/weak-ref-map";
+import type { Container } from "./container";
+import { assert } from "./errors";
+import type { InstanceRef } from "./instanceRef";
+import type { Provider } from "./provider";
+import type { Scope } from "./scope";
+import { createContext } from "./utils/context";
+import { KeyedStack } from "./utils/keyedStack";
+import { WeakRefMap } from "./utils/weakRefMap";
 
 export interface InjectionContext {
   container: Container;
@@ -36,7 +36,7 @@ export function createResolution(): Resolution {
 export const [provideInjectionContext, useInjectionContext] = createContext<InjectionContext>();
 
 // @internal
-export function ensureInjectionContext(fn: Function) {
+export function ensureInjectionContext(fn: Function): InjectionContext {
   const context = useInjectionContext();
   assert(context, `${fn.name}() can only be used within an injection context`);
   return context;

@@ -1,14 +1,11 @@
-import {assert} from "./errors";
-import type {InstanceRef} from "./instance";
-import {NullProvider, type Provider, UndefinedProvider} from "./provider";
-import {Scope} from "./scope";
-import {type Token, Type} from "./token";
-import {getTypeName} from "./utils/type-name";
+import { assert } from "./errors";
+import type { InstanceRef } from "./instanceRef";
+import { NullProvider, type Provider, UndefinedProvider } from "./provider";
+import { Scope } from "./scope";
+import { type Token, Type } from "./token";
+import { getTypeName } from "./utils/typeName";
 
-export type RegistrationMap = Omit<
-  Map<Token, Registration[]>,
-  keyof Registry
->;
+export type RegistrationMap = Omit<Map<Token, Registration[]>, keyof Registry>;
 
 export interface Registration<T = any> {
   options?: RegistrationOptions;
@@ -29,9 +26,7 @@ export interface RegistrationOptions {
 export class Registry {
   private _map = new Map<Token, Registration[]>();
 
-  constructor(
-    private parent: Registry | undefined,
-  ) {}
+  constructor(private parent: Registry | undefined) {}
 
   get map(): RegistrationMap {
     return this._map;
@@ -54,15 +49,17 @@ export class Registry {
   set<T>(token: Token<T>, registration: Registration<T>): void {
     assert(!internals.has(token), `cannot register reserved token ${token.name}`);
     let registrations = this._map.get(token);
+
     if (!registrations) {
-      this._map.set(token, registrations = []);
+      this._map.set(token, (registrations = []));
     }
+
     registrations.push(registration);
   }
 }
 
 // @internal
-export function isBuilder(provider: Provider) {
+export function isBuilder(provider: Provider): boolean {
   return builders.has(provider);
 }
 
@@ -87,10 +84,10 @@ export function isBuilder(provider: Provider) {
  */
 export function Build<Value>(factory: (...args: []) => Value): Type<Value> {
   const token = Type<Value>(`Build<${getTypeName(factory)}>`);
-  const provider = {useFactory: factory};
+  const provider = { useFactory: factory };
   internals.set(token, {
     provider,
-    options: {scope: Scope.Transient},
+    options: { scope: Scope.Transient },
   });
   builders.add(provider);
   return token;
@@ -115,14 +112,14 @@ export function Build<Value>(factory: (...args: []) => Value): Type<Value> {
  */
 export function Value<T>(value: T): Type<T> {
   const token = Type<T>(`Value<${getTypeName(value)}>`);
-  const provider = {useValue: value};
-  internals.set(token, {provider});
+  const provider = { useValue: value };
+  internals.set(token, { provider });
   return token;
 }
 
 const internals = new WeakMap<Token, Registration>([
-  [Type.Null, {provider: NullProvider}],
-  [Type.Undefined, {provider: UndefinedProvider}],
+  [Type.Null, { provider: NullProvider }],
+  [Type.Undefined, { provider: UndefinedProvider }],
 ]);
 
 const builders = new WeakSet<Provider>();

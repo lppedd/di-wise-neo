@@ -1,4 +1,4 @@
-import type {Container} from "./container";
+import type { Container } from "./container";
 
 /**
  * Middleware function that can be used to extend the container.
@@ -33,7 +33,7 @@ export interface MiddlewareComposer {
     key: MethodKey,
     wrap: Container[MethodKey] extends Function
       ? (next: Container[MethodKey]) => Container[MethodKey]
-      : never
+      : never,
   ): MiddlewareComposer;
 }
 

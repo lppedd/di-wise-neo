@@ -1,1 +1,1 @@
-export {resolveAllSafe} from "./resolve-all-safe";
+export { resolveAllSafe } from "./resolveAllSafe";
