@@ -1,7 +1,7 @@
-import {inject, injectAll} from "./inject";
-import {getMetadata} from "./metadata";
-import type {Scope} from "./scope";
-import type {Constructor, Token, TokenList} from "./token";
+import { inject, injectAll } from "./inject";
+import { getMetadata } from "./metadata";
+import type { Scope } from "./scope";
+import type { Constructor, Token, TokenList } from "./token";
 
 /**
  * Decorator API for classes.
@@ -44,7 +44,9 @@ export type ClassFieldDecorator<Value> = <This extends object>(
  *
  * @__NO_SIDE_EFFECTS__
  */
-export function Injectable<This extends object>(...tokens: Token<This>[]): ClassDecorator<Constructor<This>> {
+export function Injectable<This extends object>(
+  ...tokens: Token<This>[]
+): ClassDecorator<Constructor<This>> {
   return (Class) => {
     const metadata = getMetadata(Class);
     metadata.tokens.push(...tokens);
@@ -92,7 +94,9 @@ export function Scoped<This extends object>(scope: Scope): ClassDecorator<Constr
  *
  * @__NO_SIDE_EFFECTS__
  */
-export function AutoRegister<This extends object>(enable = true): ClassDecorator<Constructor<This>> {
+export function AutoRegister<This extends object>(
+  enable = true,
+): ClassDecorator<Constructor<This>> {
   return (Class) => {
     const metadata = getMetadata(Class);
     metadata.autoRegister = enable;
@@ -102,7 +106,9 @@ export function AutoRegister<This extends object>(enable = true): ClassDecorator
 /**
  * Decorator for injecting an instance of a class.
  */
-export function Inject<Instance extends object>(Class: Constructor<Instance>): ClassFieldDecorator<Instance>;
+export function Inject<Instance extends object>(
+  Class: Constructor<Instance>,
+): ClassFieldDecorator<Instance>;
 
 /**
  * Decorator for injecting an instance of a token.
@@ -112,18 +118,23 @@ export function Inject<Value>(token: Token<Value>): ClassFieldDecorator<Value>;
 /**
  * Decorator for injecting an instance of a token, by checking each token in order until a registered one is found.
  */
-export function Inject<Values extends unknown[]>(...tokens: TokenList<Values>): ClassFieldDecorator<Values[number]>;
+export function Inject<Values extends unknown[]>(
+  ...tokens: TokenList<Values>
+): ClassFieldDecorator<Values[number]>;
 
 export function Inject<T>(...tokens: Token<T>[]): ClassFieldDecorator<T> {
-  return () => function (this) {
-    return inject.by(this, ...tokens);
-  };
+  return () =>
+    function (this) {
+      return inject.by(this, ...tokens);
+    };
 }
 
 /**
  * Decorator for injecting instances of a class with all registered providers.
  */
-export function InjectAll<Instance extends object>(Class: Constructor<Instance>): ClassFieldDecorator<Instance[]>;
+export function InjectAll<Instance extends object>(
+  Class: Constructor<Instance>,
+): ClassFieldDecorator<Instance[]>;
 
 /**
  * Decorator for injecting instances of a token with all registered providers.
@@ -137,10 +148,13 @@ export function InjectAll<Value>(token: Token<Value>): ClassFieldDecorator<NonNu
  *
  * The returned array will not contain `null` or `undefined` values.
  */
-export function InjectAll<Values extends unknown[]>(...tokens: TokenList<Values>): ClassFieldDecorator<NonNullable<Values[number]>[]>;
+export function InjectAll<Values extends unknown[]>(
+  ...tokens: TokenList<Values>
+): ClassFieldDecorator<NonNullable<Values[number]>[]>;
 
 export function InjectAll<T>(...tokens: Token<T>[]): ClassFieldDecorator<NonNullable<T>[]> {
-  return () => function () {
-    return injectAll(...tokens);
-  };
+  return () =>
+    function () {
+      return injectAll(...tokens);
+    };
 }

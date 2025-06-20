@@ -1,5 +1,4 @@
-export type TokenList<Values extends unknown[]> =
-  {[Index in keyof Values]: Token<Values[Index]>};
+export type TokenList<Values extends unknown[]> = { [Index in keyof Values]: Token<Values[Index]> };
 
 /**
  * Token type.
@@ -59,7 +58,7 @@ export function Type<T>(typeName: string): Type<T> {
     name: `Type<${typeName}>`,
     inter: Type,
     union: Type,
-    toString() {
+    toString(): string {
       return type.name;
     },
   };
@@ -99,6 +98,8 @@ export interface Constructor<Instance extends object> {
 }
 
 // @internal
-export function isConstructor<T>(token: Type<T> | Constructor<T & object>) {
+export function isConstructor<T>(
+  token: Type<T> | Constructor<T & object>,
+): token is Constructor<T & object> {
   return typeof token == "function";
 }

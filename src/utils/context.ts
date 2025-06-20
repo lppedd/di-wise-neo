@@ -1,14 +1,17 @@
 // @internal
-export function createContext<T extends {}>() {
+export function createContext<T extends {}>(): readonly [
+  (next: T) => () => T | null,
+  () => T | null,
+] {
   let current: T | null = null;
 
-  function provide(next: T) {
+  function provide(next: T): () => T | null {
     const prev = current;
     current = next;
-    return () => current = prev;
+    return () => (current = prev);
   }
 
-  function use() {
+  function use(): T | null {
     return current;
   }
 
