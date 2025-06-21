@@ -105,6 +105,20 @@ describe("Container", () => {
     expect(characterRegistration.provider).toBe(heroRegistration.provider);
   });
 
+  it("should perform constructor injection using inject", () => {
+    @AutoRegister()
+    class Wand {}
+
+    @AutoRegister()
+    class Wizard {
+      constructor(readonly wand = inject(Wand)) {}
+    }
+
+    const wizardInstance = container.resolve(Wizard);
+    expect(wizardInstance).toBeInstanceOf(Wizard);
+    expect(wizardInstance.wand).toBeInstanceOf(Wand);
+  });
+
   it("should get the options from the class", () => {
     @Scoped(Scope.Container)
     @AutoRegister()
