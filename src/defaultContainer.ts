@@ -265,35 +265,33 @@ export class DefaultContainer implements Container {
     ];
 
     try {
-      if (scope == Scope.Container) {
-        const instanceRef = registration.instance;
+      switch (scope) {
+        case "Container": {
+          const instanceRef = registration.instance;
 
-        if (instanceRef) {
-          return instanceRef.current;
+          if (instanceRef) {
+            return instanceRef.current;
+          }
+
+          const instance = instantiate();
+          registration.instance = { current: instance };
+          return instance;
         }
+        case "Resolution": {
+          const instanceRef = resolution.instances.get(provider);
 
-        const instance = instantiate();
-        registration.instance = { current: instance };
-        return instance;
-      }
+          if (instanceRef) {
+            return instanceRef.current;
+          }
 
-      if (scope == Scope.Resolution) {
-        const instanceRef = resolution.instances.get(provider);
-
-        if (instanceRef) {
-          return instanceRef.current;
+          const instance = instantiate();
+          resolution.instances.set(provider, { current: instance });
+          return instance;
         }
-
-        const instance = instantiate();
-        resolution.instances.set(provider, { current: instance });
-        return instance;
+        case "Transient": {
+          return instantiate();
+        }
       }
-
-      if (scope == Scope.Transient) {
-        return instantiate();
-      }
-
-      expectNever(scope);
     } finally {
       cleanups.forEach((cleanup) => cleanup && cleanup());
     }
