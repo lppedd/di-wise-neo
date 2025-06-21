@@ -143,9 +143,8 @@ describe("Container", () => {
     expect(() => container.resolve(Env)).toThrowErrorMatchingInlineSnapshot(
       `[Error: unregistered token Type<Env>]`,
     );
-    expect(() => container.resolveAll(Env)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: unregistered token Type<Env>]`,
-    );
+
+    expect(container.resolveAll(Env)).toEqual([]);
   });
 
   it("should resolve all tokens", () => {

@@ -10,7 +10,7 @@ import {
   type Token,
   Type,
 } from "..";
-import { resolveAllSafe } from "../middlewares";
+import { resolveAllThrow } from "../middlewares";
 
 describe("Middleware", () => {
   let container: Container;
@@ -86,12 +86,14 @@ describe("Middleware", () => {
     ]);
   });
 
-  describe("resolveAllOptional", () => {
-    it("should resolve all tokens to empty array if they are not provided", () => {
-      applyMiddleware(container, [resolveAllSafe]);
+  describe("resolveAllThrow", () => {
+    it("should throw when resolving all for an unregistered token", () => {
+      applyMiddleware(container, [resolveAllThrow]);
 
       const NonRegistered = Type("NonRegistered");
-      expect(container.resolveAll(NonRegistered)).toEqual([]);
+      expect(() => container.resolveAll(NonRegistered)).toThrowErrorMatchingInlineSnapshot(
+        `[Error: unregistered token Type<NonRegistered>]`,
+      );
 
       const Registered = Type<string>("Registered");
       container.register(Registered, { useValue: "Success" });
