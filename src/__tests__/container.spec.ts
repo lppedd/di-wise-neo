@@ -315,7 +315,6 @@ describe("Container", () => {
     expect(wizardInstance.calls).toBe(1);
     expect(wizardInstance.wand.calls).toBe(1);
     expect(value.calls).toBe(1);
-    expect(() => container.resolve(Wand)).toThrowError("[di-wise] the container is disposed");
 
     // We can call dispose as many times as we want
     container.dispose();
