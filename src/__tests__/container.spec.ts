@@ -22,21 +22,31 @@ describe("Container", () => {
   });
 
   it("should handle hierarchical injection", () => {
-    const container = createContainer({
+    const parent = createContainer({
       defaultScope: Scope.Container,
-      autoRegister: true,
     });
 
     const Env = Type<string>("Env");
-    container.register(Env, { useValue: "production" });
+    class Wizard {
+      count = 0;
+    }
 
-    const child = container.createChild();
+    parent.register(Env, { useValue: "production" });
+    parent.register(Wizard);
+
+    const child = parent.createChild();
     expect(child.isRegistered(Env)).toBe(true);
     expect(child.resolve(Env)).toBe("production");
     expect(child.resolveAll(Env)).toEqual(["production"]);
 
+    const wizardInstance = child.resolve(Wizard);
+    wizardInstance.count++;
+
+    expect(wizardInstance).toBeInstanceOf(Wizard);
+    expect(wizardInstance).toBe(parent.resolve(Wizard));
+
     // Verify the child-parent relationship
-    expect(child.getParent()).toBe(container);
+    expect(child.getParent()).toBe(parent);
   });
 
   it("should clear the cache but keep the registrations", () => {
