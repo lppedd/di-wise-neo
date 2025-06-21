@@ -1,7 +1,6 @@
 // @ts-check
 
 import eslint from "@eslint/js";
-import pluginStylistic from "@stylistic/eslint-plugin";
 import pluginSimpleImportSort from "eslint-plugin-simple-import-sort";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -46,23 +45,41 @@ export default tseslint.config(
       },
     },
     rules: {
+      "@typescript-eslint/explicit-function-return-type": [
+        "error",
+        {
+          allowExpressions: true,
+        },
+      ],
       "@typescript-eslint/consistent-type-exports": "error",
-      "@typescript-eslint/consistent-type-imports": ["error", {
-        fixStyle: "inline-type-imports",
-      }],
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        {
+          fixStyle: "inline-type-imports",
+        },
+      ],
       "@typescript-eslint/no-import-type-side-effects": "error",
-      "@typescript-eslint/no-namespace": ["error", {
-        allowDeclarations: true,
-      }],
+      "@typescript-eslint/no-namespace": [
+        "error",
+        {
+          allowDeclarations: true,
+        },
+      ],
       // HACK: https://github.com/jsr-io/jsr/issues/780
-      "@typescript-eslint/no-unnecessary-type-assertion": ["error", {
-        typesToIgnore: ["Type<null>", "Type<undefined>"],
-      }],
-      "@typescript-eslint/no-unused-vars": ["error", {
-        argsIgnorePattern: "^_",
-        varsIgnorePattern: "^_",
-        ignoreRestSiblings: true,
-      }],
+      "@typescript-eslint/no-unnecessary-type-assertion": [
+        "error",
+        {
+          typesToIgnore: ["Type<null>", "Type<undefined>"],
+        },
+      ],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          ignoreRestSiblings: true,
+        },
+      ],
       "@typescript-eslint/no-empty-object-type": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
@@ -79,28 +96,6 @@ export default tseslint.config(
     rules: {
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
-    },
-  },
-  {
-    name: "exuanbo/stylistic",
-    extends: [
-      {
-        name: "stylistic/recommended",
-        ...pluginStylistic.configs.customize({
-          flat: true,
-          arrowParens: true,
-          blockSpacing: false,
-          jsx: false,
-          quotes: "double",
-          semi: true,
-        }),
-      },
-    ],
-    rules: {
-      "@stylistic/object-curly-spacing": ["error", "never"],
-      "@stylistic/spaced-comment": ["error", "always", {
-        exceptions: ["@__PURE__", "@__NO_SIDE_EFFECTS__"],
-      }],
     },
   },
 );
