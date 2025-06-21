@@ -13,6 +13,7 @@ import {
   Value,
 } from "..";
 import { useInjectionContext } from "../injectionContext";
+import { TypeNull, TypeUndefined } from "../token";
 
 describe("Container", () => {
   const container = createContainer();
@@ -193,8 +194,8 @@ describe("Container", () => {
 
   it("should return empty array if null or undefined is resolved", () => {
     const Character = Type<{}>("Character");
-    expect(container.resolveAll(Character, Type.Null)).toEqual([]);
-    expect(container.resolveAll(Character, Type.Undefined)).toEqual([]);
+    expect(container.resolveAll(Character, TypeNull)).toEqual([]);
+    expect(container.resolveAll(Character, TypeUndefined)).toEqual([]);
   });
 
   it("should resolve factory providers", () => {

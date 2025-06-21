@@ -74,30 +74,25 @@ export function Type<T>(typeName: string): Type<T> {
   return type;
 }
 
-export declare namespace Type {
-  /**
-   * Type token of `null`.
-   *
-   * @example
-   * ```ts
-   * container.resolve(Type.Null); // => null
-   * ```
-   */
-  export var Null: Type<null>;
+/**
+ * Type token of `null`.
+ *
+ * @example
+ * ```ts
+ * container.resolve(Type.Null); // => null
+ * ```
+ */
+export const TypeNull: Type<null> = Type("null");
 
-  /**
-   * Type token of `undefined`.
-   *
-   * @example
-   * ```ts
-   * container.resolve(Type.Undefined); // => undefined
-   * ```
-   */
-  export var Undefined: Type<undefined>;
-}
-
-Type.Null = Type("null") as Type<null>;
-Type.Undefined = Type("undefined") as Type<undefined>;
+/**
+ * Type token of `undefined`.
+ *
+ * @example
+ * ```ts
+ * container.resolve(Type.Undefined); // => undefined
+ * ```
+ */
+export const TypeUndefined: Type<undefined> = Type("undefined");
 
 // @internal
 export function isConstructor<T>(
