@@ -15,14 +15,16 @@ export interface Container {
   api?: Readonly<Container>;
 
   /**
+   * The underlying registry.
+   *
+   * @internal
+   */
+  registry: Registry;
+
+  /**
    * The parent {@link Container}, if any.
    */
   getParent(): Container | undefined;
-
-  /**
-   * The underlying registry.
-   */
-  get registry(): Registry;
 
   /**
    * Clear the cached instances with container scope.

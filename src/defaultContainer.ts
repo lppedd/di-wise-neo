@@ -25,12 +25,12 @@ export class DefaultContainer implements Container {
     this.myRegistry = new Registry(this.myOptions.parent?.registry);
   }
 
-  getParent(): Container | undefined {
-    return this.myOptions.parent;
-  }
-
   get registry(): Registry {
     return this.myRegistry;
+  }
+
+  getParent(): Container | undefined {
+    return this.myOptions.parent;
   }
 
   createChild(): Container {
