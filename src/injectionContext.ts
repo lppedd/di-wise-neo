@@ -8,19 +8,19 @@ import { KeyedStack } from "./utils/keyedStack";
 import { WeakRefMap } from "./utils/weakRefMap";
 
 export interface ResolutionFrame {
-  scope: Exclude<Scope, typeof Scope.Inherited>;
-  provider: Provider;
+  readonly scope: Exclude<Scope, typeof Scope.Inherited>;
+  readonly provider: Provider;
 }
 
 export interface Resolution {
-  stack: KeyedStack<Provider, ResolutionFrame>;
-  instances: WeakRefMap<Provider, InstanceRef>;
-  dependents: WeakRefMap<Provider, InstanceRef>;
+  readonly stack: KeyedStack<Provider, ResolutionFrame>;
+  readonly instances: WeakRefMap<Provider, InstanceRef>;
+  readonly dependents: WeakRefMap<Provider, InstanceRef>;
 }
 
 export interface InjectionContext {
-  container: Container;
-  resolution: Resolution;
+  readonly container: Container;
+  readonly resolution: Resolution;
 }
 
 // @internal
