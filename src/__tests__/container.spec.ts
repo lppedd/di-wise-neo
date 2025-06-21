@@ -34,6 +34,9 @@ describe("Container", () => {
     expect(child.isRegistered(Env)).toBe(true);
     expect(child.resolve(Env)).toBe("production");
     expect(child.resolveAll(Env)).toEqual(["production"]);
+
+    // Verify the child-parent relationship
+    expect(child.getParent()).toBe(container);
   });
 
   it("should clear the cache but keep the registrations", () => {
