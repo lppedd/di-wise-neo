@@ -3,7 +3,7 @@ import type { Token } from "./token";
 // @internal
 export function assert(condition: unknown, message: string): asserts condition {
   if (!condition) {
-    throw new Error(message);
+    throw new Error(`[di-wise] ${message}`);
   }
 }
 
@@ -16,5 +16,5 @@ export function expectNever(value: never): never {
 // @internal
 export function throwUnregisteredError(tokens: Token[]): never {
   const tokenNames = tokens.map((token) => token.name);
-  assert(false, `unregistered token ${tokenNames.join(", ")}`);
+  assert(false, `unregistered token(s) ${tokenNames.join(", ")}`);
 }

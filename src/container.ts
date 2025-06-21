@@ -22,7 +22,7 @@ export interface Container {
   readonly registry: Registry;
 
   /**
-   * Whether the container has been disposed.
+   * Whether the container is disposed.
    */
   readonly isDisposed: boolean;
 

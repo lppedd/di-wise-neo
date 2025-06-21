@@ -312,6 +312,6 @@ export class DefaultContainer implements Container {
   }
 
   private checkDisposed(): void {
-    assert(!this.myDisposed, "The container has been disposed");
+    assert(!this.myDisposed, "the container is disposed");
   }
 }

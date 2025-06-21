@@ -38,6 +38,6 @@ export const [provideInjectionContext, useInjectionContext] = createContext<Inje
 // @internal
 export function ensureInjectionContext(fn: Function): InjectionContext {
   const context = useInjectionContext();
-  assert(context, `${fn.name}() can only be used within an injection context`);
+  assert(context, `${fn.name}() can only be invoked within an injection context`);
   return context;
 }
