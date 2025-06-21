@@ -1,6 +1,6 @@
 import type { Container } from "./container";
 import type { ContainerOptions } from "./containerOptions";
-import { assert, expectNever } from "./errors";
+import { assert, expectNever, throwUnregisteredError } from "./errors";
 import { createResolution, provideInjectionContext, useInjectionContext } from "./injectionContext";
 import { getMetadata } from "./metadata";
 import { isClassProvider, isFactoryProvider, isValueProvider, type Provider } from "./provider";
@@ -137,7 +137,7 @@ export class DefaultContainer implements Container {
       }
     }
 
-    this.throwUnregisteredError(tokens);
+    throwUnregisteredError(tokens);
   }
 
   resolveAll<T>(...tokens: Token<T>[]): NonNullable<T>[] {
@@ -157,7 +157,7 @@ export class DefaultContainer implements Container {
       }
     }
 
-    this.throwUnregisteredError(tokens);
+    return [];
   }
 
   dispose(): void {
@@ -313,10 +313,5 @@ export class DefaultContainer implements Container {
 
   private checkDisposed(): void {
     assert(!this.myDisposed, "The container has been disposed");
-  }
-
-  private throwUnregisteredError(tokens: Token[]): never {
-    const tokenNames = tokens.map((token) => token.name);
-    assert(false, `unregistered token ${tokenNames.join(", ")}`);
   }
 }

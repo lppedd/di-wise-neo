@@ -1,1 +1,1 @@
-export { resolveAllSafe } from "./resolveAllSafe";
+export { resolveAllThrow } from "./resolveAllThrow";
