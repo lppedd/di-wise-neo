@@ -26,12 +26,6 @@ export function inject<T>(...tokens: Token<T>[]): T {
   return context.container.resolve(...tokens);
 }
 
-export declare namespace inject {
-  export var by: typeof injectBy;
-}
-
-inject.by = injectBy;
-
 /**
  * Inject an instance of a class.
  *
