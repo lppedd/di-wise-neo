@@ -1,4 +1,4 @@
-import {beforeEach, describe, expect, it, vi} from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   applyMiddleware,
@@ -10,7 +10,7 @@ import {
   type Token,
   Type,
 } from "..";
-import {resolveAllSafe} from "../middlewares";
+import { resolveAllSafe } from "../middlewares";
 
 describe("Middleware", () => {
   let container: Container;
@@ -25,13 +25,13 @@ describe("Middleware", () => {
     function getLogger(loggerName: string): Middleware {
       return (composer) => {
         composer
-          .use("resolve", (next) => <T>(token: Token<T>) => {
+          .use("resolve", (next) => <T>(token: Token<T>): T => {
             log(`[${loggerName}] pre  resolve    ${token.name}`);
             const result = next(token);
             log(`[${loggerName}] post resolve    ${String(result)}`);
             return result;
           })
-          .use("resolveAll", (next) => <T>(token: Token<T>) => {
+          .use("resolveAll", (next) => <T>(token: Token<T>): NonNullable<T>[] => {
             log(`[${loggerName}] pre  resolveAll ${token.name}`);
             const result = next(token);
             log(`[${loggerName}] post resolveAll [${String(result)}]`);
@@ -40,13 +40,10 @@ describe("Middleware", () => {
       };
     }
 
-    applyMiddleware(
-      container,
-      [getLogger("A"), getLogger("B")],
-    );
+    applyMiddleware(container, [getLogger("A"), getLogger("B")]);
 
     class Decoration {
-      toString() {
+      toString(): string {
         return "Decoration {}";
       }
     }
@@ -54,7 +51,7 @@ describe("Middleware", () => {
     class Wand {
       decorations = injectAll(Decoration);
 
-      toString() {
+      toString(): string {
         return `Wand {decorations: [${String(this.decorations)}]}`;
       }
     }
@@ -62,7 +59,7 @@ describe("Middleware", () => {
     class Wizard {
       wand = inject(Wand);
 
-      toString() {
+      toString(): string {
         return `Wizard {wand: ${String(this.wand)}}`;
       }
     }
@@ -97,7 +94,7 @@ describe("Middleware", () => {
       expect(container.resolveAll(NonRegistered)).toEqual([]);
 
       const Registered = Type<string>("Registered");
-      container.register(Registered, {useValue: "Success"});
+      container.register(Registered, { useValue: "Success" });
 
       expect(container.resolveAll(Registered)).toEqual(["Success"]);
     });

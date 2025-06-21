@@ -1,7 +1,18 @@
-import {afterEach, describe, expect, it} from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
-import {AutoRegister, Build, createContainer, inject, Injectable, InjectAll, Scope, Scoped, Type, Value} from "..";
-import {useInjectionContext} from "../injection-context";
+import {
+  AutoRegister,
+  Build,
+  createContainer,
+  inject,
+  Injectable,
+  InjectAll,
+  Scope,
+  Scoped,
+  Type,
+  Value,
+} from "..";
+import { useInjectionContext } from "../injectionContext";
 
 describe("Container", () => {
   const container = createContainer();
@@ -17,7 +28,7 @@ describe("Container", () => {
     });
 
     const Env = Type<string>("Env");
-    container.register(Env, {useValue: "production"});
+    container.register(Env, { useValue: "production" });
 
     const child = container.createChild();
     expect(child.isRegistered(Env)).toBe(true);
@@ -28,11 +39,7 @@ describe("Container", () => {
   it("should clear the cache but keep the registrations", () => {
     class Wizard {}
 
-    container.register(
-      Wizard,
-      {useClass: Wizard},
-      {scope: Scope.Container},
-    );
+    container.register(Wizard, { useClass: Wizard }, { scope: Scope.Container });
 
     const wizard = container.resolve(Wizard);
     expect(container.getCached(Wizard)).toBe(wizard);
@@ -76,8 +83,8 @@ describe("Container", () => {
 
     class Wizard {}
 
-    container.register(Character, {useClass: Wizard});
-    container.register(Hero, {useClass: Wizard});
+    container.register(Character, { useClass: Wizard });
+    container.register(Hero, { useClass: Wizard });
 
     const characterRegistration = container.registry.get(Character)!;
     const heroRegistration = container.registry.get(Hero)!;
@@ -98,13 +105,9 @@ describe("Container", () => {
     @Scoped(Scope.Container)
     class Wizard {}
 
-    container.register(Wizard, {useClass: Wizard});
+    container.register(Wizard, { useClass: Wizard });
 
-    container.register(
-      Wizard,
-      {useClass: Wizard},
-      {scope: Scope.Transient},
-    );
+    container.register(Wizard, { useClass: Wizard }, { scope: Scope.Transient });
 
     const registration = container.registry.get(Wizard)!;
     expect(registration.options?.scope).toBe(Scope.Transient);
@@ -112,7 +115,7 @@ describe("Container", () => {
 
   it("should unregister a token", () => {
     const Env = Type<string>("Env");
-    container.register(Env, {useValue: "production"});
+    container.register(Env, { useValue: "production" });
 
     expect(container.isRegistered(Env)).toBe(true);
     container.unregister(Env);
@@ -143,7 +146,7 @@ describe("Container", () => {
   });
 
   it("should resolve all tokens", () => {
-    const Character = Type<{name: string}>("Character");
+    const Character = Type<{ name: string }>("Character");
 
     @Injectable(Character)
     class Wizard {
@@ -160,7 +163,7 @@ describe("Container", () => {
 
     const characters = container.resolveAll(Character);
     expect(characters).toHaveLength(2);
-    expect(characters.map(({name}) => name)).toEqual(["Wizard", "Witch"]);
+    expect(characters.map(({ name }) => name)).toEqual(["Wizard", "Witch"]);
   });
 
   it("should resolve all tokens with a class fallback", () => {
@@ -187,7 +190,7 @@ describe("Container", () => {
 
     const Wizard = Type<WizardImpl>("Wizard");
 
-    container.register(Wizard, {useFactory: () => new WizardImpl()});
+    container.register(Wizard, { useFactory: () => new WizardImpl() });
     expect(container.resolve(Wizard)).toBeInstanceOf(WizardImpl);
   });
 

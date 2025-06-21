@@ -1,7 +1,7 @@
-import {afterEach, describe, expect, it, vi} from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import {Build, createContainer, Inject, inject, injectAll, Injector, Scope, Scoped} from "..";
-import {useInjectionContext} from "../injection-context";
+import { Build, createContainer, Inject, inject, injectAll, Injector, Scope, Scoped } from "..";
+import { useInjectionContext } from "../injectionContext";
 
 describe("inject", () => {
   const container = createContainer();
@@ -16,33 +16,39 @@ describe("inject", () => {
     class Wand {}
 
     expect(() => {
-      container.resolve(class Wizard {
-        constructor() {
-          setTimeout(() => inject(Wand));
-        }
-      });
+      container.resolve(
+        class Wizard {
+          constructor() {
+            setTimeout(() => inject(Wand));
+          }
+        },
+      );
       vi.runAllTimers();
     }).toThrowErrorMatchingInlineSnapshot(
       `[Error: inject() can only be used within an injection context]`,
     );
 
     expect(() => {
-      container.resolve(class Wizard {
-        constructor() {
-          setTimeout(() => inject.by(Wand));
-        }
-      });
+      container.resolve(
+        class Wizard {
+          constructor() {
+            setTimeout(() => inject.by(Wand));
+          }
+        },
+      );
       vi.runAllTimers();
     }).toThrowErrorMatchingInlineSnapshot(
       `[Error: injectBy() can only be used within an injection context]`,
     );
 
     expect(() => {
-      container.resolve(class Wizard {
-        constructor() {
-          setTimeout(() => injectAll(Wand));
-        }
-      });
+      container.resolve(
+        class Wizard {
+          constructor() {
+            setTimeout(() => injectAll(Wand));
+          }
+        },
+      );
       vi.runAllTimers();
     }).toThrowErrorMatchingInlineSnapshot(
       `[Error: injectAll() can only be used within an injection context]`,
