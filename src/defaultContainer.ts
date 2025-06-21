@@ -12,23 +12,30 @@ import { type Constructor, isConstructor, type Token } from "./token";
  * The default implementation of a di-wise {@link Container}.
  */
 export class DefaultContainer implements Container {
-  private readonly options: ContainerOptions;
-
-  readonly registry: Registry;
+  private readonly myOptions: ContainerOptions;
+  private readonly myRegistry: Registry;
 
   constructor(options: Partial<ContainerOptions>) {
-    this.options = {
+    this.myOptions = {
       autoRegister: false,
       defaultScope: Scope.Inherited,
       ...options,
     };
 
-    this.registry = new Registry(this.options.parent?.registry);
+    this.myRegistry = new Registry(this.myOptions.parent?.registry);
+  }
+
+  getParent(): Container | undefined {
+    return this.myOptions.parent;
+  }
+
+  get registry(): Registry {
+    return this.myRegistry;
   }
 
   createChild(): Container {
     return new DefaultContainer({
-      ...this.options,
+      ...this.myOptions,
       parent: this,
     });
   }
@@ -132,7 +139,7 @@ export class DefaultContainer implements Container {
   private instantiateClass<T extends object>(Class: Constructor<T>): T {
     const metadata = getMetadata(Class);
 
-    if (metadata.autoRegister ?? this.options.autoRegister) {
+    if (metadata.autoRegister ?? this.myOptions.autoRegister) {
       this.register(Class);
       return (this as Container).resolve(Class);
     }
@@ -229,7 +236,7 @@ export class DefaultContainer implements Container {
   }
 
   private resolveScope(
-    scope = this.options.defaultScope,
+    scope = this.myOptions.defaultScope,
     context = useInjectionContext(),
   ): "Transient" | "Resolution" | "Container" {
     if (scope == Scope.Inherited) {

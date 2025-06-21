@@ -15,6 +15,11 @@ export interface Container {
   api?: Readonly<Container>;
 
   /**
+   * The parent {@link Container}, if any.
+   */
+  getParent(): Container | undefined;
+
+  /**
    * The underlying registry.
    */
   get registry(): Registry;
