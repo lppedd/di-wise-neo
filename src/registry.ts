@@ -1,6 +1,12 @@
 import { assert } from "./errors";
 import type { InstanceRef } from "./instanceRef";
-import { NullProvider, type Provider, UndefinedProvider } from "./provider";
+import {
+  type FactoryProvider,
+  NullProvider,
+  type Provider,
+  UndefinedProvider,
+  type ValueProvider,
+} from "./provider";
 import { Scope } from "./scope";
 import { type Token, Type } from "./token";
 import { getTypeName } from "./utils/typeName";
@@ -84,11 +90,17 @@ export function isBuilder(provider: Provider): boolean {
  */
 export function Build<Value>(factory: (...args: []) => Value): Type<Value> {
   const token = Type<Value>(`Build<${getTypeName(factory)}>`);
-  const provider = { useFactory: factory };
+  const provider: FactoryProvider<Value> = {
+    useFactory: factory,
+  };
+
   internals.set(token, {
-    provider,
-    options: { scope: Scope.Transient },
+    provider: provider,
+    options: {
+      scope: Scope.Transient,
+    },
   });
+
   builders.add(provider);
   return token;
 }
@@ -112,8 +124,14 @@ export function Build<Value>(factory: (...args: []) => Value): Type<Value> {
  */
 export function Value<T>(value: T): Type<T> {
   const token = Type<T>(`Value<${getTypeName(value)}>`);
-  const provider = { useValue: value };
-  internals.set(token, { provider });
+  const provider: ValueProvider<T> = {
+    useValue: value,
+  };
+
+  internals.set(token, {
+    provider: provider,
+  });
+
   return token;
 }
 
