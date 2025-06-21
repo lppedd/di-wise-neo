@@ -22,7 +22,7 @@ export interface Container {
   registry: Registry;
 
   /**
-   * The parent {@link Container}, if any.
+   * Get the parent {@link Container}, if any.
    */
   getParent(): Container | undefined;
 
@@ -130,7 +130,6 @@ export function createContainer(
   options: Partial<ContainerOptions> = {
     autoRegister: false,
     defaultScope: Scope.Inherited,
-    parent: undefined,
   },
 ): Container {
   return new DefaultContainer(options);
