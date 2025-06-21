@@ -185,7 +185,9 @@ export const Injector: Type<Injector> = /*@__PURE__*/ Build(function Injector() 
     try {
       return fn();
     } finally {
-      cleanups.forEach((cleanup) => cleanup?.());
+      for (const cleanup of cleanups) {
+        cleanup?.();
+      }
     }
   }
 

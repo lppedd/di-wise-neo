@@ -35,9 +35,13 @@ export class DefaultContainer implements Container {
 
   clearCache(): void {
     for (const registrations of this.registry.map.values()) {
-      registrations.forEach(({ instance, ...registration }, i) => {
-        registrations[i] = registration;
-      });
+      for (let i = 0; i < registrations.length; i++) {
+        const registration = registrations[i]!;
+        registrations[i] = {
+          options: registration.options,
+          provider: registration.provider,
+        };
+      }
     }
   }
 
@@ -66,12 +70,13 @@ export class DefaultContainer implements Container {
       const [Class] = args;
       const metadata = getMetadata(Class);
       const tokens = [Class, ...metadata.tokens];
-      tokens.forEach((token) => {
+
+      for (const token of tokens) {
         this.registry.set(token, {
           provider: metadata.provider,
           options: { scope: metadata.scope },
         });
-      });
+      }
     } else {
       const [token, provider, options] = args;
 
