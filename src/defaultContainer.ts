@@ -102,7 +102,9 @@ export class DefaultContainer implements Container {
       for (const token of tokens) {
         this.registry.set(token, {
           provider: metadata.provider,
-          options: { scope: metadata.scope },
+          options: {
+            scope: metadata.scope,
+          },
         });
       }
     } else {
@@ -113,7 +115,12 @@ export class DefaultContainer implements Container {
         const metadata = getMetadata(Class);
         this.registry.set(token, {
           provider: metadata.provider,
-          options: { scope: metadata.scope, ...options },
+          options: {
+            // The explicit registration options override what is specified
+            // via class decorators (e.g., @Scoped)
+            scope: metadata.scope,
+            ...options,
+          },
         });
       } else {
         this.registry.set(token, { provider, options });
@@ -209,14 +216,21 @@ export class DefaultContainer implements Container {
       return (this as Container).resolve(Class);
     }
 
-    const provider = metadata.provider;
-    const options = { scope: this.resolveScope(metadata.scope) };
+    const options: RegistrationOptions = {
+      scope: this.resolveScope(metadata.scope),
+    };
+
     assert(
       options.scope != Scope.Container,
       `unregistered class ${Class.name} cannot be resolved in container scope`,
     );
 
-    return this.resolveScopedInstance({ provider, options }, () => new Class());
+    const registration: Registration<T> = {
+      provider: metadata.provider,
+      options: options,
+    };
+
+    return this.resolveScopedInstance(registration, () => new Class());
   }
 
   private instantiateProvider<T>(registration: Registration<T>): T {
