@@ -28,7 +28,7 @@ export type ClassFieldDecorator<Value> = <This extends object>(
  *
  * @example
  * ```ts
- * ⁤@Injectable(Weapon)
+ * @Injectable(Weapon)
  * class Wand {}
  *
  * container.register(Wand);
@@ -58,7 +58,7 @@ export function Injectable<This extends object>(
  *
  * @example
  * ```ts
- * ⁤@Scoped(Scope.Container)
+ * @Scoped(Scope.Container)
  * class Wizard {}
  *
  * container.register(Wizard);
@@ -85,7 +85,7 @@ export function Scoped<This extends object>(scope: Scope): ClassDecorator<Constr
  *
  * @example
  * ```ts
- * ⁤@AutoRegister()
+ * @AutoRegister()
  * class Wizard {}
  *
  * const wizard = container.resolve(Wizard);
