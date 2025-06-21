@@ -30,37 +30,39 @@ export interface RegistrationOptions {
 }
 
 export class Registry {
-  private _map = new Map<Token, Registration[]>();
+  private readonly myMap = new Map<Token, Registration[]>();
 
-  constructor(private parent: Registry | undefined) {}
+  constructor(private readonly parent: Registry | undefined) {}
 
   get map(): RegistrationMap {
-    return this._map;
+    return this.myMap;
   }
 
   get<T>(token: Token<T>): Registration<T> | undefined {
+    // To clarify, at(-1) means we take the last added registration for this token
     return this.getAll(token)?.at(-1);
   }
 
   getAll<T>(token: Token<T>): Registration<T>[] | undefined {
     const internal = internals.get(token);
-    return (internal && [internal]) || this._getAll(token);
-  }
-
-  private _getAll<T>(token: Token<T>): Registration<T>[] | undefined {
-    const registrations = this._map.get(token);
-    return registrations || this.parent?._getAll(token);
+    return (internal && [internal]) || this.getAllFromHierarchy(token);
   }
 
   set<T>(token: Token<T>, registration: Registration<T>): void {
     assert(!internals.has(token), `cannot register reserved token ${token.name}`);
-    let registrations = this._map.get(token);
+
+    let registrations = this.myMap.get(token);
 
     if (!registrations) {
-      this._map.set(token, (registrations = []));
+      this.myMap.set(token, (registrations = []));
     }
 
     registrations.push(registration);
+  }
+
+  private getAllFromHierarchy<T>(token: Token<T>): Registration<T>[] | undefined {
+    const registrations = this.myMap.get(token);
+    return registrations || this.parent?.getAllFromHierarchy(token);
   }
 }
 
