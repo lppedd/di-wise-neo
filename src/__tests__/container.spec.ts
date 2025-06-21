@@ -130,10 +130,10 @@ describe("Container", () => {
     class Wizard {}
 
     expect(() => container.resolve(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: unregistered class Wizard cannot be resolved in container scope]`,
+      `[Error: [di-wise] unregistered class Wizard cannot be resolved in container scope]`,
     );
     expect(() => container.resolveAll(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: unregistered class Wizard cannot be resolved in container scope]`,
+      `[Error: [di-wise] unregistered class Wizard cannot be resolved in container scope]`,
     );
   });
 
@@ -141,7 +141,7 @@ describe("Container", () => {
     const Env = Type<string>("Env");
 
     expect(() => container.resolve(Env)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: unregistered token Type<Env>]`,
+      `[Error: [di-wise] unregistered token(s) Type<Env>]`,
     );
 
     expect(container.resolveAll(Env)).toEqual([]);
@@ -226,7 +226,7 @@ describe("Container", () => {
     }
 
     expect(() => container.resolve(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: circular dependency detected]`,
+      `[Error: [di-wise] circular dependency detected]`,
     );
   });
 
@@ -304,7 +304,7 @@ describe("Container", () => {
     expect(wizardInstance.calls).toBe(1);
     expect(wizardInstance.wand.calls).toBe(1);
     expect(value.calls).toBe(1);
-    expect(() => container.resolve(Wand)).toThrowError("The container has been disposed");
+    expect(() => container.resolve(Wand)).toThrowError("[di-wise] the container is disposed");
 
     // We can call dispose as many times as we want
     container.dispose();

@@ -25,7 +25,7 @@ describe("inject", () => {
       );
       vi.runAllTimers();
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: inject() can only be used within an injection context]`,
+      `[Error: [di-wise] inject() can only be invoked within an injection context]`,
     );
 
     expect(() => {
@@ -38,7 +38,7 @@ describe("inject", () => {
       );
       vi.runAllTimers();
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: injectBy() can only be used within an injection context]`,
+      `[Error: [di-wise] injectBy() can only be invoked within an injection context]`,
     );
 
     expect(() => {
@@ -51,7 +51,7 @@ describe("inject", () => {
       );
       vi.runAllTimers();
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: injectAll() can only be used within an injection context]`,
+      `[Error: [di-wise] injectAll() can only be invoked within an injection context]`,
     );
 
     vi.restoreAllMocks();
@@ -84,7 +84,7 @@ describe("inject", () => {
     }
 
     expect(() => container.resolve(Build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(
-      `[Error: circular dependency detected]`,
+      `[Error: [di-wise] circular dependency detected]`,
     );
   });
 

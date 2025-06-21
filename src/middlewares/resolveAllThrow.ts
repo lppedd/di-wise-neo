@@ -10,7 +10,7 @@ import type { Middleware, Token } from "../index";
  * import { resolveAllThrow } from "di-wise/middlewares";
  *
  * const container = applyMiddleware(createContainer(), [resolveAllThrow]);
- * container.resolveAll(NonRegisteredToken); // => Error("unregistered token <NonRegisteredToken>")
+ * container.resolveAll(NonRegisteredToken); // => Error("[di-wise] unregistered token(s) <NonRegisteredToken>")
  * ```
  */
 export const resolveAllThrow: Middleware = (composer) => {

@@ -92,7 +92,7 @@ describe("Middleware", () => {
 
       const NonRegistered = Type("NonRegistered");
       expect(() => container.resolveAll(NonRegistered)).toThrowErrorMatchingInlineSnapshot(
-        `[Error: unregistered token Type<NonRegistered>]`,
+        `[Error: [di-wise] unregistered token(s) Type<NonRegistered>]`,
       );
 
       const Registered = Type<string>("Registered");
