@@ -1,4 +1,4 @@
-import { inject, injectAll } from "./inject";
+import { injectAll, injectBy } from "./inject";
 import { getMetadata } from "./metadata";
 import type { Scope } from "./scope";
 import type { Constructor, Token, TokenList } from "./token";
@@ -125,7 +125,7 @@ export function Inject<Values extends unknown[]>(
 export function Inject<T>(...tokens: Token<T>[]): ClassFieldDecorator<T> {
   return () =>
     function (this) {
-      return inject.by(this, ...tokens);
+      return injectBy(this, ...tokens);
     };
 }
 

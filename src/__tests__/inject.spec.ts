@@ -2,7 +2,7 @@
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { Build, createContainer, Inject, inject, injectAll, Injector, Scope, Scoped } from "..";
+import { Build, createContainer, Inject, inject, injectAll, injectBy, Injector, Scope, Scoped } from "..";
 import { useInjectionContext } from "../injectionContext";
 
 describe("inject", () => {
@@ -34,7 +34,7 @@ describe("inject", () => {
       container.resolve(
         class Wizard {
           constructor() {
-            setTimeout(() => inject.by(Wand));
+            setTimeout(() => injectBy(Wand));
           }
         },
       );
@@ -65,7 +65,7 @@ describe("inject", () => {
     }
 
     class Wizard {
-      wand1 = inject.by(this, Wand);
+      wand1 = injectBy(this, Wand);
 
       @Inject(Wand)
       wand2!: Wand;
@@ -82,7 +82,7 @@ describe("inject", () => {
     }
 
     class Wizard {
-      wand = inject.by(this, Wand);
+      wand = injectBy(this, Wand);
     }
 
     expect(() => container.resolve(Build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(
@@ -134,7 +134,7 @@ describe("inject", () => {
 
       @Scoped(Scope.Container)
       class Wizard {
-        injector = inject.by(this, Injector);
+        injector = injectBy(this, Injector);
       }
 
       const wizard = container.resolve(Wizard);
