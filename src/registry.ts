@@ -11,14 +11,6 @@ import { Scope } from "./scope";
 import { type Token, Type } from "./token";
 import { getTypeName } from "./utils/typeName";
 
-export type RegistrationMap = Omit<Map<Token, Registration[]>, keyof Registry>;
-
-export interface Registration<T = any> {
-  options?: RegistrationOptions;
-  instance?: InstanceRef<T>;
-  provider: Provider<T>;
-}
-
 /**
  * Registration options.
  */
@@ -28,6 +20,15 @@ export interface RegistrationOptions {
    */
   readonly scope?: Scope;
 }
+
+export interface Registration<T = any> {
+  options?: RegistrationOptions;
+  instance?: InstanceRef<T>;
+  provider: Provider<T>;
+}
+
+// eslint-disable-next-line no-use-before-define
+export type RegistrationMap = Omit<Map<Token, Registration[]>, keyof Registry>;
 
 export class Registry {
   private readonly myMap = new Map<Token, Registration[]>();

@@ -1,12 +1,3 @@
-export type TokenList<Values extends unknown[]> = { [Index in keyof Values]: Token<Values[Index]> };
-
-/**
- * Token type.
- */
-export type Token<Value = any> = Value extends object
-  ? Type<Value> | Constructor<Value>
-  : Type<Value>;
-
 /**
  * Type API.
  */
@@ -42,6 +33,24 @@ export interface Type<A> {
    */
   union<B>(typeName: string, B: Type<B>): Type<A | B>;
 }
+
+/**
+ * Constructor type.
+ */
+export interface Constructor<Instance extends object> {
+  new (...args: []): Instance;
+}
+
+/**
+ * Token type.
+ */
+export type Token<Value = any> = Value extends object
+  ? Type<Value> | Constructor<Value>
+  : Type<Value>;
+
+export type TokenList<Values extends unknown[]> = {
+  [Index in keyof Values]: Token<Values[Index]>;
+};
 
 /**
  * Create a type token.
@@ -89,13 +98,6 @@ export declare namespace Type {
 
 Type.Null = Type("null") as Type<null>;
 Type.Undefined = Type("undefined") as Type<undefined>;
-
-/**
- * Constructor type.
- */
-export interface Constructor<Instance extends object> {
-  new (...args: []): Instance;
-}
 
 // @internal
 export function isConstructor<T>(

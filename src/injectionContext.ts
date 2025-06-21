@@ -7,9 +7,9 @@ import { createContext } from "./utils/context";
 import { KeyedStack } from "./utils/keyedStack";
 import { WeakRefMap } from "./utils/weakRefMap";
 
-export interface InjectionContext {
-  container: Container;
-  resolution: Resolution;
+export interface ResolutionFrame {
+  scope: Exclude<Scope, typeof Scope.Inherited>;
+  provider: Provider;
 }
 
 export interface Resolution {
@@ -18,9 +18,9 @@ export interface Resolution {
   dependents: WeakRefMap<Provider, InstanceRef>;
 }
 
-export interface ResolutionFrame {
-  scope: Exclude<Scope, typeof Scope.Inherited>;
-  provider: Provider;
+export interface InjectionContext {
+  container: Container;
+  resolution: Resolution;
 }
 
 // @internal

@@ -13,6 +13,7 @@ import { isDisposable } from "./utils/disposable";
  * The default implementation of a di-wise {@link Container}.
  */
 export class DefaultContainer implements Container {
+  // eslint-disable-next-line no-use-before-define
   private readonly myChildren: Set<DefaultContainer> = new Set();
   private readonly myOptions: ContainerOptions;
   private readonly myRegistry: Registry;

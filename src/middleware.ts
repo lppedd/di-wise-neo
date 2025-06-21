@@ -1,6 +1,21 @@
 import type { Container } from "./container";
 
 /**
+ * Composer API for middleware functions.
+ */
+export interface MiddlewareComposer {
+  /**
+   * Add a middleware function to the composer.
+   */
+  use<MethodKey extends keyof Container>(
+    key: MethodKey,
+    wrap: Container[MethodKey] extends Function
+      ? (next: Container[MethodKey]) => Container[MethodKey]
+      : never,
+  ): MiddlewareComposer;
+}
+
+/**
  * Middleware function that can be used to extend the container.
  *
  * @example
@@ -20,21 +35,6 @@ import type { Container } from "./container";
  */
 export interface Middleware {
   (composer: MiddlewareComposer, api: Readonly<Container>): void;
-}
-
-/**
- * Composer API for middleware functions.
- */
-export interface MiddlewareComposer {
-  /**
-   * Add a middleware function to the composer.
-   */
-  use<MethodKey extends keyof Container>(
-    key: MethodKey,
-    wrap: Container[MethodKey] extends Function
-      ? (next: Container[MethodKey]) => Container[MethodKey]
-      : never,
-  ): MiddlewareComposer;
 }
 
 /**
