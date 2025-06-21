@@ -253,4 +253,62 @@ describe("Container", () => {
     const env = container.resolve(Env, Value("development"));
     expect(env).toBe("development");
   });
+
+  it("should dispose itself and its registrations", () => {
+    class Wand {
+      calls = 0;
+
+      dispose(): void {
+        this.calls++;
+      }
+    }
+
+    @Scoped(Scope.Container)
+    class Wizard {
+      calls = 0;
+      wand = inject(Wand);
+
+      dispose(): void {
+        this.calls++;
+      }
+    }
+
+    const container = createContainer();
+    const wizardToken = Type<Wizard>("SecondaryWizard");
+    container.register(
+      wizardToken,
+      { useFactory: () => inject(Wizard) },
+      { scope: Scope.Container },
+    );
+    container.register(Wizard);
+    container.register(Wand);
+
+    const value = new Wand();
+    const valueToken = Type<Wand>("ValueWand");
+    container.register(valueToken, { useValue: value });
+
+    const wizardInstance = container.resolve(Wizard);
+    expect(wizardInstance).toBeInstanceOf(Wizard);
+    expect(wizardInstance.wand).toBeInstanceOf(Wand);
+    expect(wizardInstance).toBe(container.resolve(wizardToken));
+
+    const child = container.createChild();
+    child.register(Wand);
+
+    container.dispose();
+
+    expect(container.isDisposed).toBe(true);
+    expect(child.isDisposed).toBe(true);
+    expect(() => container.resolve(Wand)).toThrowError("[di-wise] the container is disposed");
+    expect(() => child.resolve(Wand)).toThrowError("[di-wise] the container is disposed");
+
+    expect(wizardInstance.calls).toBe(1);
+    expect(wizardInstance.wand.calls).toBe(1);
+    expect(value.calls).toBe(1);
+    expect(() => container.resolve(Wand)).toThrowError("The container has been disposed");
+
+    // We can call dispose as many times as we want
+    container.dispose();
+    container.dispose();
+  });
 });

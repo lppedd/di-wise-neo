@@ -7,40 +7,55 @@ import { isClassProvider, isFactoryProvider, isValueProvider, type Provider } fr
 import { isBuilder, type Registration, type RegistrationOptions, Registry } from "./registry";
 import { Scope } from "./scope";
 import { type Constructor, isConstructor, type Token } from "./token";
+import { isDisposable } from "./utils/disposable";
 
 /**
  * The default implementation of a di-wise {@link Container}.
  */
 export class DefaultContainer implements Container {
+  private readonly myChildren: Set<DefaultContainer> = new Set();
   private readonly myOptions: ContainerOptions;
   private readonly myRegistry: Registry;
+  private myDisposed: boolean = false;
 
-  constructor(options: Partial<ContainerOptions>) {
+  constructor(
+    private readonly myParent: DefaultContainer | undefined,
+    options: Partial<ContainerOptions>,
+  ) {
     this.myOptions = {
       autoRegister: false,
       defaultScope: Scope.Inherited,
       ...options,
     };
 
-    this.myRegistry = new Registry(this.myOptions.parent?.registry);
+    this.myRegistry = new Registry(this.myParent?.registry);
   }
 
   get registry(): Registry {
     return this.myRegistry;
   }
 
+  get isDisposed(): boolean {
+    return this.myDisposed;
+  }
+
   getParent(): Container | undefined {
-    return this.myOptions.parent;
+    return this.myParent;
   }
 
   createChild(): Container {
-    return new DefaultContainer({
+    this.checkDisposed();
+    const container = new DefaultContainer(this, {
       ...this.myOptions,
-      parent: this,
     });
+
+    this.myChildren.add(container);
+    return container;
   }
 
   clearCache(): void {
+    this.checkDisposed();
+
     for (const registrations of this.registry.map.values()) {
       for (let i = 0; i < registrations.length; i++) {
         const registration = registrations[i]!;
@@ -53,11 +68,13 @@ export class DefaultContainer implements Container {
   }
 
   getCached<Value>(token: Token<Value>): Value | undefined {
+    this.checkDisposed();
     const registration = this.registry.get(token);
     return registration?.instance?.current;
   }
 
   isRegistered(token: Token): boolean {
+    this.checkDisposed();
     return !!this.registry.get(token);
   }
 
@@ -66,6 +83,7 @@ export class DefaultContainer implements Container {
   }
 
   unregister(token: Token): this {
+    this.checkDisposed();
     this.registry.map.delete(token);
     return this;
   }
@@ -73,6 +91,8 @@ export class DefaultContainer implements Container {
   register<T>(
     ...args: [Constructor<T & object>] | [Token<T>, Provider<T>, RegistrationOptions?]
   ): this {
+    this.checkDisposed();
+
     if (args.length == 1) {
       const [Class] = args;
       const metadata = getMetadata(Class);
@@ -103,6 +123,8 @@ export class DefaultContainer implements Container {
   }
 
   resolve<T>(...tokens: Token<T>[]): T {
+    this.checkDisposed();
+
     for (const token of tokens) {
       const registration = this.registry.get(token);
 
@@ -119,6 +141,8 @@ export class DefaultContainer implements Container {
   }
 
   resolveAll<T>(...tokens: Token<T>[]): NonNullable<T>[] {
+    this.checkDisposed();
+
     for (const token of tokens) {
       const registrations = this.registry.getAll(token);
 
@@ -134,6 +158,46 @@ export class DefaultContainer implements Container {
     }
 
     this.throwUnregisteredError(tokens);
+  }
+
+  dispose(): void {
+    if (this.myDisposed) {
+      return;
+    }
+
+    // Dispose children containers first
+    for (const child of this.myChildren) {
+      child.dispose();
+    }
+
+    this.myChildren.clear();
+
+    // Remove ourselves from our parent container
+    this.myParent?.myChildren?.delete(this);
+    this.myDisposed = true;
+
+    const registry = this.registry;
+    const disposedRefs = new Set<any>();
+
+    // Dispose all resolved (aka instantiated) tokens that implement the Disposable interface
+    for (const registrations of registry.map.values()) {
+      for (const registration of registrations) {
+        // Special consideration must be taken for value providers,
+        // which never cache their value using the registration.instance property
+        const instance = isValueProvider(registration.provider)
+          ? registration.provider.useValue
+          : registration.instance?.current;
+
+        if (isDisposable(instance) && !disposedRefs.has(instance)) {
+          disposedRefs.add(instance);
+          instance.dispose();
+        }
+      }
+    }
+
+    // Allow instances to be GCed
+    disposedRefs.clear();
+    registry.map.clear();
   }
 
   private instantiateClass<T extends object>(Class: Constructor<T>): T {
@@ -245,6 +309,10 @@ export class DefaultContainer implements Container {
     }
 
     return scope;
+  }
+
+  private checkDisposed(): void {
+    assert(!this.myDisposed, "The container has been disposed");
   }
 
   private throwUnregisteredError(tokens: Token[]): never {

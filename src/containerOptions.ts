@@ -1,4 +1,3 @@
-import type { Container } from "./container";
 import type { Scope } from "./scope";
 
 /**
@@ -18,11 +17,4 @@ export interface ContainerOptions {
    * @defaultValue Scope.Inherited
    */
   readonly defaultScope: Scope;
-
-  /**
-   * The parent container.
-   *
-   * @defaultValue undefined
-   */
-  readonly parent?: Container;
 }
