@@ -227,6 +227,7 @@ describe("Container", () => {
 
   it("should throw error if detected circular dependency", () => {
     class Wand {
+      // eslint-disable-next-line no-use-before-define
       owner = inject(Wizard);
     }
 

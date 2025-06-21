@@ -1,14 +1,6 @@
 import type { Constructor } from "./token";
 
 /**
- * Provider type.
- */
-export type Provider<Value = any> =
-  | ClassProvider<Value & object>
-  | FactoryProvider<Value>
-  | ValueProvider<Value>;
-
-/**
  * Class provider type.
  */
 export interface ClassProvider<Instance extends object> {
@@ -28,6 +20,14 @@ export interface FactoryProvider<Value> {
 export interface ValueProvider<T> {
   readonly useValue: T;
 }
+
+/**
+ * Provider type.
+ */
+export type Provider<Value = any> =
+  | ClassProvider<Value & object>
+  | FactoryProvider<Value>
+  | ValueProvider<Value>;
 
 // @internal
 export const NullProvider = { useValue: null };
