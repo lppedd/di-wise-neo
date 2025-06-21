@@ -19,7 +19,12 @@ export interface Container {
    *
    * @internal
    */
-  registry: Registry;
+  readonly registry: Registry;
+
+  /**
+   * Whether the {@link Container} has been disposed.
+   */
+  readonly isDisposed: boolean;
 
   /**
    * Get the parent {@link Container}, if any.
@@ -121,6 +126,13 @@ export interface Container {
    * Remove a registration from the internal registry.
    */
   unregister(token: Token): this;
+
+  /**
+   * Disposes the container, and all its currently instantiated classes/tokens.
+   *
+   * Children containers are disposed first, in creation order.
+   */
+  dispose(): void;
 }
 
 /**
@@ -132,5 +144,5 @@ export function createContainer(
     defaultScope: Scope.Inherited,
   },
 ): Container {
-  return new DefaultContainer(options);
+  return new DefaultContainer(undefined, options);
 }
