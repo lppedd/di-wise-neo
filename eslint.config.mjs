@@ -30,6 +30,15 @@ export default tseslint.config(
       },
     ],
     rules: {
+      "no-use-before-define": [
+        "error",
+        {
+          classes: true,
+          functions: false,
+          variables: false,
+          allowNamedExports: false,
+        },
+      ],
       "no-param-reassign": "error",
     },
   },
