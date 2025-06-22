@@ -6,7 +6,13 @@ export { AutoRegister, Inject, Injectable, InjectAll, Scoped } from "./decorator
 export { inject, injectAll, injectBy, Injector } from "./inject";
 export type { Middleware, MiddlewareComposer } from "./middleware";
 export { applyMiddleware } from "./middleware";
-export type { ClassProvider, FactoryProvider, Provider, ValueProvider } from "./provider";
+export type {
+  ClassProvider,
+  ExistingProvider,
+  FactoryProvider,
+  Provider,
+  ValueProvider,
+} from "./provider";
 export type { RegistrationOptions } from "./registry";
 export { Build, Value } from "./registry";
 export { Scope } from "./scope";

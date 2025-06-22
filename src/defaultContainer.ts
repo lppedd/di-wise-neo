@@ -1,9 +1,20 @@
 import type { Container } from "./container";
 import type { ContainerOptions } from "./containerOptions";
-import { assert, expectNever, throwUnregisteredError } from "./errors";
+import {
+  assert,
+  expectNever,
+  throwExistingUnregisteredError,
+  throwUnregisteredError,
+} from "./errors";
 import { createResolution, provideInjectionContext, useInjectionContext } from "./injectionContext";
 import { getMetadata } from "./metadata";
-import { isClassProvider, isFactoryProvider, isValueProvider, type Provider } from "./provider";
+import {
+  isClassProvider,
+  isExistingProvider,
+  isFactoryProvider,
+  isValueProvider,
+  type Provider,
+} from "./provider";
 import { isBuilder, type Registration, type RegistrationOptions, Registry } from "./registry";
 import { Scope } from "./scope";
 import { type Constructor, isConstructor, type Token } from "./token";
@@ -123,6 +134,13 @@ export class DefaultContainer implements Container {
           },
         });
       } else {
+        if (isExistingProvider(provider)) {
+          assert(
+            token !== provider.useExisting,
+            `the useExisting token ${token.name} cannot be the same as the token being registered`,
+          );
+        }
+
         this.registry.set(token, { provider, options });
       }
     }
@@ -137,7 +155,7 @@ export class DefaultContainer implements Container {
       const registration = this.registry.get(token);
 
       if (registration) {
-        return this.instantiateProvider(registration);
+        return this.instantiateProvider(token, registration);
       }
 
       if (isConstructor(token)) {
@@ -156,7 +174,7 @@ export class DefaultContainer implements Container {
 
       if (registrations) {
         return registrations
-          .map((registration) => this.instantiateProvider(registration))
+          .map((registration) => this.instantiateProvider(token, registration))
           .filter((instance) => instance != null);
       }
 
@@ -233,12 +251,22 @@ export class DefaultContainer implements Container {
     return this.resolveScopedInstance(registration, () => new Class());
   }
 
-  private instantiateProvider<T>(registration: Registration<T>): T {
+  private instantiateProvider<T>(token: Token<T>, registration: Registration<T>): T {
     const provider = registration.provider;
 
     if (isClassProvider(provider)) {
       const Class = provider.useClass;
       return this.resolveScopedInstance(registration, () => new Class());
+    }
+
+    if (isExistingProvider(provider)) {
+      return this.resolveScopedInstance(registration, () => {
+        try {
+          return this.resolve(provider.useExisting);
+        } catch (e) {
+          throwExistingUnregisteredError(token, e as Error);
+        }
+      });
     }
 
     if (isFactoryProvider(provider)) {
