@@ -8,7 +8,7 @@ import {
   type ValueProvider,
 } from "./provider";
 import { Scope } from "./scope";
-import { type Token, Type, TypeNull, TypeUndefined } from "./token";
+import { type Constructor, type Token, Type, TypeNull, TypeUndefined } from "./token";
 import { getTypeName } from "./utils/typeName";
 
 /**
@@ -49,6 +49,15 @@ export class Registry {
     return (internal && [internal]) || this.getAllFromHierarchy(token);
   }
 
+  //
+  // set(...) overloads added because of TS distributive conditional types.
+  //
+  // TODO(Edoardo): is there a better way? Maybe refactor the Token<T> type
+  //  into two types, TokenObject<T extends object> | Token<T>
+  //
+
+  set<T extends object>(token: Type<T> | Constructor<T>, registration: Registration<T>): void;
+  set<T>(token: Token<T>, registration: Registration<T>): void;
   set<T>(token: Token<T>, registration: Registration<T>): void {
     assert(!internals.has(token), `cannot register reserved token ${token.name}`);
 

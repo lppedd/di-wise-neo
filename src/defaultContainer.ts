@@ -105,13 +105,25 @@ export class DefaultContainer implements Container {
     this.checkDisposed();
 
     if (args.length == 1) {
-      const [Class] = args;
+      const Class = args[0];
       const metadata = getMetadata(Class);
-      const tokens = [Class, ...metadata.tokens];
 
-      for (const token of tokens) {
+      // Register the class itself
+      this.registry.set(Class, {
+        // The provider is of type ClassProvider, initialized by getMetadata
+        provider: metadata.provider,
+        options: {
+          scope: metadata.scope,
+        },
+      });
+
+      // Register the additional tokens specified via class decorators.
+      // These tokens will point to the original Class token, and will have the same scope.
+      for (const token of metadata.tokens) {
         this.registry.set(token, {
-          provider: metadata.provider,
+          provider: {
+            useExisting: Class,
+          },
           options: {
             scope: metadata.scope,
           },
