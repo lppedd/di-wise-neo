@@ -49,7 +49,7 @@ export interface Container {
   getCached<Value>(token: Token<Value>): Value | undefined;
 
   /**
-   * Returns whether the {@link token} is registered in the container or its parent containers.
+   * Returns whether the token is registered in the container or its parent containers.
    */
   isRegistered(token: Token): boolean;
 
