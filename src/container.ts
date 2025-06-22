@@ -1,9 +1,27 @@
-import type { ContainerOptions } from "./containerOptions";
 import { DefaultContainer } from "./defaultContainer";
 import type { ClassProvider, ExistingProvider, FactoryProvider, ValueProvider } from "./provider";
 import type { RegistrationOptions, Registry } from "./registry";
 import { Scope } from "./scope";
 import type { Constructor, Token, TokenList } from "./token";
+
+/**
+ * Options for creating a container.
+ */
+export interface ContainerOptions {
+  /**
+   * Whether to automatically register a class when resolving it as a token.
+   *
+   * @defaultValue false
+   */
+  readonly autoRegister: boolean;
+
+  /**
+   * The default scope for registrations.
+   *
+   * @defaultValue Scope.Inherited
+   */
+  readonly defaultScope: Scope;
+}
 
 /**
  * Container API.
