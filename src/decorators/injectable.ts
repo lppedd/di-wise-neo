@@ -28,6 +28,9 @@ export function Injectable<This extends object>(
 ): ClassDecorator<Constructor<This>> {
   return (Class) => {
     const metadata = getMetadata(Class);
-    metadata.tokens.push(...tokens);
+
+    for (const token of tokens) {
+      metadata.tokens.add(token);
+    }
   };
 }

@@ -5,7 +5,7 @@ import type { Constructor, Token } from "./token";
 export interface Metadata<This extends object = any> {
   autoRegister?: boolean;
   scope?: Scope;
-  tokens: Token<This>[];
+  tokens: Set<Token<This>>;
   provider: ClassProvider<This>;
 }
 
@@ -17,8 +17,10 @@ export function getMetadata<T extends object>(Class: Constructor<T>): Metadata<T
     metadataMap.set(
       Class,
       (metadata = {
-        tokens: [],
-        provider: { useClass: Class },
+        tokens: new Set(),
+        provider: {
+          useClass: Class,
+        },
       }),
     );
   }
