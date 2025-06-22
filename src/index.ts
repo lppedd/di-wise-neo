@@ -1,8 +1,8 @@
 export type { Container } from "./container";
 export { createContainer } from "./container";
 export type { ContainerOptions } from "./containerOptions";
-export type { ClassDecorator, ClassFieldDecorator } from "./decorators";
 export { AutoRegister, Inject, Injectable, InjectAll, Scoped } from "./decorators";
+export type { ClassDecorator, ClassFieldDecorator } from "./decorators/decorators";
 export { inject, injectAll, injectBy, Injector } from "./inject";
 export type { Middleware, MiddlewareComposer } from "./middleware";
 export { applyMiddleware } from "./middleware";
