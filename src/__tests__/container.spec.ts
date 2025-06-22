@@ -84,11 +84,16 @@ describe("Container", () => {
     const Character = Type<{}>("Character");
 
     @Injectable(Character)
+    @Scoped(Scope.Container)
     class Wizard {}
 
     container.register(Wizard);
     expect(container.isRegistered(Character)).toBe(true);
     expect(container.isRegistered(Wizard)).toBe(true);
+
+    // Since Wizard has been registered as a singleton, the Character token
+    // which is being used as an alias should resolve to the same instance
+    expect(container.resolve(Wizard)).toBe(container.resolve(Character));
   });
 
   it("should use the same provider for the same class", () => {
