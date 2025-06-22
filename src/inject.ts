@@ -25,7 +25,7 @@ export function inject<T>(...tokens: Token<T>[]): T {
  * Inject an instance of a class.
  *
  * @param thisArg - Used for resolving circular dependencies.
- * @param Class - TODO
+ * @param Class - The class to resolve.
  */
 export function injectBy<Instance extends object>(
   thisArg: any,
@@ -36,7 +36,7 @@ export function injectBy<Instance extends object>(
  * Inject an instance of a token.
  *
  * @param thisArg - Used for resolving circular dependencies.
- * @param token - TODO
+ * @param token - The token to resolve.
  */
 export function injectBy<Value>(thisArg: any, token: Token<Value>): Value;
 
@@ -44,7 +44,7 @@ export function injectBy<Value>(thisArg: any, token: Token<Value>): Value;
  * Inject an instance of a token, by checking each token in order until a registered one is found.
  *
  * @param thisArg - Used for resolving circular dependencies.
- * @param tokens - TODO
+ * @param tokens - The token to resolve. Each token is checked in order until a registered one is found.
  */
 export function injectBy<Values extends unknown[]>(
   thisArg: any,
