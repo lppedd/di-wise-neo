@@ -81,9 +81,9 @@ export interface Container {
   /**
    * Registers a {@link ClassProvider} with a token.
    */
-  register<Instance extends object>(
+  register<Instance extends object, ProviderInstance extends Instance>(
     token: Token<Instance>,
-    provider: ClassProvider<Instance>,
+    provider: ClassProvider<ProviderInstance>,
     options?: RegistrationOptions,
   ): this;
 
