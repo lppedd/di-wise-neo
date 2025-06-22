@@ -1,4 +1,5 @@
-import { inject, injectAll } from "./inject";
+import { inject } from "./inject";
+import { injectAll } from "./injectAll";
 import {
   ensureInjectionContext,
   provideInjectionContext,
