@@ -1,4 +1,4 @@
-import { injectAll } from "../inject";
+import { injectAll } from "../injectAll";
 import type { Constructor, Token, TokenList } from "../token";
 import type { ClassFieldDecorator } from "./decorators";
 
