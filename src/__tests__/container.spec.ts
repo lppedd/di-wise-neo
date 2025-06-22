@@ -242,6 +242,17 @@ describe("Container", () => {
         [cause] unregistered class NotRegistered cannot be resolved in container scope]
       `,
     );
+
+    // It is unclear to me how this should behave.
+    // As of now, let's simply document the fact that a resolveAll call
+    // to a registered token using an ExistingProvider pointing to a
+    // non-registered token will throw an error.
+    expect(() => container.resolveAll(Registered)).toThrowErrorMatchingInlineSnapshot(
+      `
+      [Error: [di-wise] token resolution error encountered while resolving Registered
+        [cause] unregistered class NotRegistered cannot be resolved in container scope]
+      `,
+    );
   });
 
   it("should resolve factory providers", () => {
