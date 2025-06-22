@@ -1,5 +1,4 @@
-import type { Container } from "./container";
-import type { ContainerOptions } from "./containerOptions";
+import type { Container, ContainerOptions } from "./container";
 import {
   assert,
   expectNever,
