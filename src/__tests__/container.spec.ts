@@ -212,6 +212,38 @@ describe("Container", () => {
     expect(container.resolveAll(Character, TypeUndefined)).toEqual([]);
   });
 
+  it("should resolve existing providers", () => {
+    class Registered {}
+    class NotRegistered {}
+    class WizardImpl {}
+    const Wizard = Type<WizardImpl>("Wizard");
+
+    const container = createContainer({
+      defaultScope: "Container",
+    });
+
+    container.register(Registered, { useExisting: NotRegistered });
+    container.register(WizardImpl);
+
+    // We should not be able to register a token pointing to itself,
+    // as it would cause a circular dependency error
+    expect(() => container.register(Wizard, { useExisting: Wizard })).toThrowError(
+      "[di-wise] the useExisting token Type<Wizard> cannot be the same as the token being registered",
+    );
+
+    container.register(Wizard, { useExisting: WizardImpl });
+    expect(container.resolve(WizardImpl)).toBe(container.resolve(Wizard));
+
+    // When resolving a token using an ExistingProvider that points to an unregistered token,
+    // the error should include the original cause
+    expect(() => container.resolve(Registered)).toThrowErrorMatchingInlineSnapshot(
+      `
+      [Error: [di-wise] token resolution error encountered while resolving Registered
+        [cause] unregistered class NotRegistered cannot be resolved in container scope]
+      `,
+    );
+  });
+
   it("should resolve factory providers", () => {
     class WizardImpl {}
 

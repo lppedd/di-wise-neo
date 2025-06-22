@@ -1,6 +1,6 @@
 import type { ContainerOptions } from "./containerOptions";
 import { DefaultContainer } from "./defaultContainer";
-import type { ClassProvider, FactoryProvider, ValueProvider } from "./provider";
+import type { ClassProvider, ExistingProvider, FactoryProvider, ValueProvider } from "./provider";
 import type { RegistrationOptions, Registry } from "./registry";
 import { Scope } from "./scope";
 import type { Constructor, Token, TokenList } from "./token";
@@ -75,6 +75,15 @@ export interface Container {
   register<Value>(
     token: Token<Value>,
     provider: FactoryProvider<Value>,
+    options?: RegistrationOptions,
+  ): this;
+
+  /**
+   * Registers an {@link ExistingProvider} with a token.
+   */
+  register<Value>(
+    token: Token<Value>,
+    provider: ExistingProvider<Value>,
     options?: RegistrationOptions,
   ): this;
 
