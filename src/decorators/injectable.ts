@@ -24,8 +24,8 @@ import { throwNoTokensProvidedError } from "../errors";
  *
  * @__NO_SIDE_EFFECTS__
  */
-export function Injectable<This extends object>(
-  ...tokens: Token<This>[]
+export function Injectable<This extends object, Value extends This>(
+  ...tokens: Token<Value>[]
 ): ClassDecorator<Constructor<This>> {
   // The current method signature allows for an empty array.
   // While that is not solved, let's throw an error when no tokens are provided.
