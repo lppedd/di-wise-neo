@@ -7,5 +7,5 @@ export interface Disposable {
  */
 export function isDisposable(obj: any): obj is Disposable {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return !!obj && typeof obj === "object" && typeof obj["dispose"] === "function";
+  return !!obj && typeof obj === "object" && typeof obj.dispose === "function";
 }
