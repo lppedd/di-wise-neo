@@ -22,9 +22,9 @@ export interface RegistrationOptions {
 }
 
 export interface Registration<T = any> {
-  options?: RegistrationOptions;
   instance?: InstanceRef<T>;
   provider: Provider<T>;
+  options?: RegistrationOptions;
 }
 
 // eslint-disable-next-line no-use-before-define
