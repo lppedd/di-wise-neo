@@ -3,7 +3,7 @@ import type { Constructor } from "../token";
 import type { ClassDecorator } from "./decorators";
 
 /**
- * Decorator for enabling auto-registration of a class.
+ * Decorator for enabling auto-registration of a class when resolving it.
  *
  * @example
  * ```ts

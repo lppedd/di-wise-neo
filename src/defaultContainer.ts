@@ -155,7 +155,7 @@ export class DefaultContainer implements Container {
       });
 
       // Register the additional tokens specified via class decorators.
-      // These tokens will point to the original Class token, and will have the same scope.
+      // These tokens will point to the original Class token and will have the same scope.
       for (const token of metadata.tokens) {
         this.registry.set(token, {
           provider: {

@@ -4,7 +4,10 @@ import type { Constructor } from "../token";
 import type { ClassDecorator } from "./decorators";
 
 /**
- * Decorator for setting the scope of a class when registering.
+ * Decorator for setting the scope of a class when registering it.
+ *
+ * The scope specified by this decorator is overridden by explicit
+ * registration options, if provided.
  *
  * @example
  * ```ts
@@ -16,8 +19,8 @@ import type { ClassDecorator } from "./decorators";
  * // Under the hood
  * container.register(
  *   Wizard,
- *   {useClass: Wizard},
- *   {scope: Scope.Container},
+ *   { useClass: Wizard },
+ *   { scope: Scope.Container },
  * );
  * ```
  *
