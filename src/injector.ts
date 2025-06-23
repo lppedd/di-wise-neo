@@ -6,7 +6,7 @@ import {
   useInjectionContext,
 } from "./injectionContext";
 import { Build } from "./registry";
-import type { Constructor, Token, TokenList, Type } from "./token";
+import type { Constructor, Token, TokenList, Tokens, Type } from "./token";
 
 /**
  * Injector API.
@@ -25,7 +25,7 @@ export interface Injector {
   /**
    * Inject the value of a token, by checking each token in order until a registered one is found.
    */
-  inject<Values extends unknown[]>(...tokens: TokenList<Values>): Values[number];
+  inject<Values extends [unknown, ...unknown[]]>(...tokens: TokenList<Values>): Values[number];
 
   /**
    * Inject instances of a class with all registered providers.
@@ -45,7 +45,9 @@ export interface Injector {
    *
    * The returned array will not contain `null` or `undefined` values.
    */
-  injectAll<Values extends unknown[]>(...tokens: TokenList<Values>): NonNullable<Values[number]>[];
+  injectAll<Values extends [unknown, ...unknown[]]>(
+    ...tokens: TokenList<Values>
+  ): NonNullable<Values[number]>[];
 }
 
 /**
@@ -94,7 +96,7 @@ export const Injector: Type<Injector> = /*@__PURE__*/ Build(function Injector() 
   }
 
   return {
-    inject: <T>(...tokens: Token<T>[]) => withCurrentContext(() => inject(...tokens)),
-    injectAll: <T>(...tokens: Token<T>[]) => withCurrentContext(() => injectAll(...tokens)),
+    inject: <T>(...tokens: Tokens<T>) => withCurrentContext(() => inject(...tokens)),
+    injectAll: <T>(...tokens: Tokens<T>) => withCurrentContext(() => injectAll(...tokens)),
   };
 });

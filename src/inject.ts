@@ -1,5 +1,5 @@
 import { ensureInjectionContext } from "./injectionContext";
-import type { Constructor, Token, TokenList } from "./token";
+import type { Constructor, Token, TokenList, Tokens } from "./token";
 
 /**
  * Inject an instance of a class.
@@ -14,9 +14,11 @@ export function inject<Value>(token: Token<Value>): Value;
 /**
  * Inject an instance of a token, by checking each token in order until a registered one is found.
  */
-export function inject<Values extends unknown[]>(...tokens: TokenList<Values>): Values[number];
+export function inject<Values extends [unknown, ...unknown[]]>(
+  ...tokens: TokenList<Values>
+): Values[number];
 
-export function inject<T>(...tokens: Token<T>[]): T {
+export function inject<T>(...tokens: Tokens<T>): T {
   const context = ensureInjectionContext(inject);
   return context.container.resolve(...tokens);
 }
@@ -46,12 +48,12 @@ export function injectBy<Value>(thisArg: any, token: Token<Value>): Value;
  * @param thisArg - Used for resolving circular dependencies.
  * @param tokens - The token to resolve. Each token is checked in order until a registered one is found.
  */
-export function injectBy<Values extends unknown[]>(
+export function injectBy<Values extends [unknown, ...unknown[]]>(
   thisArg: any,
   ...tokens: TokenList<Values>
 ): Values[number];
 
-export function injectBy<T>(thisArg: any, ...tokens: Token<T>[]): T {
+export function injectBy<T>(thisArg: any, ...tokens: Tokens<T>): T {
   const context = ensureInjectionContext(injectBy);
   const resolution = context.resolution;
   const currentFrame = resolution.stack.peek();

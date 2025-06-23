@@ -34,7 +34,7 @@ describe("inject", () => {
       container.resolve(
         class Wizard {
           constructor() {
-            setTimeout(() => injectBy(Wand));
+            setTimeout(() => injectBy(Wand, Wand));
           }
         },
       );

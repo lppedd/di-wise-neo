@@ -17,5 +17,5 @@ export type {
 export type { RegistrationOptions } from "./registry";
 export { Build, Value } from "./registry";
 export { Scope } from "./scope";
-export type { Constructor, Token, TokenList } from "./token";
+export type { Constructor, Token, TokenList, Tokens } from "./token";
 export { Type } from "./token";

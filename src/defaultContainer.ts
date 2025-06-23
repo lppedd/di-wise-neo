@@ -3,7 +3,6 @@ import {
   assert,
   expectNever,
   throwExistingUnregisteredError,
-  throwNoTokensProvidedError,
   throwUnregisteredError,
 } from "./errors";
 import { createResolution, provideInjectionContext, useInjectionContext } from "./injectionContext";
@@ -224,12 +223,6 @@ export class DefaultContainer implements Container {
   resolve<T>(...tokens: Token<T>[]): T {
     this.checkDisposed();
 
-    // The current method signature allows for an empty array.
-    // While that is not solved, let's throw an error when no tokens are provided.
-    if (tokens.length === 0) {
-      throwNoTokensProvidedError();
-    }
-
     for (const token of tokens) {
       const registration = this.registry.get(token);
 
@@ -247,12 +240,6 @@ export class DefaultContainer implements Container {
 
   resolveAll<T>(...tokens: Token<T>[]): NonNullable<T>[] {
     this.checkDisposed();
-
-    // The current method signature allows for an empty array.
-    // While that is not solved, let's throw an error when no tokens are provided.
-    if (tokens.length === 0) {
-      throwNoTokensProvidedError();
-    }
 
     for (const token of tokens) {
       const registrations = this.registry.getAll(token);
