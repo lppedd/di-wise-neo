@@ -65,7 +65,7 @@ describe("Container", () => {
     // The cached value should be the value for the last registration
     expect(container.getCached(Wizard)).toBe(wizards[1]);
 
-    // We should now have two cached instances for the two registrations
+    // We should now have two cached values for the two registrations
     const cachedWizards = container.getAllCached(Wizard);
     expect(cachedWizards).toHaveLength(2);
 
@@ -79,7 +79,7 @@ describe("Container", () => {
     expect(container.getCached(Wizard)).toBeUndefined();
     expect(container.getAllCached(Wizard)).toEqual([]);
 
-    // Since the cached values have been cleared, new instances are created
+    // Since the cached values have been cleared, new values are created
     expect(container.resolve(Wizard)).not.toBe(wizards[1]);
 
     // An empty array should be returned for unregistered tokens

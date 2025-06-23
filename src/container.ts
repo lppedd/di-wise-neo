@@ -92,7 +92,7 @@ export interface Container {
   /**
    * Removes all registrations from the container's internal registry.
    *
-   * Returns an array of unique cached instances that were associated with the removed registrations.
+   * Returns an array of unique cached values that were associated with the removed registrations.
    * Values of registrations created via {@link ValueProvider} are not included in the array, as they are not cached.
    *
    * Note that this only affects the current container. The parent container, if any, is not affected.
@@ -148,7 +148,7 @@ export interface Container {
   /**
    * Removes all registrations for the given token from the container's internal registry.
    *
-   * Returns an array of unique cached instances that were associated with the removed registrations.
+   * Returns an array of unique cached values that were associated with the removed registrations.
    * Values of registrations created via {@link ValueProvider} are not included in the array, as they are not cached.
    *
    * Note that this only affects the current container. The parent container, if any, is not affected.
@@ -161,12 +161,12 @@ export interface Container {
   resolve<Instance extends object>(Class: Constructor<Instance>): Instance;
 
   /**
-   * Resolves a token to an instance.
+   * Resolves a token to its value.
    */
   resolve<Value>(token: Token<Value>): Value;
 
   /**
-   * Resolves a token to an instance, by checking each token in order until a registered one is found.
+   * Resolves a token to its value, by checking each token in order until a registered one is found.
    */
   resolve<Values extends unknown[]>(...tokens: TokenList<Values>): Values[number];
 
@@ -176,21 +176,22 @@ export interface Container {
   resolveAll<Instance extends object>(Class: Constructor<Instance>): Instance[];
 
   /**
-   * Resolves a token to instances with all registered providers.
+   * Resolves a token to the values of all its registered providers.
    *
    * The returned array _will not_ contain `null` or `undefined` values.
    */
   resolveAll<Value>(token: Token<Value>): NonNullable<Value>[];
 
   /**
-   * Resolves a token to instances with all registered providers, by checking each token in order until a registered one is found.
+   * Resolves a token to the values of all its registered providers,
+   * by checking each token in order until a registered one is found.
    *
    * The returned array _will not_ contain `null` or `undefined` values.
    */
   resolveAll<Values extends unknown[]>(...tokens: TokenList<Values>): NonNullable<Values[number]>[];
 
   /**
-   * Disposes the container, and all its currently instantiated classes/tokens.
+   * Disposes the container, and all its currently cached values.
    *
    * Children containers are disposed first, in creation order.
    */
