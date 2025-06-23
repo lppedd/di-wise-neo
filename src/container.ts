@@ -50,11 +50,13 @@ export interface Container {
   getParent(): Container | undefined;
 
   /**
-   * Clears the cached instances with container scope.
+   * Clears the cached values with container scope from the container's internal registry.
    *
-   * The registered constants with {@link ValueProvider} are not affected.
+   * Values of registrations created via {@link ValueProvider} are not affected, as they are not cached.
+   *
+   * Note that this only affects the current container. The parent container, if any, is not affected.
    */
-  clearCache(): void;
+  clearCache(): unknown[];
 
   /**
    * Creates a child container with the same configuration.
@@ -62,7 +64,7 @@ export interface Container {
   createChild(): Container;
 
   /**
-   * Gets the cached instance for the token with container scope.
+   * Gets the cached value for the token with container scope.
    */
   getCached<Value>(token: Token<Value>): Value | undefined;
 
@@ -112,8 +114,13 @@ export interface Container {
 
   /**
    * Removes all registrations from the container's internal registry.
+   *
+   * Returns an array of unique cached instances that were associated with the removed registrations.
+   * Values of registrations created via {@link ValueProvider} are not included in the array, as they are not cached.
+   *
+   * Note that this only affects the current container. The parent container, if any, is not affected.
    */
-  resetRegistry(): void;
+  resetRegistry(): unknown[];
 
   /**
    * Resolves a class token to an instance.
@@ -150,9 +157,14 @@ export interface Container {
   resolveAll<Values extends unknown[]>(...tokens: TokenList<Values>): NonNullable<Values[number]>[];
 
   /**
-   * Removes a registration from the container's internal registry.
+   * Removes all registrations for the given token from the container's internal registry.
+   *
+   * Returns an array of unique cached instances that were associated with the removed registrations.
+   * Values of registrations created via {@link ValueProvider} are not included in the array, as they are not cached.
+   *
+   * Note that this only affects the current container. The parent container, if any, is not affected.
    */
-  unregister(token: Token): this;
+  unregister<Value>(token: Token<Value>): NonNullable<Value>[];
 
   /**
    * Disposes the container, and all its currently instantiated classes/tokens.
