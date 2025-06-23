@@ -87,7 +87,7 @@ export interface Container {
    * Values are not cached for tokens with transient or resolution scope,
    * or for registrations created via {@link ValueProvider}.
    */
-  getAllCached<Value>(token: Token<Value>): NonNullable<Value>[];
+  getAllCached<Value>(token: Token<Value>): Value[];
 
   /**
    * Removes all registrations from the container's internal registry.
@@ -151,7 +151,7 @@ export interface Container {
    *
    * Note that this only affects the current container. The parent container, if any, is not affected.
    */
-  unregister<Value>(token: Token<Value>): NonNullable<Value>[];
+  unregister<Value>(token: Token<Value>): Value[];
 
   /**
    * Resolves a class token to an instance.

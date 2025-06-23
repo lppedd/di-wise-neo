@@ -72,10 +72,10 @@ export class DefaultContainer implements Container {
     for (const registrations of this.registry.map.values()) {
       for (let i = 0; i < registrations.length; i++) {
         const registration = registrations[i]!;
-        const instance = registration.instance?.current;
+        const instance = registration.instance;
 
         if (instance) {
-          instances.add(instance);
+          instances.add(instance.current);
         }
 
         registrations[i] = {
@@ -94,7 +94,7 @@ export class DefaultContainer implements Container {
     return registration?.instance?.current;
   }
 
-  getAllCached<T>(token: Token<T>): NonNullable<T>[] {
+  getAllCached<T>(token: Token<T>): T[] {
     this.checkDisposed();
     const registrations = this.registry.getAll(token);
 
@@ -102,13 +102,13 @@ export class DefaultContainer implements Container {
       return [];
     }
 
-    const instances = new Set<NonNullable<T>>();
+    const instances = new Set<T>();
 
     for (const registration of registrations) {
-      const instance = registration.instance?.current;
+      const instance = registration.instance;
 
       if (instance) {
-        instances.add(instance);
+        instances.add(instance.current);
       }
     }
 
@@ -121,10 +121,10 @@ export class DefaultContainer implements Container {
     const instances = new Set<unknown>();
 
     for (const registration of registrations) {
-      const instance = registration.instance?.current;
+      const instance = registration.instance;
 
       if (instance) {
-        instances.add(instance);
+        instances.add(instance.current);
       }
     }
 
@@ -199,7 +199,7 @@ export class DefaultContainer implements Container {
     return this;
   }
 
-  unregister<T>(token: Token<T>): NonNullable<T>[] {
+  unregister<T>(token: Token<T>): T[] {
     this.checkDisposed();
     const registrations = this.registry.delete(token);
 
@@ -207,13 +207,13 @@ export class DefaultContainer implements Container {
       return [];
     }
 
-    const instances = new Set<NonNullable<T>>();
+    const instances = new Set<T>();
 
     for (const registration of registrations) {
-      const instance = registration.instance?.current;
+      const instance = registration.instance;
 
       if (instance) {
-        instances.add(instance);
+        instances.add(instance.current);
       }
     }
 
