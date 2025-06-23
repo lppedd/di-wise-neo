@@ -87,6 +87,28 @@ describe("Container", () => {
     expect(container.getAllCached(Wizard)).toEqual([]);
   });
 
+  it("should get primitive cached values", () => {
+    const Env = Type<string>("Env");
+    const Port = Type<number>("Port");
+    const Null = Type<null>("Undefined");
+
+    container.register(Env, { useFactory: () => "" }, { scope: Scope.Container });
+    container.register(Port, { useFactory: () => 0 }, { scope: Scope.Container });
+    container.register(Null, { useFactory: () => null }, { scope: Scope.Container });
+
+    expect(container.resolve(Env)).toBe("");
+    expect(container.resolve(Port)).toBe(0);
+    expect(container.resolve(Null)).toBe(null);
+
+    expect(container.getCached(Env)).toBe("");
+    expect(container.getCached(Port)).toBe(0);
+    expect(container.getCached(Null)).toBe(null);
+
+    expect(container.getAllCached(Port)).toEqual([0]);
+    expect(container.getAllCached(Env)).toEqual([""]);
+    expect(container.getAllCached(Null)).toEqual([null]);
+  });
+
   it("should reset registry", () => {
     const container = createContainer({
       defaultScope: Scope.Container,
