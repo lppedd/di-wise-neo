@@ -77,6 +77,19 @@ export interface Container {
   getCached<Value>(token: Token<Value>): Value | undefined;
 
   /**
+   * Returns all cached values associated with registrations of the token,
+   * in the order they were registered, or an empty array if none have been cached.
+   *
+   * If the token has at least one registration in the current container,
+   * cached values are taken from those registrations.
+   * Otherwise, cached values may be retrieved from parent containers, if any.
+   *
+   * Values are not cached for tokens with transient or resolution scope,
+   * or for registrations created via {@link ValueProvider}.
+   */
+  getAllCached<Value>(token: Token<Value>): NonNullable<Value>[];
+
+  /**
    * Removes all registrations from the container's internal registry.
    *
    * Returns an array of unique cached instances that were associated with the removed registrations.

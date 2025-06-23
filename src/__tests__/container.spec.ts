@@ -50,18 +50,41 @@ describe("Container", () => {
     expect(child.getParent()).toBe(parent);
   });
 
-  it("should clear the cache but keep the registrations", () => {
+  it("should get the cached values but keep the registrations", () => {
+    @Scoped(Scope.Container)
     class Wizard {}
 
-    container.register(Wizard, { useClass: Wizard }, { scope: Scope.Container });
+    // Purposedly register two Wizard(s)
+    container.register(Wizard);
+    container.register(Wizard);
 
-    const wizard = container.resolve(Wizard);
-    expect(container.getCached(Wizard)).toBe(wizard);
+    // Resolve all Wizard(s) so the values are cached
+    const wizards = container.resolveAll(Wizard);
+    expect(wizards).toHaveLength(2);
+
+    // The cached value should be the value for the last registration
+    expect(container.getCached(Wizard)).toBe(wizards[1]);
+
+    // We should now have two cached instances for the two registrations
+    const cachedWizards = container.getAllCached(Wizard);
+    expect(cachedWizards).toHaveLength(2);
+
+    // The cached values are returned in registration order
+    expect(cachedWizards[0]).toBe(wizards[0]);
+    expect(cachedWizards[1]).toBe(wizards[1]);
 
     container.clearCache();
+
     expect(container.isRegistered(Wizard)).toBe(true);
     expect(container.getCached(Wizard)).toBeUndefined();
-    expect(container.resolve(Wizard)).not.toBe(wizard);
+    expect(container.getAllCached(Wizard)).toEqual([]);
+
+    // Since the cached values have been cleared, new instances are created
+    expect(container.resolve(Wizard)).not.toBe(wizards[1]);
+
+    // An empty array should be returned for unregistered tokens
+    container.unregister(Wizard);
+    expect(container.getAllCached(Wizard)).toEqual([]);
   });
 
   it("should reset registry", () => {
