@@ -1,3 +1,4 @@
+import { assert } from "../errors";
 import { getMetadata } from "../metadata";
 import type { Constructor, Token } from "../token";
 import type { ClassDecorator } from "./decorators";
@@ -28,11 +29,13 @@ export function Injectable<This extends object, Value extends This>(
   ...tokens: Token<Value>[]
 ): ClassDecorator<Constructor<This>> {
   return (Class) => {
-    const metadata = getMetadata(Class);
-    metadata.tokens.add(token);
+    const metadataTokens = getMetadata(Class).tokens;
+    metadataTokens.add(token);
 
     for (const other of tokens) {
-      metadata.tokens.add(other);
+      const message = `token ${other.name} must be passed exactly once to @Injectable`;
+      assert(!metadataTokens.has(other), message);
+      metadataTokens.add(other);
     }
   };
 }

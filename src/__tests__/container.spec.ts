@@ -100,6 +100,18 @@ describe("Container", () => {
     expect(container.resolve(Wizard)).toBe(container.resolve(Dumbledore));
   });
 
+  it("should throw error when a token is passed multiple times to @Injectable", () => {
+    expect(() => {
+      const Character = Type<{}>("Character");
+
+      @Injectable(Character, Character)
+      @Scoped(Scope.Container) // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {}
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise] token Type<Character> must be passed exactly once to @Injectable]`,
+    );
+  });
+
   it("should use the same provider for the same class", () => {
     const Character = Type<{}>("Character");
     const Hero = Type<{}>("Hero");
