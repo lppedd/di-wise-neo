@@ -288,6 +288,27 @@ describe("Container", () => {
     );
   });
 
+  it("should throw error if no tokens are passed to resolve, resolveAll, @Injectable", () => {
+    expect(() => {
+      container.resolve();
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise] at least one token must be provided for dependency resolution]`,
+    );
+
+    expect(() => {
+      container.resolveAll();
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise] at least one token must be provided for dependency resolution]`,
+    );
+
+    expect(() => {
+      @Injectable() // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {}
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise] at least one token must be provided for dependency resolution]`,
+    );
+  });
+
   it("should throw error if detected circular dependency", () => {
     class Wand {
       // eslint-disable-next-line no-use-before-define

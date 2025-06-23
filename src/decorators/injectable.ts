@@ -1,6 +1,7 @@
 import { getMetadata } from "../metadata";
 import type { Constructor, Token } from "../token";
 import type { ClassDecorator } from "./decorators";
+import { throwNoTokensProvidedError } from "../errors";
 
 /**
  * Decorator for adding additional tokens to a class when registering.
@@ -26,6 +27,12 @@ import type { ClassDecorator } from "./decorators";
 export function Injectable<This extends object>(
   ...tokens: Token<This>[]
 ): ClassDecorator<Constructor<This>> {
+  // The current method signature allows for an empty array.
+  // While that is not solved, let's throw an error when no tokens are provided.
+  if (tokens.length === 0) {
+    throwNoTokensProvidedError();
+  }
+
   return (Class) => {
     const metadata = getMetadata(Class);
 

@@ -13,6 +13,11 @@ export function expectNever(value: never): never {
 }
 
 // @internal
+export function throwNoTokensProvidedError(): never {
+  throw new Error(tag(`at least one token must be provided for dependency resolution`));
+}
+
+// @internal
 export function throwUnregisteredError(tokens: Token[]): never {
   const tokenNames = tokens.map((token) => token.name);
   throw new Error(tag(`unregistered token(s) ${tokenNames.join(", ")}`));
