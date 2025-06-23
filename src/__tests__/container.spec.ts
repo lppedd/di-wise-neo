@@ -299,16 +299,10 @@ describe("Container", () => {
   });
 
   it("should resolve existing providers", () => {
-    class Registered {}
-    class NotRegistered {}
+    @Scoped(Scope.Container)
     class WizardImpl {}
     const Wizard = Type<WizardImpl>("Wizard");
 
-    const container = createContainer({
-      defaultScope: "Container",
-    });
-
-    container.register(Registered, { useExisting: NotRegistered });
     container.register(WizardImpl);
 
     // We should not be able to register a token pointing to itself,
@@ -319,13 +313,20 @@ describe("Container", () => {
 
     container.register(Wizard, { useExisting: WizardImpl });
     expect(container.resolve(WizardImpl)).toBe(container.resolve(Wizard));
+  });
+
+  it("should throw error if existing provider points to unregistered token", () => {
+    class Registered {}
+    class NotRegistered {}
+
+    container.register(Registered, { useExisting: NotRegistered });
 
     // When resolving a token using an ExistingProvider that points to an unregistered token,
     // the error should include the original cause
     expect(() => container.resolve(Registered)).toThrowErrorMatchingInlineSnapshot(
       `
       [Error: [di-wise] token resolution error encountered while resolving Registered
-        [cause] unregistered class NotRegistered cannot be resolved in container scope]
+        [cause] the aliased token NotRegistered is not registered]
       `,
     );
 
@@ -336,7 +337,33 @@ describe("Container", () => {
     expect(() => container.resolveAll(Registered)).toThrowErrorMatchingInlineSnapshot(
       `
       [Error: [di-wise] token resolution error encountered while resolving Registered
-        [cause] unregistered class NotRegistered cannot be resolved in container scope]
+        [cause] the aliased token NotRegistered is not registered]
+      `,
+    );
+  });
+
+  it("should throw error if resolving existing provider with circular dependency", () => {
+    @Scoped(Scope.Container)
+    class Wand {
+      // eslint-disable-next-line no-use-before-define
+      dep = inject(Wizard);
+    }
+
+    @Scoped(Scope.Container)
+    class Wizard {
+      dep = inject(Wand);
+    }
+
+    const Character = Type<Wizard>("Character");
+
+    container.register(Wand);
+    container.register(Wizard);
+    container.register(Character, { useExisting: Wizard });
+
+    expect(() => container.resolveAll(Character)).toThrowErrorMatchingInlineSnapshot(
+      `
+      [Error: [di-wise] token resolution error encountered while resolving Type<Character>
+        [cause] circular dependency detected]
       `,
     );
   });

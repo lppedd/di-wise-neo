@@ -9,6 +9,7 @@ import {
 import { createResolution, provideInjectionContext, useInjectionContext } from "./injectionContext";
 import { getMetadata } from "./metadata";
 import {
+  type ExistingProvider,
   isClassProvider,
   isExistingProvider,
   isFactoryProvider,
@@ -233,7 +234,7 @@ export class DefaultContainer implements Container {
       const registration = this.registry.get(token);
 
       if (registration) {
-        return this.instantiateProvider(token, registration);
+        return this.resolveRegistration(token, registration);
       }
 
       if (isConstructor(token)) {
@@ -258,7 +259,7 @@ export class DefaultContainer implements Container {
 
       if (registrations) {
         return registrations
-          .map((registration) => this.instantiateProvider(token, registration))
+          .map((registration) => this.resolveRegistration(token, registration))
           .filter((instance) => instance != null);
       }
 
@@ -306,6 +307,34 @@ export class DefaultContainer implements Container {
     registry.map.clear();
   }
 
+  private resolveRegistration<T>(token: Token<T>, registration: Registration<T>): T {
+    let currRegistration: Registration<T> | undefined = registration;
+    let currProvider = currRegistration.provider;
+
+    while (isExistingProvider(currProvider)) {
+      const targetToken = currProvider.useExisting;
+      currRegistration = this.registry.get(targetToken);
+
+      if (!currRegistration) {
+        throwExistingUnregisteredError(token, targetToken);
+      }
+
+      currProvider = currRegistration.provider;
+    }
+
+    try {
+      return this.instantiateProvider(currRegistration, currProvider);
+    } catch (e) {
+      // If we were trying to resolve a token registered via ExistingProvider,
+      // we must add the cause of the error to the message
+      if (isExistingProvider(registration.provider)) {
+        throwExistingUnregisteredError(token, e as Error);
+      }
+
+      throw e;
+    }
+  }
+
   private instantiateClass<T extends object>(Class: Constructor<T>): T {
     const metadata = getMetadata(Class);
 
@@ -331,22 +360,15 @@ export class DefaultContainer implements Container {
     return this.resolveScopedInstance(registration, () => new Class());
   }
 
-  private instantiateProvider<T>(token: Token<T>, registration: Registration<T>): T {
-    const provider = registration.provider;
+  private instantiateProvider<T>(
+    registration: Registration<T>,
+    provider: Exclude<Provider<T>, ExistingProvider<T>>,
+  ): T {
+    assert(registration.provider === provider, "internal error: mismatching provider");
 
     if (isClassProvider(provider)) {
       const Class = provider.useClass;
       return this.resolveScopedInstance(registration, () => new Class());
-    }
-
-    if (isExistingProvider(provider)) {
-      return this.resolveScopedInstance(registration, () => {
-        try {
-          return this.resolve(provider.useExisting);
-        } catch (e) {
-          throwExistingUnregisteredError(token, e as Error);
-        }
-      });
     }
 
     if (isFactoryProvider(provider)) {

@@ -24,10 +24,24 @@ export function throwUnregisteredError(tokens: Token[]): never {
 }
 
 // @internal
-export function throwExistingUnregisteredError(token: Token, cause: Error): never {
-  let message = tag(`token resolution error encountered while resolving ${token.name}`);
-  message += `\n  [cause] ${untag(cause.message)}`;
-  throw new Error(message, { cause: cause });
+export function throwExistingUnregisteredError(
+  sourceToken: Token,
+  targetTokenOrError: Token | Error,
+): never {
+  let message = tag(`token resolution error encountered while resolving ${sourceToken.name}`);
+
+  if (isError(targetTokenOrError)) {
+    message += `\n  [cause] ${untag(targetTokenOrError.message)}`;
+  } else {
+    message += `\n  [cause] the aliased token ${targetTokenOrError.name} is not registered`;
+  }
+
+  throw new Error(message);
+}
+
+function isError(value: any): value is Error {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  return value && value.stack && value.message && typeof value.message === "string";
 }
 
 function tag(message: string): string {
