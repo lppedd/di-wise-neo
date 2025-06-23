@@ -94,11 +94,6 @@ export class DefaultContainer implements Container {
     return registration?.instance?.current;
   }
 
-  isRegistered(token: Token): boolean {
-    this.checkDisposed();
-    return !!this.registry.get(token);
-  }
-
   resetRegistry(): unknown[] {
     this.checkDisposed();
     const registrations = this.registry.deleteAll();
@@ -115,25 +110,9 @@ export class DefaultContainer implements Container {
     return Array.from(instances);
   }
 
-  unregister<T>(token: Token<T>): NonNullable<T>[] {
+  isRegistered(token: Token): boolean {
     this.checkDisposed();
-    const registrations = this.registry.delete(token);
-
-    if (!registrations) {
-      return [];
-    }
-
-    const instances = new Set<NonNullable<T>>();
-
-    for (const registration of registrations) {
-      const instance = registration.instance?.current;
-
-      if (instance) {
-        instances.add(instance);
-      }
-    }
-
-    return Array.from(instances);
+    return !!this.registry.get(token);
   }
 
   register<T>(
@@ -197,6 +176,27 @@ export class DefaultContainer implements Container {
     }
 
     return this;
+  }
+
+  unregister<T>(token: Token<T>): NonNullable<T>[] {
+    this.checkDisposed();
+    const registrations = this.registry.delete(token);
+
+    if (!registrations) {
+      return [];
+    }
+
+    const instances = new Set<NonNullable<T>>();
+
+    for (const registration of registrations) {
+      const instance = registration.instance?.current;
+
+      if (instance) {
+        instances.add(instance);
+      }
+    }
+
+    return Array.from(instances);
   }
 
   resolve<T>(...tokens: Token<T>[]): T {
