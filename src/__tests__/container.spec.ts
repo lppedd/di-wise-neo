@@ -162,13 +162,33 @@ describe("Container", () => {
     expect(registration.options?.scope).toBe(Scope.Transient);
   });
 
-  it("should unregister a token", () => {
+  it("should unregister tokens", () => {
     const Env = Type<string>("Env");
+
+    @Scoped(Scope.Container)
+    class Product {
+      env = inject(Env);
+    }
+
+    // Unregistering an unregistered token should simply return an empty array
+    expect(container.unregister(Env)).toEqual([]);
+
     container.register(Env, { useValue: "production" });
+    container.register(Product, { useClass: Product });
 
     expect(container.isRegistered(Env)).toBe(true);
-    container.unregister(Env);
+    expect(container.isRegistered(Product)).toBe(true);
+    expect(container.resolve(Product)).toBeInstanceOf(Product);
+
+    // Values provided via ValueProvider are not returned
+    expect(container.unregister(Env)).toEqual([]);
+
+    const cachedValues = container.unregister(Product);
+    expect(cachedValues).toHaveLength(1);
+    expect(cachedValues[0]).toBeInstanceOf(Product);
+
     expect(container.isRegistered(Env)).toBe(false);
+    expect(container.isRegistered(Product)).toBe(false);
   });
 
   it("should throw an error if unregistered class has container scope", () => {

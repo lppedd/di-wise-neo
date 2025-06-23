@@ -65,18 +65,27 @@ export class DefaultContainer implements Container {
     return container;
   }
 
-  clearCache(): void {
+  clearCache(): unknown[] {
     this.checkDisposed();
+    const instances = new Set<unknown>();
 
     for (const registrations of this.registry.map.values()) {
       for (let i = 0; i < registrations.length; i++) {
         const registration = registrations[i]!;
+        const instance = registration.instance?.current;
+
+        if (instance) {
+          instances.add(instance);
+        }
+
         registrations[i] = {
           provider: registration.provider,
           options: registration.options,
         };
       }
     }
+
+    return Array.from(instances);
   }
 
   getCached<Value>(token: Token<Value>): Value | undefined {
@@ -90,14 +99,41 @@ export class DefaultContainer implements Container {
     return !!this.registry.get(token);
   }
 
-  resetRegistry(): void {
-    this.registry.map.clear();
+  resetRegistry(): unknown[] {
+    this.checkDisposed();
+    const registrations = this.registry.deleteAll();
+    const instances = new Set<unknown>();
+
+    for (const registration of registrations) {
+      const instance = registration.instance?.current;
+
+      if (instance) {
+        instances.add(instance);
+      }
+    }
+
+    return Array.from(instances);
   }
 
-  unregister(token: Token): this {
+  unregister<T>(token: Token<T>): NonNullable<T>[] {
     this.checkDisposed();
-    this.registry.map.delete(token);
-    return this;
+    const registrations = this.registry.delete(token);
+
+    if (!registrations) {
+      return [];
+    }
+
+    const instances = new Set<NonNullable<T>>();
+
+    for (const registration of registrations) {
+      const instance = registration.instance?.current;
+
+      if (instance) {
+        instances.add(instance);
+      }
+    }
+
+    return Array.from(instances);
   }
 
   register<T>(

@@ -70,6 +70,18 @@ export class Registry {
     registrations.push(registration);
   }
 
+  delete<T>(token: Token<T>): Registration<T>[] | undefined {
+    const registrations = this.myMap.get(token);
+    this.myMap.delete(token);
+    return registrations;
+  }
+
+  deleteAll(): Registration[] {
+    const registrations = Array.from(this.myMap.values()).flat();
+    this.myMap.clear();
+    return registrations;
+  }
+
   private getAllFromHierarchy<T>(token: Token<T>): Registration<T>[] | undefined {
     const registrations = this.myMap.get(token);
     return registrations || this.parent?.getAllFromHierarchy(token);
