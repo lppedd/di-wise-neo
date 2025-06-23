@@ -10,17 +10,13 @@ export function InjectAll<Instance extends object>(
 ): ClassFieldDecorator<Instance[]>;
 
 /**
- * Decorator for injecting the values of a token from all its registered providers.
- *
- * The returned array will not contain `null` or `undefined` values.
+ * Decorator for injecting the values of a token created by all its registered providers.
  */
 export function InjectAll<Value>(token: Token<Value>): ClassFieldDecorator<NonNullable<Value>[]>;
 
 /**
- * Decorator for injecting the values of a token from all its registered providers,
- * by checking each token in order until a registered one is found.
- *
- * The returned array will not contain `null` or `undefined` values.
+ * Decorator for injecting values by sequentially checking each token
+ * in the provided list until a registered one is found.
  */
 export function InjectAll<Values extends [unknown, ...unknown[]]>(
   ...tokens: TokenList<Values>

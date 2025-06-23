@@ -4,7 +4,9 @@ import type { Constructor, Tokens } from "../token";
 import type { ClassDecorator } from "./decorators";
 
 /**
- * Decorator for adding additional tokens to a class when registering.
+ * Decorator for adding aliasing tokens to a class when registering it.
+ *
+ * The container uses {@link ExistingProvider} under the hood.
  *
  * @example
  * ```ts
@@ -17,7 +19,7 @@ import type { ClassDecorator } from "./decorators";
  * [Wand, Weapon].forEach((token) => {
  *   container.register(
  *     token,
- *     {useClass: Wand},
+ *     { useClass: Wand },
  *   );
  * });
  * ```

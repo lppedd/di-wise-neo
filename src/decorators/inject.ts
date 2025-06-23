@@ -15,7 +15,8 @@ export function Inject<Instance extends object>(
 export function Inject<Value>(token: Token<Value>): ClassFieldDecorator<Value>;
 
 /**
- * Decorator for injecting the value of a token, by checking each token in order until a registered one is found.
+ * Decorator for injecting a value by sequentially checking each token
+ * in the provided list until a registered one is found.
  */
 export function Inject<Values extends [unknown, ...unknown[]]>(
   ...tokens: TokenList<Values>

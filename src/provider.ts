@@ -1,21 +1,21 @@
 import type { Constructor, Token } from "./token";
 
 /**
- * Provides a token via a zero-argument class constructor.
+ * Provides a class instance for a token via a class constructor.
  */
 export interface ClassProvider<Instance extends object> {
   readonly useClass: Constructor<Instance>;
 }
 
 /**
- * Provides a token via another existing token.
+ * Provides a value for a token via another existing token.
  */
 export interface ExistingProvider<Value> {
   readonly useExisting: Token<Value>;
 }
 
 /**
- * Provides a token via a factory function.
+ * Provides a value for a token via a factory function.
  *
  * The factory function runs inside the injection context
  * and can thus access dependencies via {@link inject}.
@@ -25,7 +25,7 @@ export interface FactoryProvider<Value> {
 }
 
 /**
- * Provides a token via an explicit - already constructed - value.
+ * Provides a direct - already constructed - value for a token.
  */
 export interface ValueProvider<T> {
   readonly useValue: T;
