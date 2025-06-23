@@ -82,18 +82,22 @@ describe("Container", () => {
 
   it("should register all tokens", () => {
     const Character = Type<{}>("Character");
+    const Dumbledore = Type<{}>("Dumbledore");
 
-    @Injectable(Character)
+    @Injectable(Character, Dumbledore)
     @Scoped(Scope.Container)
     class Wizard {}
 
     container.register(Wizard);
+
     expect(container.isRegistered(Character)).toBe(true);
+    expect(container.isRegistered(Dumbledore)).toBe(true);
     expect(container.isRegistered(Wizard)).toBe(true);
 
     // Since Wizard has been registered as a singleton, the Character token
     // which is being used as an alias should resolve to the same instance
     expect(container.resolve(Wizard)).toBe(container.resolve(Character));
+    expect(container.resolve(Wizard)).toBe(container.resolve(Dumbledore));
   });
 
   it("should use the same provider for the same class", () => {
@@ -297,13 +301,6 @@ describe("Container", () => {
 
     expect(() => {
       container.resolveAll();
-    }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] at least one token must be provided for dependency resolution]`,
-    );
-
-    expect(() => {
-      @Injectable() // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      class Wizard {}
     }).toThrowErrorMatchingInlineSnapshot(
       `[Error: [di-wise] at least one token must be provided for dependency resolution]`,
     );
