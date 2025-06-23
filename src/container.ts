@@ -64,7 +64,15 @@ export interface Container {
   clearCache(): unknown[];
 
   /**
-   * Gets the cached value for the token with container scope.
+   * Returns the cached value from the most recent registration of the token,
+   * or `undefined` if no value has been cached yet.
+   *
+   * If the token has at least one registration in the current container,
+   * the cached value is taken from the most recent of those registrations.
+   * Otherwise, it may be retrieved from parent containers, if any.
+   *
+   * Values are not cached for tokens with transient or resolution scope,
+   * or for registrations created via {@link ValueProvider}.
    */
   getCached<Value>(token: Token<Value>): Value | undefined;
 
