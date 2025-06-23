@@ -90,23 +90,28 @@ describe("Container", () => {
   it("should get primitive cached values", () => {
     const Env = Type<string>("Env");
     const Port = Type<number>("Port");
-    const Null = Type<null>("Undefined");
+    const Null = Type<null>("Null");
+    const Undefined = Type<undefined>("Undefined");
 
     container.register(Env, { useFactory: () => "" }, { scope: Scope.Container });
     container.register(Port, { useFactory: () => 0 }, { scope: Scope.Container });
     container.register(Null, { useFactory: () => null }, { scope: Scope.Container });
+    container.register(Undefined, { useFactory: () => undefined }, { scope: Scope.Container });
 
     expect(container.resolve(Env)).toBe("");
     expect(container.resolve(Port)).toBe(0);
-    expect(container.resolve(Null)).toBe(null);
+    expect(container.resolve(Null)).toBeNull();
+    expect(container.resolve(Undefined)).toBeUndefined();
 
     expect(container.getCached(Env)).toBe("");
     expect(container.getCached(Port)).toBe(0);
-    expect(container.getCached(Null)).toBe(null);
+    expect(container.getCached(Null)).toBeNull();
+    expect(container.getCached(Undefined)).toBeUndefined();
 
-    expect(container.getAllCached(Port)).toEqual([0]);
-    expect(container.getAllCached(Env)).toEqual([""]);
-    expect(container.getAllCached(Null)).toEqual([null]);
+    expect(container.getAllCached(Port)).toStrictEqual([0]);
+    expect(container.getAllCached(Env)).toStrictEqual([""]);
+    expect(container.getAllCached(Null)).toStrictEqual([null]);
+    expect(container.getAllCached(Undefined)).toStrictEqual([undefined]);
   });
 
   it("should reset registry", () => {
