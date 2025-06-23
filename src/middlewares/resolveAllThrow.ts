@@ -1,5 +1,6 @@
 import { throwUnregisteredError } from "../errors";
-import type { Middleware, Token } from "../index";
+import type { Middleware } from "../index";
+import type { Tokens } from "../token";
 
 /**
  * Middleware that makes `resolveAll` throw an error for an unregistered token,
@@ -14,7 +15,7 @@ import type { Middleware, Token } from "../index";
  * ```
  */
 export const resolveAllThrow: Middleware = (composer) => {
-  composer.use("resolveAll", (next) => <T>(...args: Token<T>[]): (T & {})[] => {
+  composer.use("resolveAll", (next) => <T>(...args: Tokens<T>): (T & {})[] => {
     const result = next(...args);
 
     if (result.length > 0) {

@@ -168,7 +168,7 @@ export interface Container {
   /**
    * Resolves a token to its value, by checking each token in order until a registered one is found.
    */
-  resolve<Values extends unknown[]>(...tokens: TokenList<Values>): Values[number];
+  resolve<Values extends [unknown, ...unknown[]]>(...tokens: TokenList<Values>): Values[number];
 
   /**
    * Resolves a class token to instances with all registered providers.
@@ -188,7 +188,9 @@ export interface Container {
    *
    * The returned array _will not_ contain `null` or `undefined` values.
    */
-  resolveAll<Values extends unknown[]>(...tokens: TokenList<Values>): NonNullable<Values[number]>[];
+  resolveAll<Values extends [unknown, ...unknown[]]>(
+    ...tokens: TokenList<Values>
+  ): NonNullable<Values[number]>[];
 
   /**
    * Disposes the container, and all its currently cached values.

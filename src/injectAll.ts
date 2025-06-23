@@ -1,5 +1,5 @@
 import { ensureInjectionContext } from "./injectionContext";
-import type { Constructor, Token, TokenList } from "./token";
+import type { Constructor, Token, TokenList, Tokens } from "./token";
 
 /**
  * Inject instances of a class with all registered providers.
@@ -19,11 +19,11 @@ export function injectAll<Value>(token: Token<Value>): NonNullable<Value>[];
  *
  * The returned array will not contain `null` or `undefined` values.
  */
-export function injectAll<Values extends unknown[]>(
+export function injectAll<Values extends [unknown, ...unknown[]]>(
   ...tokens: TokenList<Values>
 ): NonNullable<Values[number]>[];
 
-export function injectAll<T>(...tokens: Token<T>[]): NonNullable<T>[] {
+export function injectAll<T>(...tokens: Tokens<T>): NonNullable<T>[] {
   const context = ensureInjectionContext(injectAll);
   return context.container.resolveAll(...tokens);
 }

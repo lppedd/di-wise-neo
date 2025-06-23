@@ -50,7 +50,12 @@ export type Token<Value = any> = Value extends object
   ? Type<Value> | Constructor<Value>
   : Type<Value>;
 
-export type TokenList<Values extends unknown[]> = {
+/**
+ * Describes a {@link Token} array with at least one element.
+ */
+export type Tokens<Value = any> = [Token<Value>, ...Token<Value>[]];
+
+export type TokenList<Values extends [unknown, ...unknown[]]> = {
   [Index in keyof Values]: Token<Values[Index]>;
 };
 

@@ -1,5 +1,5 @@
 import { injectAll } from "../injectAll";
-import type { Constructor, Token, TokenList } from "../token";
+import type { Constructor, Token, TokenList, Tokens } from "../token";
 import type { ClassFieldDecorator } from "./decorators";
 
 /**
@@ -22,11 +22,11 @@ export function InjectAll<Value>(token: Token<Value>): ClassFieldDecorator<NonNu
  *
  * The returned array will not contain `null` or `undefined` values.
  */
-export function InjectAll<Values extends unknown[]>(
+export function InjectAll<Values extends [unknown, ...unknown[]]>(
   ...tokens: TokenList<Values>
 ): ClassFieldDecorator<NonNullable<Values[number]>[]>;
 
-export function InjectAll<T>(...tokens: Token<T>[]): ClassFieldDecorator<NonNullable<T>[]> {
+export function InjectAll<T>(...tokens: Tokens<T>): ClassFieldDecorator<NonNullable<T>[]> {
   return () =>
     function () {
       return injectAll(...tokens);
