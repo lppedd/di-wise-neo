@@ -235,11 +235,7 @@ export class DefaultContainer implements Container {
     // Dispose all resolved (aka instantiated) tokens that implement the Disposable interface
     for (const registrations of registry.map.values()) {
       for (const registration of registrations) {
-        // Special consideration must be taken for value providers,
-        // which never cache their value using the registration.instance property
-        const instance = isValueProvider(registration.provider)
-          ? registration.provider.useValue
-          : registration.instance?.current;
+        const instance = registration.instance?.current;
 
         if (isDisposable(instance) && !disposedRefs.has(instance)) {
           disposedRefs.add(instance);

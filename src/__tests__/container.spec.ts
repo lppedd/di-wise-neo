@@ -395,7 +395,10 @@ describe("Container", () => {
 
     expect(wizardInstance.calls).toBe(1);
     expect(wizardInstance.wand.calls).toBe(1);
-    expect(value.calls).toBe(1);
+
+    // Values provided via ValueProvider are not disposed by the container
+    // and must manage their own lifecycle
+    expect(value.calls).toBe(0);
 
     // We can call dispose as many times as we want
     container.dispose();
