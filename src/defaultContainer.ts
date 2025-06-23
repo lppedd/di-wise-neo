@@ -88,10 +88,31 @@ export class DefaultContainer implements Container {
     return Array.from(instances);
   }
 
-  getCached<Value>(token: Token<Value>): Value | undefined {
+  getCached<T>(token: Token<T>): T | undefined {
     this.checkDisposed();
     const registration = this.registry.get(token);
     return registration?.instance?.current;
+  }
+
+  getAllCached<T>(token: Token<T>): NonNullable<T>[] {
+    this.checkDisposed();
+    const registrations = this.registry.getAll(token);
+
+    if (!registrations) {
+      return [];
+    }
+
+    const instances = new Set<NonNullable<T>>();
+
+    for (const registration of registrations) {
+      const instance = registration.instance?.current;
+
+      if (instance) {
+        instances.add(instance);
+      }
+    }
+
+    return Array.from(instances);
   }
 
   resetRegistry(): unknown[] {
