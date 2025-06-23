@@ -1,5 +1,4 @@
 import { assert } from "./errors";
-import type { InstanceRef } from "./instanceRef";
 import {
   type FactoryProvider,
   NullProvider,
@@ -10,6 +9,7 @@ import {
 import { Scope } from "./scope";
 import { type Constructor, type Token, Type, TypeNull, TypeUndefined } from "./token";
 import { getTypeName } from "./utils/typeName";
+import type { ValueRef } from "./valueRef";
 
 /**
  * Registration options.
@@ -22,7 +22,7 @@ export interface RegistrationOptions {
 }
 
 export interface Registration<T = any> {
-  instance?: InstanceRef<T>;
+  value?: ValueRef<T>;
   provider: Provider<T>;
   options?: RegistrationOptions;
 }

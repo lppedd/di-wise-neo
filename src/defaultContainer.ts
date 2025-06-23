@@ -68,15 +68,15 @@ export class DefaultContainer implements Container {
 
   clearCache(): unknown[] {
     this.checkDisposed();
-    const instances = new Set<unknown>();
+    const values = new Set<unknown>();
 
     for (const registrations of this.registry.map.values()) {
       for (let i = 0; i < registrations.length; i++) {
         const registration = registrations[i]!;
-        const instance = registration.instance;
+        const value = registration.value;
 
-        if (instance) {
-          instances.add(instance.current);
+        if (value) {
+          values.add(value.current);
         }
 
         registrations[i] = {
@@ -86,13 +86,13 @@ export class DefaultContainer implements Container {
       }
     }
 
-    return Array.from(instances);
+    return Array.from(values);
   }
 
   getCached<T>(token: Token<T>): T | undefined {
     this.checkDisposed();
     const registration = this.registry.get(token);
-    return registration?.instance?.current;
+    return registration?.value?.current;
   }
 
   getAllCached<T>(token: Token<T>): T[] {
@@ -103,33 +103,33 @@ export class DefaultContainer implements Container {
       return [];
     }
 
-    const instances = new Set<T>();
+    const values = new Set<T>();
 
     for (const registration of registrations) {
-      const instance = registration.instance;
+      const value = registration.value;
 
-      if (instance) {
-        instances.add(instance.current);
+      if (value) {
+        values.add(value.current);
       }
     }
 
-    return Array.from(instances);
+    return Array.from(values);
   }
 
   resetRegistry(): unknown[] {
     this.checkDisposed();
     const registrations = this.registry.deleteAll();
-    const instances = new Set<unknown>();
+    const values = new Set<unknown>();
 
     for (const registration of registrations) {
-      const instance = registration.instance;
+      const value = registration.value;
 
-      if (instance) {
-        instances.add(instance.current);
+      if (value) {
+        values.add(value.current);
       }
     }
 
-    return Array.from(instances);
+    return Array.from(values);
   }
 
   isRegistered(token: Token): boolean {
@@ -208,17 +208,17 @@ export class DefaultContainer implements Container {
       return [];
     }
 
-    const instances = new Set<T>();
+    const values = new Set<T>();
 
     for (const registration of registrations) {
-      const instance = registration.instance;
+      const value = registration.value;
 
-      if (instance) {
-        instances.add(instance.current);
+      if (value) {
+        values.add(value.current);
       }
     }
 
-    return Array.from(instances);
+    return Array.from(values);
   }
 
   resolve<T>(...tokens: Token<T>[]): T {
@@ -260,7 +260,7 @@ export class DefaultContainer implements Container {
       if (registrations) {
         return registrations
           .map((registration) => this.resolveRegistration(token, registration))
-          .filter((instance) => instance != null);
+          .filter((value) => value != null);
       }
 
       if (isConstructor(token)) {
@@ -293,16 +293,16 @@ export class DefaultContainer implements Container {
     // Dispose all resolved (aka instantiated) tokens that implement the Disposable interface
     for (const registrations of registry.map.values()) {
       for (const registration of registrations) {
-        const instance = registration.instance?.current;
+        const value = registration.value?.current;
 
-        if (isDisposable(instance) && !disposedRefs.has(instance)) {
-          disposedRefs.add(instance);
-          instance.dispose();
+        if (isDisposable(value) && !disposedRefs.has(value)) {
+          disposedRefs.add(value);
+          value.dispose();
         }
       }
     }
 
-    // Allow instances to be GCed
+    // Allow values to be GCed
     disposedRefs.clear();
     registry.map.clear();
   }
@@ -323,7 +323,7 @@ export class DefaultContainer implements Container {
     }
 
     try {
-      return this.instantiateProvider(currRegistration, currProvider);
+      return this.resolveProviderValue(currRegistration, currProvider);
     } catch (e) {
       // If we were trying to resolve a token registered via ExistingProvider,
       // we must add the cause of the error to the message
@@ -357,10 +357,10 @@ export class DefaultContainer implements Container {
       options: options,
     };
 
-    return this.resolveScopedInstance(registration, () => new Class());
+    return this.resolveScopedValue(registration, () => new Class());
   }
 
-  private instantiateProvider<T>(
+  private resolveProviderValue<T>(
     registration: Registration<T>,
     provider: Exclude<Provider<T>, ExistingProvider<T>>,
   ): T {
@@ -368,12 +368,12 @@ export class DefaultContainer implements Container {
 
     if (isClassProvider(provider)) {
       const Class = provider.useClass;
-      return this.resolveScopedInstance(registration, () => new Class());
+      return this.resolveScopedValue(registration, () => new Class());
     }
 
     if (isFactoryProvider(provider)) {
       const factory = provider.useFactory;
-      return this.resolveScopedInstance(registration, factory);
+      return this.resolveScopedValue(registration, factory);
     }
 
     if (isValueProvider(provider)) {
@@ -383,7 +383,7 @@ export class DefaultContainer implements Container {
     expectNever(provider);
   }
 
-  private resolveScopedInstance<T>(registration: Registration<T>, instantiate: () => T): T {
+  private resolveScopedValue<T>(registration: Registration<T>, create: () => T): T {
     let context = useInjectionContext();
 
     if (!context || context.container !== this) {
@@ -412,29 +412,29 @@ export class DefaultContainer implements Container {
     try {
       switch (scope) {
         case "Container": {
-          const instanceRef = registration.instance;
+          const valueRef = registration.value;
 
-          if (instanceRef) {
-            return instanceRef.current;
+          if (valueRef) {
+            return valueRef.current;
           }
 
-          const instance = instantiate();
-          registration.instance = { current: instance };
-          return instance;
+          const value = create();
+          registration.value = { current: value };
+          return value;
         }
         case "Resolution": {
-          const instanceRef = resolution.instances.get(provider);
+          const valueRef = resolution.values.get(provider);
 
-          if (instanceRef) {
-            return instanceRef.current;
+          if (valueRef) {
+            return valueRef.current;
           }
 
-          const instance = instantiate();
-          resolution.instances.set(provider, { current: instance });
-          return instance;
+          const value = create();
+          resolution.values.set(provider, { current: value });
+          return value;
         }
         case "Transient": {
-          return instantiate();
+          return create();
         }
       }
     } finally {

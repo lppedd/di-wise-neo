@@ -7,14 +7,15 @@ import type { Constructor, Token, TokenList } from "./token";
 export function injectAll<Instance extends object>(Class: Constructor<Instance>): Instance[];
 
 /**
- * Inject instances of a token with all registered providers.
+ * Inject the values of a token from all its registered providers.
  *
  * The returned array will not contain `null` or `undefined` values.
  */
 export function injectAll<Value>(token: Token<Value>): NonNullable<Value>[];
 
 /**
- * Inject instances of a token with all registered providers, by checking each token in order until a registered one is found.
+ * Inject the values of a token from all its registered providers,
+ * by checking each token in order until a registered one is found.
  *
  * The returned array will not contain `null` or `undefined` values.
  */

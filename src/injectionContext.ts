@@ -1,11 +1,11 @@
 import type { Container } from "./container";
 import { assert } from "./errors";
-import type { InstanceRef } from "./instanceRef";
 import type { Provider } from "./provider";
 import type { Scope } from "./scope";
 import { createContext } from "./utils/context";
 import { KeyedStack } from "./utils/keyedStack";
 import { WeakRefMap } from "./utils/weakRefMap";
+import type { ValueRef } from "./valueRef";
 
 export interface ResolutionFrame {
   readonly scope: Exclude<Scope, typeof Scope.Inherited>;
@@ -14,8 +14,8 @@ export interface ResolutionFrame {
 
 export interface Resolution {
   readonly stack: KeyedStack<Provider, ResolutionFrame>;
-  readonly instances: WeakRefMap<Provider, InstanceRef>;
-  readonly dependents: WeakRefMap<Provider, InstanceRef>;
+  readonly values: WeakRefMap<Provider, ValueRef>;
+  readonly dependents: WeakRefMap<Provider, ValueRef>;
 }
 
 export interface InjectionContext {
@@ -27,7 +27,7 @@ export interface InjectionContext {
 export function createResolution(): Resolution {
   return {
     stack: new KeyedStack(),
-    instances: new WeakRefMap(),
+    values: new WeakRefMap(),
     dependents: new WeakRefMap(),
   };
 }
