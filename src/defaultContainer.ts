@@ -72,8 +72,8 @@ export class DefaultContainer implements Container {
       for (let i = 0; i < registrations.length; i++) {
         const registration = registrations[i]!;
         registrations[i] = {
-          options: registration.options,
           provider: registration.provider,
+          options: registration.options,
         };
       }
     }
@@ -153,7 +153,10 @@ export class DefaultContainer implements Container {
           );
         }
 
-        this.registry.set(token, { provider, options });
+        this.registry.set(token, {
+          provider: provider,
+          options: options,
+        });
       }
     }
 
