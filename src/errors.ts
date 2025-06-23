@@ -9,8 +9,7 @@ export function assert(condition: unknown, message: string): asserts condition {
 
 // @internal
 export function expectNever(value: never): never {
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  throw new TypeError(tag(`unexpected value ${value}`));
+  throw new TypeError(tag(`unexpected value ${String(value)}`));
 }
 
 // @internal
