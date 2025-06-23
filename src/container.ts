@@ -135,7 +135,6 @@ export interface Container {
   register<Value, ProviderValue extends Value>(
     token: Token<Value>,
     provider: ExistingProvider<ProviderValue>,
-    options?: RegistrationOptions,
   ): this;
 
   /**
