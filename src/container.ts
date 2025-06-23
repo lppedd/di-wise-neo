@@ -123,25 +123,28 @@ export interface Container {
   /**
    * Registers a {@link FactoryProvider} with a token.
    */
-  register<Value>(
+  register<Value, ProviderValue extends Value>(
     token: Token<Value>,
-    provider: FactoryProvider<Value>,
+    provider: FactoryProvider<ProviderValue>,
     options?: RegistrationOptions,
   ): this;
 
   /**
    * Registers an {@link ExistingProvider} with a token.
    */
-  register<Value>(
+  register<Value, ProviderValue extends Value>(
     token: Token<Value>,
-    provider: ExistingProvider<Value>,
+    provider: ExistingProvider<ProviderValue>,
     options?: RegistrationOptions,
   ): this;
 
   /**
    * Registers a {@link ValueProvider} with a token.
    */
-  register<Value>(token: Token<Value>, provider: ValueProvider<Value>): this;
+  register<Value, ProviderValue extends Value>(
+    token: Token<Value>,
+    provider: ValueProvider<ProviderValue>,
+  ): this;
 
   /**
    * Removes all registrations for the given token from the container's internal registry.
