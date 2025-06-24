@@ -28,7 +28,6 @@ export function getMetadata<T extends object>(Class: Constructor<T>): Metadata<T
         },
         dependencies: {
           constructor: [],
-          properties: [],
           methods: new Map(),
         },
       }),

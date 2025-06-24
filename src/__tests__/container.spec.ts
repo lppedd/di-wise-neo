@@ -212,38 +212,6 @@ describe("Container", () => {
     expect(wizardInstance.spells[1]).toBe("spell two");
   });
 
-  it("should perform property injection with @Inject and @InjectAll", () => {
-    class Wand {
-      constructor(readonly name: string) {}
-    }
-
-    @Scoped(Scope.Container)
-    class Wizard {
-      @Inject(Wand)
-      readonly wand!: Wand;
-
-      @InjectAll(Wand)
-      readonly wands!: Wand[];
-    }
-
-    const wandOne = new Wand("one");
-    const wandTwo = new Wand("two");
-
-    container.register(Wand, { useValue: wandOne });
-    container.register(Wand, { useValue: wandTwo });
-    container.register(Wizard);
-
-    expect(container.isRegistered(Wand)).toBe(true);
-    expect(container.isRegistered(Wizard)).toBe(true);
-
-    const wizardInstance = container.resolve(Wizard);
-    expect(wizardInstance).toBeInstanceOf(Wizard);
-    expect(wizardInstance.wand).toBe(wandTwo);
-    expect(wizardInstance.wands).toHaveLength(2);
-    expect(wizardInstance.wands[0]).toBe(wandOne);
-    expect(wizardInstance.wands[1]).toBe(wandTwo);
-  });
-
   it("should perform method injection with @Inject and @InjectAll", () => {
     class Castle {}
 
@@ -289,20 +257,6 @@ describe("Container", () => {
     expect(wizardInstance.wands).toHaveLength(2);
     expect(wizardInstance.wands![0]).toBe(wandOne);
     expect(wizardInstance.wands![1]).toBe(wandTwo);
-  });
-
-  it("should throw when @Inject is applied to static properties", () => {
-    expect(() => {
-      class Wand {}
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      class Wizard {
-        @Inject(Wand)
-        static wand: Wand;
-      }
-    }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] @Inject cannot be used on static member Wizard.wand]`,
-    );
   });
 
   it("should throw when @InjectAll is applied to static methods", () => {
@@ -574,8 +528,12 @@ describe("Container", () => {
     }
 
     class Wizard {
-      @InjectAll(Wand)
-      wand!: Wand[];
+      wands!: Wand[];
+
+      setWand(@InjectAll(Wand) wands: Wand[]): Wand[] {
+        this.wands = wands;
+        return this.wands;
+      }
     }
 
     expect(() => container.resolve(Wizard)).toThrowErrorMatchingInlineSnapshot(
