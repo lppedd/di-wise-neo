@@ -265,9 +265,7 @@ describe("Container", () => {
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {
-        static setWands(@InjectAll(Wand) wands: string[]): void {
-          console.log(wands);
-        }
+        static setWands(@InjectAll(Wand) _wands: string[]): void {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
       `[Error: [di-wise] @InjectAll cannot be used on static member Wizard.setWands]`,
