@@ -403,7 +403,7 @@ export class DefaultContainer implements Container {
 
     try {
       switch (scope) {
-        case "Container": {
+        case Scope.Container: {
           const valueRef = registration.value;
 
           if (valueRef) {
@@ -415,7 +415,7 @@ export class DefaultContainer implements Container {
           registration.value = { current: value };
           return value;
         }
-        case "Resolution": {
+        case Scope.Resolution: {
           const valueRef = resolution.values.get(provider);
 
           if (valueRef) {
@@ -427,7 +427,7 @@ export class DefaultContainer implements Container {
           resolution.values.set(provider, { current: value });
           return value;
         }
-        case "Transient": {
+        case Scope.Transient: {
           const args = this.resolveConstructorDependencies(registration);
           return this.injectDependencies(registration, factory(args));
         }
@@ -440,7 +440,7 @@ export class DefaultContainer implements Container {
   private resolveScope(
     scope = this.myOptions.defaultScope,
     context = useInjectionContext(),
-  ): "Transient" | "Resolution" | "Container" {
+  ): Exclude<Scope, "Inherited"> {
     if (scope == Scope.Inherited) {
       const dependentFrame = context?.resolution.stack.peek();
       return dependentFrame?.scope || Scope.Transient;
@@ -461,9 +461,9 @@ export class DefaultContainer implements Container {
         // If not, we cannot safely create an instance.
         const ctor = registration.provider.useClass;
         assert(ctor.length === ctorDeps.length, () => {
-          const expected = `expected ${ctor.length} decorated constructor parameters in ${ctor.name}`;
-          const found = `but found ${ctorDeps.length}`;
-          return `${expected}, ${found}`;
+          let msg = `expected ${ctor.length} decorated constructor parameters in ${ctor.name}, `;
+          msg += `but found ${ctorDeps.length}`;
+          return msg;
         });
 
         return ctorDeps
@@ -492,10 +492,10 @@ export class DefaultContainer implements Container {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         const method = (instance as any)[key] as Function;
         assert(methodDeps.length === method.length, () => {
-          const expected = `expected ${method.length} decorated method parameters`;
-          const where = `in ${ctor.name}.${String(key)}`;
-          const found = `but found ${methodDeps.length}`;
-          return `${expected} ${where}, ${found}`;
+          let msg = `expected ${method.length} decorated method parameters `;
+          msg += `in ${ctor.name}.${String(key)}, `;
+          msg += `but found ${methodDeps.length}`;
+          return msg;
         });
 
         const args = methodDeps

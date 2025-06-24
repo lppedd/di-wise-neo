@@ -29,7 +29,7 @@ export function Inject<Values extends [unknown, ...unknown[]]>(
 export function Inject<Value>(tokens: TokensRef<Value>): ParameterDecorator;
 
 export function Inject(...args: unknown[]): ParameterDecorator {
-  return function (target, propertyKey, parameterIndex: number) {
+  return function (target, propertyKey, parameterIndex: number): void {
     processDecoratedParameter("Inject", args, target, propertyKey, parameterIndex);
   };
 }

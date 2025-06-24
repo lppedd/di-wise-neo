@@ -26,7 +26,7 @@ import type { Constructor } from "../token";
  * @__NO_SIDE_EFFECTS__
  */
 export function Scoped(scope: Scope): ClassDecorator {
-  return (Class) => {
+  return function (Class): void {
     const metadata = getMetadata(Class as any as Constructor<any>);
     metadata.scope = scope;
   };

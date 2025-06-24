@@ -31,7 +31,7 @@ export function InjectAll<Values extends [unknown, ...unknown[]]>(
 export function InjectAll<Value>(tokens: TokensRef<Value>): ParameterDecorator;
 
 export function InjectAll(...args: unknown[]): ParameterDecorator {
-  return function (target, propertyKey, parameterIndex: number) {
+  return function (target, propertyKey, parameterIndex: number): void {
     processDecoratedParameter("InjectAll", args, target, propertyKey, parameterIndex);
   };
 }

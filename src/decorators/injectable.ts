@@ -36,7 +36,7 @@ export function Injectable<This extends object, Value extends This>(
  * @__NO_SIDE_EFFECTS__
  */
 export function Injectable(...args: unknown[]): ClassDecorator {
-  return (Class) => {
+  return function (Class): void {
     const metadata = getMetadata(Class as any as Constructor<any>);
     const tokensRef = isTokensRef(args[0]) ? args[0] : ref(() => args as Token | Tokens);
     const existingTokensRef = metadata.tokensRef;
