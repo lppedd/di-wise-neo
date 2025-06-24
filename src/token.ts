@@ -78,6 +78,7 @@ export function Type<T>(typeName: string): Type<T> {
       return type.name;
     },
   };
+
   return type;
 }
 

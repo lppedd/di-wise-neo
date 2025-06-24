@@ -13,8 +13,7 @@ export function processDecoratedParameter(
   // Error out immediately if the decorator has been applied
   // to a static property or a static method
   if (propertyKey !== undefined && typeof target === "function") {
-    const message = `@${type} cannot be used on static member ${target.name}.${String(propertyKey)}`;
-    assert(false, message);
+    assert(false, `@${type} cannot be used on static member ${target.name}.${String(propertyKey)}`);
   }
 
   const tokensRef = isTokensRef(args[0]) //
