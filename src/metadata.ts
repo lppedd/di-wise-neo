@@ -1,12 +1,13 @@
+import type { TokensRef } from "./decorators";
 import type { ClassProvider } from "./provider";
 import type { Dependencies } from "./registry";
 import type { Scope } from "./scope";
-import type { Constructor, Token } from "./token";
+import type { Constructor } from "./token";
 
 export interface Metadata<This extends object = any> {
   autoRegister?: boolean;
   scope?: Scope;
-  tokens: Set<Token<This>>;
+  tokensRef: TokensRef<This>;
   provider: ClassProvider<This>;
   dependencies: Dependencies;
 }
@@ -19,12 +20,16 @@ export function getMetadata<T extends object>(Class: Constructor<T>): Metadata<T
     metadataMap.set(
       Class,
       (metadata = {
-        tokens: new Set(),
+        tokensRef: {
+          getRefTokens: () => new Set(),
+        },
         provider: {
           useClass: Class,
         },
         dependencies: {
+          constructor: [],
           properties: [],
+          methods: new Map(),
         },
       }),
     );

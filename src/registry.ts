@@ -1,3 +1,4 @@
+import type { TokensRef } from "./decorators/tokensRef";
 import { assert } from "./errors";
 import {
   type FactoryProvider,
@@ -23,8 +24,14 @@ export interface RegistrationOptions {
 
 // @internal
 export interface Dependency {
-  readonly tokens: Token[];
+  readonly tokensRef: TokensRef;
   readonly type: "inject" | "injectAll";
+}
+
+// @internal
+export interface MethodDependency extends Dependency {
+  // The index of the annotated parameter (zero-based)
+  readonly index: number;
 }
 
 // @internal
@@ -34,7 +41,9 @@ export interface PropertyDependency extends Dependency {
 
 // @internal
 export interface Dependencies {
+  readonly constructor: MethodDependency[];
   readonly properties: PropertyDependency[];
+  readonly methods: Map<string | symbol, MethodDependency[]>;
 }
 
 // @internal

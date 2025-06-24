@@ -1,9 +1,10 @@
 import type { Token } from "./token";
 
 // @internal
-export function assert(condition: unknown, message: string): asserts condition {
+export function assert(condition: unknown, message: string | (() => string)): asserts condition {
   if (!condition) {
-    throw new Error(tag(message));
+    const resolvedMessage = typeof message === "string" ? message : message();
+    throw new Error(tag(resolvedMessage));
   }
 }
 
@@ -14,8 +15,9 @@ export function expectNever(value: never): never {
 
 // @internal
 export function throwUnregisteredError(tokens: Token[]): never {
-  const tokenNames = tokens.map((token) => token.name);
-  throw new Error(tag(`unregistered token(s) ${tokenNames.join(", ")}`));
+  const tokenNames = tokens.map((token) => token.name).join(", ");
+  const suffix = tokenNames.length === 0 ? "no tokens received" : tokenNames;
+  throw new Error(tag(`unregistered tokens: ${suffix}`));
 }
 
 // @internal

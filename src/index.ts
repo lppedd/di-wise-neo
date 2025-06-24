@@ -1,6 +1,7 @@
 export type { Container, ContainerOptions } from "./container";
 export { createContainer } from "./container";
-export { AutoRegister, Inject, Injectable, InjectAll, Scoped } from "./decorators";
+export type { TokensRef } from "./decorators";
+export { AutoRegister, Inject, Injectable, InjectAll, ref, Scoped } from "./decorators";
 export { inject, injectBy } from "./inject";
 export { injectAll } from "./injectAll";
 export { Injector } from "./injector";
