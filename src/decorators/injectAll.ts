@@ -1,7 +1,6 @@
-import { assert } from "../errors";
-import { getMetadata } from "../metadata";
-import type { Constructor, Token, TokenList, Tokens } from "../token";
-import { isTokensRef, ref, type TokensRef } from "./tokensRef";
+import type { Constructor, Token, TokenList } from "../token";
+import { processDecoratedSymbol } from "./decorators";
+import type { TokensRef } from "./tokensRef";
 
 /**
  * Decorator for injecting instances of a class with all registered providers.
@@ -33,51 +32,6 @@ export function InjectAll<Value>(tokens: TokensRef<Value>): ParameterDecorator &
 
 export function InjectAll(...args: unknown[]): ParameterDecorator & PropertyDecorator {
   return function (target, propertyKey, parameterIndex?: number) {
-    // Error out immediately if the decorator has been applied
-    // to a static property or a static method
-    if (propertyKey !== undefined && typeof target === "function") {
-      const message = `@InjectAll cannot be used on static member ${target.name}.${String(propertyKey)}`;
-      assert(false, message);
-    }
-
-    const tokensRef = isTokensRef(args[0]) ? args[0] : ref(() => args as Token | Tokens);
-
-    if (typeof parameterIndex === "number") {
-      // Method parameter decorator
-      //
-      // When propertyKey is undefined, the decorator has been applied to a constructor parameter.
-      // Otherwise, it is a standard instance method.
-      if (propertyKey === undefined) {
-        const metadata = getMetadata(target as Constructor<any>);
-        metadata.dependencies.constructor.push({
-          tokensRef: tokensRef,
-          type: "injectAll",
-          index: parameterIndex,
-        });
-      } else {
-        const metadata = getMetadata(target.constructor as Constructor<any>);
-        const methods = metadata.dependencies.methods;
-        let dep = methods.get(propertyKey);
-
-        if (dep === undefined) {
-          dep = [];
-          methods.set(propertyKey, dep);
-        }
-
-        dep.push({
-          tokensRef: tokensRef,
-          type: "injectAll",
-          index: parameterIndex,
-        });
-      }
-    } else {
-      // Class property decorator
-      const metadata = getMetadata(target.constructor as Constructor<any>);
-      metadata.dependencies.properties.push({
-        tokensRef: tokensRef,
-        type: "injectAll",
-        key: propertyKey!,
-      });
-    }
+    processDecoratedSymbol("InjectAll", propertyKey, target, args, parameterIndex);
   };
 }
