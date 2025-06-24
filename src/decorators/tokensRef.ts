@@ -22,5 +22,5 @@ export function ref<Value>(tokens: () => Token<Value> | Tokens<Value>): TokensRe
 // @internal
 export function isTokensRef(value: any): value is TokensRef {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return !!value && typeof value.getRefTokens === "function";
+  return value && typeof value === "object" && typeof value.getRefTokens === "function";
 }
