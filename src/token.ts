@@ -97,10 +97,10 @@ export const NULL: Type<null> = Type<null>("null");
  *
  * @example
  * ```ts
- * container.resolve(Type.Undefined); // => undefined
+ * container.resolve(UNDEFINED); // => undefined
  * ```
  */
-export const TypeUndefined: Type<undefined> = Type("undefined");
+export const UNDEFINED: Type<undefined> = Type<undefined>("undefined");
 
 // @internal
 export function isConstructor<T>(

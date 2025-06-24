@@ -18,7 +18,7 @@ import {
   Value
 } from "..";
 import { useInjectionContext } from "../injectionContext";
-import { NULL, TypeUndefined } from "../token";
+import { NULL, UNDEFINED } from "../token";
 
 describe("Container", () => {
   const container = createContainer();
@@ -422,7 +422,7 @@ describe("Container", () => {
   it("should return empty array if null or undefined is resolved", () => {
     const Character = Type<{}>("Character");
     expect(container.resolveAll(Character, NULL)).toEqual([]);
-    expect(container.resolveAll(Character, TypeUndefined)).toEqual([]);
+    expect(container.resolveAll(Character, UNDEFINED)).toEqual([]);
   });
 
   it("should resolve existing providers", () => {
