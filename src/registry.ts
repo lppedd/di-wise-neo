@@ -7,7 +7,7 @@ import {
   type ValueProvider,
 } from "./provider";
 import { Scope } from "./scope";
-import { type Constructor, NULL, type Token, Type, TypeUndefined } from "./token";
+import { type Constructor, NULL, type Token, Type, UNDEFINED } from "./token";
 import type { TokensRef } from "./tokensRef";
 import { getTypeName } from "./utils/typeName";
 import type { ValueRef } from "./valueRef";
@@ -182,7 +182,7 @@ export function Value<T>(value: T): Type<T> {
 
 const internals = new WeakMap<Token, Registration>([
   [NULL, { provider: NullProvider }],
-  [TypeUndefined, { provider: UndefinedProvider }],
+  [UNDEFINED, { provider: UndefinedProvider }],
 ]);
 
 const builders = new WeakSet<Provider>();
