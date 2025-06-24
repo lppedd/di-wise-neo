@@ -1,7 +1,6 @@
 import { getMetadata } from "../metadata";
 import type { Scope } from "../scope";
 import type { Constructor } from "../token";
-import type { ClassDecorator } from "./decorators";
 
 /**
  * Decorator for setting the scope of a class when registering it.
@@ -26,9 +25,9 @@ import type { ClassDecorator } from "./decorators";
  *
  * @__NO_SIDE_EFFECTS__
  */
-export function Scoped<This extends object>(scope: Scope): ClassDecorator<Constructor<This>> {
+export function Scoped(scope: Scope): ClassDecorator {
   return (Class) => {
-    const metadata = getMetadata(Class);
+    const metadata = getMetadata(Class as any as Constructor<any>);
     metadata.scope = scope;
   };
 }

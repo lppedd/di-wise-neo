@@ -4,6 +4,7 @@ import {
   AutoRegister,
   Build,
   createContainer,
+  Inject,
   inject,
   Injectable,
   InjectAll,
@@ -188,6 +189,62 @@ describe("Container", () => {
     const wizardInstance = container.resolve(Wizard);
     expect(wizardInstance).toBeInstanceOf(Wizard);
     expect(wizardInstance.wand).toBeInstanceOf(Wand);
+  });
+
+  it("should perform property injection using @Inject and @InjectAll", () => {
+    class Wand {
+      constructor(readonly name: string) {}
+    }
+
+    @Scoped(Scope.Container)
+    class Wizard {
+      @Inject(Wand)
+      readonly wand!: Wand;
+
+      @InjectAll(Wand)
+      readonly wands!: Wand[];
+    }
+
+    const wandOne = new Wand("one");
+    const wandTwo = new Wand("two");
+
+    container.register(Wand, { useValue: wandOne });
+    container.register(Wand, { useValue: wandTwo });
+    container.register(Wizard);
+
+    expect(container.isRegistered(Wand)).toBe(true);
+    expect(container.isRegistered(Wizard)).toBe(true);
+
+    const wizardInstance = container.resolve(Wizard);
+    expect(wizardInstance).toBeInstanceOf(Wizard);
+    expect(wizardInstance.wand).toBe(wandTwo);
+    expect(wizardInstance.wands).toHaveLength(2);
+    expect(wizardInstance.wands[0]).toBe(wandOne);
+    expect(wizardInstance.wands[1]).toBe(wandTwo);
+  });
+
+  it("should throw when @Inject is applied to static properties", () => {
+    expect(() => {
+      class Wand {}
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {
+        @Inject(Wand)
+        static wand: Wand;
+      }
+    }).toThrowError("@Inject cannot be used on static member Wizard.wand");
+  });
+
+  it("should throw when @InjectAll is applied to static properties", () => {
+    expect(() => {
+      const type = Type<string>("string");
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {
+        @InjectAll(type)
+        static str: string[];
+      }
+    }).toThrowError("@InjectAll cannot be used on static member Wizard.str");
   });
 
   it("should get the options from the class", () => {

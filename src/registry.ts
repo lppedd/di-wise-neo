@@ -21,10 +21,28 @@ export interface RegistrationOptions {
   readonly scope?: Scope;
 }
 
+// @internal
+export interface Dependency {
+  readonly tokens: Token[];
+  readonly type: "inject" | "injectAll";
+}
+
+// @internal
+export interface PropertyDependency extends Dependency {
+  readonly key: string | symbol;
+}
+
+// @internal
+export interface Dependencies {
+  readonly properties: PropertyDependency[];
+}
+
+// @internal
 export interface Registration<T = any> {
   value?: ValueRef<T>;
-  provider: Provider<T>;
-  options?: RegistrationOptions;
+  readonly provider: Provider<T>;
+  readonly options?: RegistrationOptions;
+  readonly dependencies?: Dependencies;
 }
 
 // eslint-disable-next-line no-use-before-define

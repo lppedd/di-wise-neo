@@ -5,6 +5,8 @@ import {
   throwExistingUnregisteredError,
   throwUnregisteredError,
 } from "./errors";
+import { injectBy } from "./inject";
+import { injectAll } from "./injectAll";
 import { createResolution, provideInjectionContext, useInjectionContext } from "./injectionContext";
 import { getMetadata } from "./metadata";
 import {
@@ -17,7 +19,7 @@ import {
 } from "./provider";
 import { isBuilder, type Registration, type RegistrationOptions, Registry } from "./registry";
 import { Scope } from "./scope";
-import { type Constructor, isConstructor, type Token } from "./token";
+import { type Constructor, isConstructor, type Token, type Tokens } from "./token";
 import { isDisposable } from "./utils/disposable";
 
 /**
@@ -152,6 +154,7 @@ export class DefaultContainer implements Container {
         options: {
           scope: metadata.scope,
         },
+        dependencies: metadata.dependencies,
       });
 
       // Register the additional tokens specified via class decorators.
@@ -160,9 +163,6 @@ export class DefaultContainer implements Container {
         this.registry.set(token, {
           provider: {
             useExisting: Class,
-          },
-          options: {
-            scope: metadata.scope,
           },
         });
       }
@@ -180,6 +180,7 @@ export class DefaultContainer implements Container {
             scope: metadata.scope,
             ...options,
           },
+          dependencies: metadata.dependencies,
         });
       } else {
         if (isExistingProvider(provider)) {
@@ -342,6 +343,7 @@ export class DefaultContainer implements Container {
     const registration: Registration<T> = {
       provider: metadata.provider,
       options: options,
+      dependencies: metadata.dependencies,
     };
 
     return this.resolveScopedValue(registration, () => new Class());
@@ -405,7 +407,7 @@ export class DefaultContainer implements Container {
             return valueRef.current;
           }
 
-          const value = create();
+          const value = this.injectDependencies(registration, create());
           registration.value = { current: value };
           return value;
         }
@@ -416,12 +418,12 @@ export class DefaultContainer implements Container {
             return valueRef.current;
           }
 
-          const value = create();
+          const value = this.injectDependencies(registration, create());
           resolution.values.set(provider, { current: value });
           return value;
         }
         case "Transient": {
-          return create();
+          return this.injectDependencies(registration, create());
         }
       }
     } finally {
@@ -439,6 +441,26 @@ export class DefaultContainer implements Container {
     }
 
     return scope;
+  }
+
+  private injectDependencies<T>(registration: Registration<T>, instance: T): T {
+    const dependencies = registration.dependencies;
+
+    if (dependencies) {
+      assert(isClassProvider(registration.provider), `internal error: not a ClassProvider`);
+
+      // Perform property injection
+      for (const { key, type, tokens } of dependencies.properties) {
+        // Here we use injectBy to workaround circular dependencies
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        (instance as any)[key] =
+          type === "inject"
+            ? injectBy(instance, ...(tokens as Tokens))
+            : injectAll(...(tokens as Tokens));
+      }
+    }
+
+    return instance;
   }
 
   private checkDisposed(): void {

@@ -1,18 +1,16 @@
-import { injectAll } from "../injectAll";
+import { assert } from "../errors";
+import { getMetadata } from "../metadata";
 import type { Constructor, Token, TokenList, Tokens } from "../token";
-import type { ClassFieldDecorator } from "./decorators";
 
 /**
  * Decorator for injecting instances of a class with all registered providers.
  */
-export function InjectAll<Instance extends object>(
-  Class: Constructor<Instance>,
-): ClassFieldDecorator<Instance[]>;
+export function InjectAll<Instance extends object>(Class: Constructor<Instance>): PropertyDecorator;
 
 /**
  * Decorator for injecting the values of a token created by all its registered providers.
  */
-export function InjectAll<Value>(token: Token<Value>): ClassFieldDecorator<NonNullable<Value>[]>;
+export function InjectAll<Value>(token: Token<Value>): PropertyDecorator;
 
 /**
  * Decorator for injecting values by sequentially checking each token
@@ -20,11 +18,22 @@ export function InjectAll<Value>(token: Token<Value>): ClassFieldDecorator<NonNu
  */
 export function InjectAll<Values extends [unknown, ...unknown[]]>(
   ...tokens: TokenList<Values>
-): ClassFieldDecorator<NonNullable<Values[number]>[]>;
+): PropertyDecorator;
 
-export function InjectAll<T>(...tokens: Tokens<T>): ClassFieldDecorator<NonNullable<T>[]> {
-  return () =>
-    function () {
-      return injectAll(...tokens);
-    };
+export function InjectAll<T>(...tokens: Tokens<T>): PropertyDecorator {
+  return function (target, propertyKey) {
+    // Error out immediately if the decorator has been applied to a static property
+    if (propertyKey !== undefined && typeof target === "function") {
+      const message = `@InjectAll cannot be used on static member ${target.name}.${String(propertyKey)}`;
+      assert(false, message);
+    }
+
+    // Class property decorator
+    const metadata = getMetadata(target.constructor as Constructor<any>);
+    metadata.dependencies.properties.push({
+      key: propertyKey,
+      tokens: tokens,
+      type: "injectAll",
+    });
+  };
 }

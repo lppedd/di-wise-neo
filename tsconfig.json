@@ -16,8 +16,11 @@
     "isolatedDeclarations": true,
     "verbatimModuleSyntax": true,
 
+    // TS experimental features
+    "experimentalDecorators": true,
+
     // Language and Environment
-    "lib": ["ES2022", "ESNext.Decorators"],
+    "lib": ["ES2022"],
     "target": "ES2022",
 
     // Projects
