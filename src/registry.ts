@@ -35,14 +35,8 @@ export interface MethodDependency extends Dependency {
 }
 
 // @internal
-export interface PropertyDependency extends Dependency {
-  readonly key: string | symbol;
-}
-
-// @internal
 export interface Dependencies {
   readonly constructor: MethodDependency[];
-  readonly properties: PropertyDependency[];
   readonly methods: Map<string | symbol, MethodDependency[]>;
 }
 

@@ -1,5 +1,5 @@
 import type { Constructor, Token, TokenList } from "../token";
-import { processDecoratedSymbol } from "./decorators";
+import { processDecoratedParameter } from "./decorators";
 import type { TokensRef } from "./tokensRef";
 
 /**
@@ -7,12 +7,12 @@ import type { TokensRef } from "./tokensRef";
  */
 export function InjectAll<Instance extends object>(
   Class: Constructor<Instance>,
-): ParameterDecorator & PropertyDecorator;
+): ParameterDecorator;
 
 /**
  * Decorator for injecting the values of a token created by all its registered providers.
  */
-export function InjectAll<Value>(token: Token<Value>): ParameterDecorator & PropertyDecorator;
+export function InjectAll<Value>(token: Token<Value>): ParameterDecorator;
 
 /**
  * Decorator for injecting values by sequentially checking each token
@@ -20,7 +20,7 @@ export function InjectAll<Value>(token: Token<Value>): ParameterDecorator & Prop
  */
 export function InjectAll<Values extends [unknown, ...unknown[]]>(
   ...tokens: TokenList<Values>
-): ParameterDecorator & PropertyDecorator;
+): ParameterDecorator;
 
 /**
  * Decorator for injecting values by sequentially checking each token
@@ -28,10 +28,10 @@ export function InjectAll<Values extends [unknown, ...unknown[]]>(
  *
  * Allows referencing tokens that are declared after this usage.
  */
-export function InjectAll<Value>(tokens: TokensRef<Value>): ParameterDecorator & PropertyDecorator;
+export function InjectAll<Value>(tokens: TokensRef<Value>): ParameterDecorator;
 
-export function InjectAll(...args: unknown[]): ParameterDecorator & PropertyDecorator {
-  return function (target, propertyKey, parameterIndex?: number) {
-    processDecoratedSymbol("InjectAll", propertyKey, target, args, parameterIndex);
+export function InjectAll(...args: unknown[]): ParameterDecorator {
+  return function (target, propertyKey, parameterIndex: number) {
+    processDecoratedParameter("InjectAll", args, target, propertyKey, parameterIndex);
   };
 }

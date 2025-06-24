@@ -67,9 +67,11 @@ describe("inject", () => {
 
     class Wizard {
       wand1 = injectBy(this, Wand);
-
-      @Inject(Wand)
       wand2!: Wand;
+
+      setWand(@Inject(Wand) wand: Wand): void {
+        this.wand2 = wand;
+      }
     }
 
     const wizard = container.resolve(Wizard);

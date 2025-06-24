@@ -483,16 +483,6 @@ export class DefaultContainer implements Container {
 
     if (dependencies) {
       assert(isClassProvider(registration.provider), `internal error: not a ClassProvider`);
-
-      // Perform property injection
-      for (const { key, type, tokensRef } of dependencies.properties) {
-        const tokens = Array.from(tokensRef.getRefTokens()) as Tokens;
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        (instance as any)[key] =
-          type === "Inject" ? injectBy(instance, ...tokens) : injectAll(...tokens);
-      }
-
       const ctor = registration.provider.useClass;
 
       // Perform method injection
