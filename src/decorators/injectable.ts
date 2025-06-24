@@ -1,6 +1,6 @@
 import { getMetadata } from "../metadata";
 import type { Constructor, Token, Tokens } from "../token";
-import { isTokensRef, ref, type TokensRef } from "./tokensRef";
+import { isTokensRef, ref, type TokensRef } from "../tokensRef";
 
 /**
  * Decorator for adding aliasing tokens to a class when registering it.

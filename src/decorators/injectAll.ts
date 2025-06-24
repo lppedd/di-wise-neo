@@ -1,6 +1,6 @@
 import type { Constructor, Token, TokenList } from "../token";
+import type { TokensRef } from "../tokensRef";
 import { processDecoratedParameter } from "./decorators";
-import type { TokensRef } from "./tokensRef";
 
 /**
  * Decorator for injecting instances of a class with all registered providers.

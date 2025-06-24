@@ -1,4 +1,4 @@
-import type { Token, Tokens } from "../token";
+import type { Token, Tokens } from "./token";
 
 export interface TokensRef<Value = any> {
   readonly getRefTokens: () => Set<Token<Value>>;
