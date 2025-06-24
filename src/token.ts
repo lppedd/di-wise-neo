@@ -87,10 +87,10 @@ export function Type<T>(typeName: string): Type<T> {
  *
  * @example
  * ```ts
- * container.resolve(Type.Null); // => null
+ * container.resolve(NULL); // => null
  * ```
  */
-export const TypeNull: Type<null> = Type("null");
+export const NULL: Type<null> = Type<null>("null");
 
 /**
  * Type token of `undefined`.
