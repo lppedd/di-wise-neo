@@ -25,7 +25,7 @@ export interface RegistrationOptions {
 // @internal
 export interface Dependency {
   readonly tokensRef: TokensRef;
-  readonly type: "inject" | "injectAll";
+  readonly type: "Inject" | "InjectAll";
 }
 
 // @internal

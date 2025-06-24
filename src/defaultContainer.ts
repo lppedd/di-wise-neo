@@ -470,7 +470,7 @@ export class DefaultContainer implements Container {
           .sort((a, b) => a.index - b.index)
           .map(({ type, tokensRef }) => {
             const tokens = tokensRef.getRefTokens();
-            return type === "inject" ? this.resolve(...tokens) : this.resolveAll(...tokens);
+            return type === "Inject" ? this.resolve(...tokens) : this.resolveAll(...tokens);
           });
       }
     }
@@ -490,7 +490,7 @@ export class DefaultContainer implements Container {
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         (instance as any)[key] =
-          type === "inject" ? injectBy(instance, ...tokens) : injectAll(...tokens);
+          type === "Inject" ? injectBy(instance, ...tokens) : injectAll(...tokens);
       }
 
       const ctor = registration.provider.useClass;
@@ -512,7 +512,7 @@ export class DefaultContainer implements Container {
           .sort((a, b) => a.index - b.index)
           .map(({ type, tokensRef }) => {
             const tokens = Array.from(tokensRef.getRefTokens()) as Tokens;
-            return type === "inject" ? injectBy(instance, ...tokens) : injectAll(...tokens);
+            return type === "Inject" ? injectBy(instance, ...tokens) : injectAll(...tokens);
           });
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
