@@ -1,7 +1,7 @@
 import { assert } from "../errors";
 import { getMetadata } from "../metadata";
 import type { Constructor, Token, Tokens } from "../token";
-import { isTokensRef, ref } from "./tokensRef";
+import { isTokensRef, ref } from "../tokensRef";
 
 export function processDecoratedParameter(
   type: "Inject" | "InjectAll",

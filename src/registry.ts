@@ -1,4 +1,3 @@
-import type { TokensRef } from "./decorators/tokensRef";
 import { assert } from "./errors";
 import {
   type FactoryProvider,
@@ -9,6 +8,7 @@ import {
 } from "./provider";
 import { Scope } from "./scope";
 import { type Constructor, type Token, Type, TypeNull, TypeUndefined } from "./token";
+import type { TokensRef } from "./tokensRef";
 import { getTypeName } from "./utils/typeName";
 import type { ValueRef } from "./valueRef";
 
