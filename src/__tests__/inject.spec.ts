@@ -1,3 +1,4 @@
+// noinspection JSUnusedGlobalSymbols
 /* eslint-disable no-use-before-define */
 
 import { afterEach, describe, expect, it, vi } from "vitest";

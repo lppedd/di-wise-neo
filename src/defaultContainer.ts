@@ -10,7 +10,6 @@ import { injectAll } from "./injectAll";
 import { createResolution, provideInjectionContext, useInjectionContext } from "./injectionContext";
 import { getMetadata } from "./metadata";
 import {
-  type ExistingProvider,
   isClassProvider,
   isExistingProvider,
   isFactoryProvider,
@@ -159,7 +158,7 @@ export class DefaultContainer implements Container {
 
       // Register the additional tokens specified via class decorators.
       // These tokens will point to the original Class token and will have the same scope.
-      for (const token of metadata.tokens) {
+      for (const token of metadata.tokensRef.getRefTokens()) {
         this.registry.set(token, {
           provider: {
             useExisting: Class,
@@ -346,18 +345,18 @@ export class DefaultContainer implements Container {
       dependencies: metadata.dependencies,
     };
 
-    return this.resolveScopedValue(registration, () => new Class());
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.resolveScopedValue(registration, (args) => new Class(...args));
   }
 
-  private resolveProviderValue<T>(
-    registration: Registration<T>,
-    provider: Exclude<Provider<T>, ExistingProvider<T>>,
-  ): T {
+  private resolveProviderValue<T>(registration: Registration<T>, provider: Provider<T>): T {
     assert(registration.provider === provider, "internal error: mismatching provider");
 
     if (isClassProvider(provider)) {
       const Class = provider.useClass;
-      return this.resolveScopedValue(registration, () => new Class());
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      return this.resolveScopedValue(registration, (args) => new Class(...args));
     }
 
     if (isFactoryProvider(provider)) {
@@ -369,10 +368,14 @@ export class DefaultContainer implements Container {
       return provider.useValue;
     }
 
+    if (isExistingProvider(provider)) {
+      assert(false, "internal error: unexpected ExistingProvider");
+    }
+
     expectNever(provider);
   }
 
-  private resolveScopedValue<T>(registration: Registration<T>, create: () => T): T {
+  private resolveScopedValue<T>(registration: Registration<T>, factory: (...args: any[]) => T): T {
     let context = useInjectionContext();
 
     if (!context || context.container !== this) {
@@ -407,7 +410,8 @@ export class DefaultContainer implements Container {
             return valueRef.current;
           }
 
-          const value = this.injectDependencies(registration, create());
+          const args = this.resolveConstructorDependencies(registration);
+          const value = this.injectDependencies(registration, factory(args));
           registration.value = { current: value };
           return value;
         }
@@ -418,12 +422,14 @@ export class DefaultContainer implements Container {
             return valueRef.current;
           }
 
-          const value = this.injectDependencies(registration, create());
+          const args = this.resolveConstructorDependencies(registration);
+          const value = this.injectDependencies(registration, factory(args));
           resolution.values.set(provider, { current: value });
           return value;
         }
         case "Transient": {
-          return this.injectDependencies(registration, create());
+          const args = this.resolveConstructorDependencies(registration);
+          return this.injectDependencies(registration, factory(args));
         }
       }
     } finally {
@@ -443,6 +449,35 @@ export class DefaultContainer implements Container {
     return scope;
   }
 
+  private resolveConstructorDependencies<T>(registration: Registration<T>): any[] {
+    const dependencies = registration.dependencies;
+
+    if (dependencies) {
+      assert(isClassProvider(registration.provider), `internal error: not a ClassProvider`);
+      const ctorDeps = dependencies.constructor;
+
+      if (ctorDeps.length > 0) {
+        // Let's check if all necessary constructor parameters are decorated.
+        // If not, we cannot safely create an instance.
+        const ctor = registration.provider.useClass;
+        assert(ctor.length === ctorDeps.length, () => {
+          const expected = `expected ${ctor.length} decorated constructor parameters in ${ctor.name}`;
+          const found = `but found ${ctorDeps.length}`;
+          return `${expected}, ${found}`;
+        });
+
+        return ctorDeps
+          .sort((a, b) => a.index - b.index)
+          .map(({ type, tokensRef }) => {
+            const tokens = tokensRef.getRefTokens();
+            return type === "inject" ? this.resolve(...tokens) : this.resolveAll(...tokens);
+          });
+      }
+    }
+
+    return [];
+  }
+
   private injectDependencies<T>(registration: Registration<T>, instance: T): T {
     const dependencies = registration.dependencies;
 
@@ -450,13 +485,38 @@ export class DefaultContainer implements Container {
       assert(isClassProvider(registration.provider), `internal error: not a ClassProvider`);
 
       // Perform property injection
-      for (const { key, type, tokens } of dependencies.properties) {
-        // Here we use injectBy to workaround circular dependencies
+      for (const { key, type, tokensRef } of dependencies.properties) {
+        const tokens = Array.from(tokensRef.getRefTokens()) as Tokens;
+
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         (instance as any)[key] =
-          type === "inject"
-            ? injectBy(instance, ...(tokens as Tokens))
-            : injectAll(...(tokens as Tokens));
+          type === "inject" ? injectBy(instance, ...tokens) : injectAll(...tokens);
+      }
+
+      const ctor = registration.provider.useClass;
+
+      // Perform method injection
+      for (const [key, methodDeps] of dependencies.methods) {
+        // Let's check if all necessary method parameters are decorated.
+        // If not, we cannot safely invoke the method.
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const method = (instance as any)[key] as Function;
+        assert(methodDeps.length === method.length, () => {
+          const expected = `expected ${method.length} decorated method parameters`;
+          const where = `in ${ctor.name}.${String(key)}`;
+          const found = `but found ${methodDeps.length}`;
+          return `${expected} ${where}, ${found}`;
+        });
+
+        const args = methodDeps
+          .sort((a, b) => a.index - b.index)
+          .map(({ type, tokensRef }) => {
+            const tokens = Array.from(tokensRef.getRefTokens()) as Tokens;
+            return type === "inject" ? injectBy(instance, ...tokens) : injectAll(...tokens);
+          });
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        method.bind(instance)(...args);
       }
     }
 
