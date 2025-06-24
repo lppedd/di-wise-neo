@@ -434,8 +434,10 @@ describe("Container", () => {
 
     // We should not be able to register a token pointing to itself,
     // as it would cause a circular dependency error
-    expect(() => container.register(Wizard, { useExisting: Wizard })).toThrowError(
-      "[di-wise] the useExisting token Type<Wizard> cannot be the same as the token being registered",
+    expect(() =>
+      container.register(Wizard, { useExisting: Wizard }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise] the useExisting token Type<Wizard> cannot be the same as the token being registered]`,
     );
 
     container.register(Wizard, { useExisting: WizardImpl });
@@ -609,8 +611,12 @@ describe("Container", () => {
 
     expect(container.isDisposed).toBe(true);
     expect(child.isDisposed).toBe(true);
-    expect(() => container.resolve(Wand)).toThrowError("[di-wise] the container is disposed");
-    expect(() => child.resolve(Wand)).toThrowError("[di-wise] the container is disposed");
+    expect(() => container.resolve(Wand)).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise] the container is disposed]`,
+    );
+    expect(() => child.resolve(Wand)).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise] the container is disposed]`,
+    );
 
     expect(wizardInstance.calls).toBe(1);
     expect(wizardInstance.wand.calls).toBe(1);
