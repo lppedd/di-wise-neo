@@ -312,6 +312,22 @@ describe("Container", () => {
     );
   });
 
+  it("should throw when not all method params are decorated with @Inject/@InjectAll", () => {
+    expect(() => {
+      class Wand {}
+      class Spell {}
+
+      @AutoRegister()
+      class Wizard {
+        set(@Inject(Wand) _wand: Wand, @InjectAll(Spell) _spell: Spell, _other: string): void {}
+      }
+
+      container.resolve(Wizard);
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise] expected 3 decorated method parameters in Wizard.set, but found 2]`,
+    );
+  });
+
   it("should get the options from the class", () => {
     @Scoped(Scope.Container)
     @AutoRegister()
