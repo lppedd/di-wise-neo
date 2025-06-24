@@ -38,8 +38,7 @@ export interface Type<A> {
  * Constructor type.
  */
 export interface Constructor<Instance extends object> {
-  // Allow only zero-argument constructors
-  new (...args: []): Instance;
+  new (...args: any[]): Instance;
   readonly name: string;
 }
 

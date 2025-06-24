@@ -1,4 +1,5 @@
 import type { ClassProvider } from "./provider";
+import type { Dependencies } from "./registry";
 import type { Scope } from "./scope";
 import type { Constructor, Token } from "./token";
 
@@ -7,6 +8,7 @@ export interface Metadata<This extends object = any> {
   scope?: Scope;
   tokens: Set<Token<This>>;
   provider: ClassProvider<This>;
+  dependencies: Dependencies;
 }
 
 // @internal
@@ -20,6 +22,9 @@ export function getMetadata<T extends object>(Class: Constructor<T>): Metadata<T
         tokens: new Set(),
         provider: {
           useClass: Class,
+        },
+        dependencies: {
+          properties: [],
         },
       }),
     );

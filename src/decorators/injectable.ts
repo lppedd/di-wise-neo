@@ -1,7 +1,6 @@
 import { assert } from "../errors";
 import { getMetadata } from "../metadata";
 import type { Constructor, Tokens } from "../token";
-import type { ClassDecorator } from "./decorators";
 
 /**
  * Decorator for adding aliasing tokens to a class when registering it.
@@ -28,9 +27,9 @@ import type { ClassDecorator } from "./decorators";
  */
 export function Injectable<This extends object, Value extends This>(
   ...tokens: Tokens<Value>
-): ClassDecorator<Constructor<This>> {
+): ClassDecorator {
   return (Class) => {
-    const metadataTokens = getMetadata(Class).tokens;
+    const metadataTokens = getMetadata(Class as any as Constructor<any>).tokens;
 
     for (const token of tokens) {
       const message = `token ${token.name} must be passed exactly once to @Injectable`;
