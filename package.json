@@ -1,6 +1,5 @@
 {
   "name": "di-wise-neo",
-  "packageManager": "yarn@4.6.0",
   "version": "0.2.8",
   "description": "Lightweight, typesafe, and flexible dependency injection library for JavaScript and TypeScript",
   "files": [
@@ -26,7 +25,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsc --noEmit && bunchee --sourcemap",
-    "test": "vitest --coverage \"$@\"",
+    "test": "vitest --coverage",
     "lint": "eslint . --fix --cache",
     "lint:ci": "eslint . --max-warnings 0 --cache --cache-location ./node_modules/.cache/eslint/.eslintcache",
     "format": "prettier \"**/*.{json,md,yml}\" --write --log-level warn --cache",

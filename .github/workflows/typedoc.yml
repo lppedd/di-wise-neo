@@ -1,13 +1,9 @@
 name: TypeDoc
 
 on:
-  # Runs on pushes of tags starting with 'v'
   push:
     tags:
       - "v*"
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -29,10 +25,10 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: actions/setup-node@v4
         with:
-          cache: "yarn"
+          cache: "npm"
           node-version-file: ".nvmrc"
-      - run: yarn install
-      - run: yarn typedoc
+      - run: npm install
+      - run: npm run typedoc
       - uses: actions/upload-pages-artifact@v3
         with:
           path: "./docs"
