@@ -1,8 +1,8 @@
 {
-  "name": "di-wise",
+  "name": "di-wise-neo",
   "packageManager": "yarn@4.6.0",
   "version": "0.2.8",
-  "description": "Lightweight and flexible dependency injection library for JavaScript and TypeScript, w/wo ECMAScript decorators.",
+  "description": "Lightweight, typesafe, and flexible dependency injection library for JavaScript and TypeScript",
   "files": [
     "dist",
     "src",
@@ -35,28 +35,28 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/exuanbo/di-wise.git"
+    "url": "git+https://github.com/lppedd/di-wise-neo.git"
   },
   "keywords": [
     "di",
     "ioc",
     "dependency injection",
     "inversion of control",
-    "ecmascript decorator",
     "dependency",
     "injection",
     "injector",
     "container",
-    "ecmascript",
+    "typescript",
+    "experimental",
     "decorator",
-    "metadata"
+    "decorators"
   ],
-  "author": "exuanbo <exuanbo@protonmail.com>",
+  "author": "Edoardo Luppi <lp.edoardo@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/exuanbo/di-wise/issues"
+    "url": "https://github.com/lppedd/di-wise-neo/issues"
   },
-  "homepage": "https://exuanbo.xyz/di-wise/",
+  "homepage": "https://github.com/lppedd/di-wise-neo",
   "devDependencies": {
     "@eslint/js": "^9.20.0",
     "@stylistic/eslint-plugin": "^3.1.0",

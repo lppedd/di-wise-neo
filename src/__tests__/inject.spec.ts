@@ -29,7 +29,7 @@ describe("inject", () => {
       );
       vi.runAllTimers();
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] inject() can only be invoked within an injection context]`,
+      `[Error: [di-wise-neo] inject() can only be invoked within an injection context]`,
     );
 
     expect(() => {
@@ -42,7 +42,7 @@ describe("inject", () => {
       );
       vi.runAllTimers();
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] injectBy() can only be invoked within an injection context]`,
+      `[Error: [di-wise-neo] injectBy() can only be invoked within an injection context]`,
     );
 
     expect(() => {
@@ -55,7 +55,7 @@ describe("inject", () => {
       );
       vi.runAllTimers();
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] injectAll() can only be invoked within an injection context]`,
+      `[Error: [di-wise-neo] injectAll() can only be invoked within an injection context]`,
     );
 
     vi.restoreAllMocks();
@@ -109,7 +109,7 @@ describe("inject", () => {
     }
 
     expect(() => container.resolve(Build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] circular dependency detected]`,
+      `[Error: [di-wise-neo] circular dependency detected]`,
     );
   });
 
@@ -123,7 +123,7 @@ describe("inject", () => {
     }
 
     expect(() => container.resolve(Build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] circular dependency detected]`,
+      `[Error: [di-wise-neo] circular dependency detected]`,
     );
   });
 
