@@ -1,37 +1,45 @@
-import type { Constructor, Token, TokenList } from "../token";
-import type { TokensRef } from "../tokensRef";
+import type { Constructor, Token } from "../token";
+import type { TokenRef } from "../tokensRef";
 import { processDecoratedParameter } from "./decorators";
 
 /**
- * Decorator for injecting instances of a class with all registered providers.
+ * Parameter decorator that injects all instances provided by the registrations
+ * associated with the given class.
+ *
+ * Throws an error if the class is not registered in the container.
  */
-export function InjectAll<Instance extends object>(
-  Class: Constructor<Instance>,
-): ParameterDecorator;
+export function InjectAll<Instance extends object>(Class: Constructor<Instance>): ParameterDecorator;
 
 /**
- * Decorator for injecting the values of a token created by all its registered providers.
+ * Parameter decorator that injects all values provided by the registrations
+ * associated with the given token.
+ *
+ * Throws an error if the token is not registered in the container.
  */
 export function InjectAll<Value>(token: Token<Value>): ParameterDecorator;
 
 /**
- * Decorator for injecting values by sequentially checking each token
- * in the provided list until a registered one is found.
- */
-export function InjectAll<Values extends [unknown, ...unknown[]]>(
-  ...tokens: TokenList<Values>
-): ParameterDecorator;
-
-/**
- * Decorator for injecting values by sequentially checking each token
- * in the provided list until a registered one is found.
+ * Parameter decorator that injects all values provided by the registrations
+ * associated with the given token.
  *
- * Allows referencing tokens that are declared after this usage.
+ * Allows referencing a token that is declared later in the file by using
+ * the {@link forwardRef} helper function.
+ *
+ * Throws an error if the token is not registered in the container.
+ *
+ * @example
+ * ```ts
+ * class Wizard {
+ *   constructor(@InjectAll(forwardRef(() => Wand)) readonly wands: Wand[]) {}
+ * }
+ * // Other code...
+ * class Wand {}
+ * ```
  */
-export function InjectAll<Value>(tokens: TokensRef<Value>): ParameterDecorator;
+export function InjectAll<Value>(tokens: TokenRef<Value>): ParameterDecorator;
 
-export function InjectAll(...args: unknown[]): ParameterDecorator {
+export function InjectAll<T>(token: Token<T> | TokenRef<T>): ParameterDecorator {
   return function (target, propertyKey, parameterIndex: number): void {
-    processDecoratedParameter("InjectAll", args, target, propertyKey, parameterIndex);
+    processDecoratedParameter("InjectAll", token, target, propertyKey, parameterIndex);
   };
 }

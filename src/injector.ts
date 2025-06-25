@@ -1,57 +1,70 @@
 import { inject } from "./inject";
 import { injectAll } from "./injectAll";
-import {
-  ensureInjectionContext,
-  provideInjectionContext,
-  useInjectionContext,
-} from "./injectionContext";
+import { ensureInjectionContext, provideInjectionContext, useInjectionContext } from "./injectionContext";
+import { optional } from "./optional";
+import { optionalAll } from "./optionalAll";
 import { Build } from "./registry";
-import type { Constructor, Token, TokenList, Tokens, Type } from "./token";
+import type { Constructor, Token, Type } from "./token";
 
 /**
  * Injector API.
  */
 export interface Injector {
   /**
-   * Inject an instance of a class.
+   * Injects the instance associated with the given class.
+   *
+   * Throws an error if the class is not registered in the container.
    */
   inject<Instance extends object>(Class: Constructor<Instance>): Instance;
 
   /**
-   * Inject the value of a token.
+   * Injects the value associated with the given token.
+   *
+   * Throws an error if the token is not registered in the container.
    */
   inject<Value>(token: Token<Value>): Value;
 
   /**
-   * Inject the value of a token, by checking each token in order until a registered one is found.
-   */
-  inject<Values extends [unknown, ...unknown[]]>(...tokens: TokenList<Values>): Values[number];
-
-  /**
-   * Inject instances of a class with all registered providers.
+   * Injects all instances provided by the registrations associated with the given class.
+   *
+   * Throws an error if the class is not registered in the container.
    */
   injectAll<Instance extends object>(Class: Constructor<Instance>): Instance[];
 
   /**
-   * Inject the values of a token from all its registered providers.
+   * Injects all values provided by the registrations associated with the given token.
    *
-   * The returned array will not contain `null` or `undefined` values.
+   * Throws an error if the token is not registered in the container.
    */
   injectAll<Value>(token: Token<Value>): NonNullable<Value>[];
 
   /**
-   * Inject the values of a token from all its registered providers,
-   * by checking each token in order until a registered one is found.
-   *
-   * The returned array will not contain `null` or `undefined` values.
+   * Injects the instance associated with the given class,
+   * or `undefined` if the class is not registered in the container.
    */
-  injectAll<Values extends [unknown, ...unknown[]]>(
-    ...tokens: TokenList<Values>
-  ): NonNullable<Values[number]>[];
+  optional<Instance extends object>(Class: Constructor<Instance>): Instance | undefined;
+
+  /**
+   * Injects the value associated with the given token,
+   * or `undefined` if the token is not registered in the container.
+   */
+  optional<Value>(token: Token<Value>): Value | undefined;
+
+  /**
+   * Injects all instances provided by the registrations associated with the given class,
+   * or an empty array if the class is not registered in the container.
+   */
+  optionalAll<Instance extends object>(Class: Constructor<Instance>): Instance[];
+
+  /**
+   * Injects all values provided by the registrations associated with the given token,
+   * or an empty array if the token is not registered in the container.
+   */
+  optionalAll<Value>(token: Token<Value>): NonNullable<Value>[];
 }
 
 /**
- * Injector token for dynamic injection.
+ * Injector token for dynamic injections.
  *
  * @example
  * ```ts
@@ -59,7 +72,7 @@ export interface Injector {
  *   private injector = inject(Injector);
  *   private wand?: Wand;
  *
- *   getWand() {
+ *   getWand(): Wand {
  *     return (this.wand ??= this.injector.inject(Wand));
  *   }
  * }
@@ -96,7 +109,9 @@ export const Injector: Type<Injector> = /*@__PURE__*/ Build(function Injector() 
   }
 
   return {
-    inject: <T>(...tokens: Tokens<T>) => withCurrentContext(() => inject(...tokens)),
-    injectAll: <T>(...tokens: Tokens<T>) => withCurrentContext(() => injectAll(...tokens)),
+    inject: <T>(token: Token<T>) => withCurrentContext(() => inject(token)),
+    injectAll: <T>(token: Token<T>) => withCurrentContext(() => injectAll(token)),
+    optional: <T>(token: Token<T>) => withCurrentContext(() => optional(token)),
+    optionalAll: <T>(token: Token<T>) => withCurrentContext(() => optionalAll(token)),
   };
 });

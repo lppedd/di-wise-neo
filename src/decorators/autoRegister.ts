@@ -2,7 +2,8 @@ import { getMetadata } from "../metadata";
 import type { Constructor } from "../token";
 
 /**
- * Decorator for enabling auto-registration of a class when resolving it.
+ * Class decorator for enabling auto-registration of an unregistered class
+ * when first resolving it from the container.
  *
  * @example
  * ```ts

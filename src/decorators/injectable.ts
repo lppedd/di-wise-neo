@@ -1,9 +1,11 @@
 import { getMetadata } from "../metadata";
-import type { Constructor, Token, Tokens } from "../token";
-import { isTokensRef, ref, type TokensRef } from "../tokensRef";
+import type { Constructor, Tokens } from "../token";
+import { forwardRef, isTokensRef, type TokenRef, type TokensRef } from "../tokensRef";
 
 /**
- * Decorator for adding aliasing tokens to a class when registering it.
+ * Class decorator for registering additional aliasing tokens for the decorated type
+ * when registering it.
+ *
  * The container uses {@link ExistingProvider} under the hood.
  *
  * @example
@@ -12,24 +14,27 @@ import { isTokensRef, ref, type TokensRef } from "../tokensRef";
  * class Wand {}
  * ```
  */
-export function Injectable<This extends object, Value extends This>(
-  ...tokens: Tokens<Value>
-): ClassDecorator;
+export function Injectable<This extends object, Value extends This>(...tokens: Tokens<Value>): ClassDecorator;
 
 /**
- * Decorator for adding aliasing tokens to a class when registering it.
+ * Class decorator for registering additional aliasing tokens for the decorated type
+ * when registering it.
+ *
  * The container uses {@link ExistingProvider} under the hood.
  *
- * Allows referencing tokens that are declared after this usage.
+ * Allows referencing tokens that are declared later in the file by using
+ * the {@link forwardRef} helper function.
  *
  * @example
  * ```ts
- * @Injectable(() => Weapon) // Weapon is declared after Wand
- * class Wand {}
+ * @Injectable(forwardRef() => Weapon) // Weapon is declared after Wand
+ * class Wizard {}
+ * // Other code...
+ * class Weapon {}
  * ```
  */
 export function Injectable<This extends object, Value extends This>(
-  tokens: TokensRef<Value>,
+  tokens: TokenRef<Value> | TokensRef<Value>,
 ): ClassDecorator;
 
 /**
@@ -38,7 +43,8 @@ export function Injectable<This extends object, Value extends This>(
 export function Injectable(...args: unknown[]): ClassDecorator {
   return function (Class): void {
     const metadata = getMetadata(Class as any as Constructor<any>);
-    const tokensRef = isTokensRef(args[0]) ? args[0] : ref(() => args as Token | Tokens);
+    const arg0 = args[0];
+    const tokensRef = isTokensRef(arg0) ? arg0 : forwardRef(() => args as Tokens);
     const existingTokensRef = metadata.tokensRef;
     metadata.tokensRef = {
       getRefTokens: () => {

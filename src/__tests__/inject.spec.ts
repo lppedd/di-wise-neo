@@ -3,8 +3,9 @@
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { Build, createContainer, Inject, inject, injectAll, injectBy, Injector, Scope, Scoped } from "..";
+import { Build, createContainer, Inject, inject, injectAll, injectBy, Injector, Optional, Scope, Scoped } from "..";
 import { useInjectionContext } from "../injectionContext";
+import { optional, optionalBy } from "../optional";
 
 describe("inject", () => {
   const container = createContainer();
@@ -60,7 +61,7 @@ describe("inject", () => {
     vi.restoreAllMocks();
   });
 
-  it("should handle circular dependencies", () => {
+  it("should handle circular dependencies with injectBy and @Inject", () => {
     class Wand {
       owner = inject(Wizard);
     }
@@ -79,6 +80,25 @@ describe("inject", () => {
     expect(wizard.wand2.owner).toBe(wizard);
   });
 
+  it("should handle circular dependencies with optionalBy and @Optional", () => {
+    class Wand {
+      owner = optional(Wizard);
+    }
+
+    class Wizard {
+      wand1 = optionalBy(this, Wand);
+      wand2?: Wand;
+
+      setWand(@Optional(Wand) wand?: Wand): void {
+        this.wand2 = wand;
+      }
+    }
+
+    const wizard = container.resolve(Wizard);
+    expect(wizard.wand1?.owner).toBe(wizard);
+    expect(wizard.wand2?.owner).toBe(wizard);
+  });
+
   it("should fallback to inject if no dependent", () => {
     class Wand {
       owner = inject(Wizard);
@@ -86,6 +106,20 @@ describe("inject", () => {
 
     class Wizard {
       wand = injectBy(this, Wand);
+    }
+
+    expect(() => container.resolve(Build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise] circular dependency detected]`,
+    );
+  });
+
+  it("should fallback to optional if no dependent", () => {
+    class Wand {
+      owner = optional(Wizard);
+    }
+
+    class Wizard {
+      wand = optionalBy(this, Wand);
     }
 
     expect(() => container.resolve(Build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(

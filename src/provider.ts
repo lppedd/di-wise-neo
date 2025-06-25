@@ -41,16 +41,6 @@ export type Provider<Value = any> =
   | ValueProvider<Value>;
 
 // @internal
-export const NullProvider: ValueProvider<null> = {
-  useValue: null,
-};
-
-// @internal
-export const UndefinedProvider: ValueProvider<undefined> = {
-  useValue: undefined,
-};
-
-// @internal
 export function isClassProvider<T>(provider: Provider<T>): provider is ClassProvider<T & object> {
   return "useClass" in provider;
 }

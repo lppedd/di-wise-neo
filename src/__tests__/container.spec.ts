@@ -7,18 +7,21 @@ import {
   AutoRegister,
   Build,
   createContainer,
+  forwardRef,
   Inject,
   inject,
   Injectable,
   InjectAll,
-  ref,
+  injectAll,
+  Optional,
+  OptionalAll,
   Scope,
   Scoped,
-  Type,
-  Value
+  Type
 } from "..";
 import { useInjectionContext } from "../injectionContext";
-import { NULL, UNDEFINED } from "../token";
+import { optional } from "../optional";
+import { optionalAll } from "../optionalAll";
 
 describe("Container", () => {
   const container = createContainer();
@@ -169,29 +172,57 @@ describe("Container", () => {
     expect(characterRegistration.provider).toBe(heroRegistration.provider);
   });
 
-  it("should perform constructor injection using inject", () => {
+  it("should perform constructor injection using inject and injectAll", () => {
     @AutoRegister()
     class Wand {}
 
     @AutoRegister()
     class Wizard {
-      constructor(readonly wand = inject(Wand)) {}
+      constructor(
+        readonly wand = inject(Wand),
+        readonly wands = injectAll(Wand),
+      ) {}
     }
 
     const wizardInstance = container.resolve(Wizard);
     expect(wizardInstance).toBeInstanceOf(Wizard);
     expect(wizardInstance.wand).toBeInstanceOf(Wand);
+    expect(wizardInstance.wands).toHaveLength(1);
+    expect(wizardInstance.wands[0]).toBeInstanceOf(Wand);
+  });
+
+  it("should perform constructor injection using optional and optionalAll", () => {
+    @Scoped(Scope.Container)
+    class Castle {}
+
+    @AutoRegister()
+    class Wand {}
+
+    @AutoRegister()
+    class Wizard {
+      constructor(
+        readonly castle = optional(Castle),
+        readonly wand = optional(Wand),
+        readonly wands = optionalAll(Wand),
+      ) {}
+    }
+
+    const wizardInstance = container.resolve(Wizard);
+    expect(wizardInstance).toBeInstanceOf(Wizard);
+    expect(wizardInstance.castle).toBeUndefined();
+    expect(wizardInstance.wand).toBeInstanceOf(Wand);
+    expect(wizardInstance.wands).toHaveLength(1);
+    expect(wizardInstance.wands[0]).toBeInstanceOf(Wand);
   });
 
   it("should perform constructor injection with @Inject and @InjectAll", () => {
-    const NonRegistered = Type<boolean>("NonRegistered");
     const Spell = Type<string>("Spell");
 
     @Scoped(Scope.Container)
     class Wizard {
       constructor(
         @Inject(Spell) readonly spell: string,
-        @InjectAll(NonRegistered, Spell) readonly spells: boolean | string[],
+        @InjectAll(Spell) readonly spells: string[],
       ) {}
     }
 
@@ -212,24 +243,48 @@ describe("Container", () => {
     expect(wizardInstance.spells[1]).toBe("spell two");
   });
 
+  it("should perform constructor injection with @Optional and @OptionalAll", () => {
+    const Spell = Type<string>("Spell");
+
+    @Scoped(Scope.Container)
+    class Wizard {
+      constructor(
+        @Optional(Spell) readonly spell: string | undefined,
+        @OptionalAll(Spell) readonly spells: string[],
+      ) {}
+    }
+
+    container.register(Wizard);
+
+    expect(container.isRegistered(Spell)).toBe(false);
+    expect(container.isRegistered(Wizard)).toBe(true);
+
+    const wizardInstance = container.resolve(Wizard);
+    expect(wizardInstance).toBeInstanceOf(Wizard);
+    expect(wizardInstance.spell).toBeUndefined();
+
+    assert(Array.isArray(wizardInstance.spells), "spells should be an array");
+    expect(wizardInstance.spells).toHaveLength(0);
+  });
+
   it("should perform method injection with @Inject and @InjectAll", () => {
     class Castle {}
 
     @Scoped(Scope.Container)
     class Wizard {
-      castle?: Castle;
-      wand?: Wand;
-      wands?: Wand[];
+      castle!: Castle;
+      wand!: Wand;
+      wands!: Wand[];
 
       setCastle(@Inject(Castle) castle: Castle): void {
         this.castle = castle;
       }
 
-      setWand(@Inject(ref(() => Wand)) wand: Wand): void {
+      setWand(@Inject(forwardRef(() => Wand)) wand: Wand): void {
         this.wand = wand;
       }
 
-      setWands(@InjectAll(ref(() => Wand)) wands: Wand[]): void {
+      setWands(@InjectAll(forwardRef(() => Wand)) wands: Wand[]): void {
         this.wands = wands;
       }
     }
@@ -240,7 +295,6 @@ describe("Container", () => {
 
     const wandOne = new Wand("one");
     const wandTwo = new Wand("two");
-
     container.register(Castle);
     container.register(Wand, { useValue: wandOne });
     container.register(Wand, { useValue: wandTwo });
@@ -255,13 +309,77 @@ describe("Container", () => {
     expect(wizardInstance.castle).toBeInstanceOf(Castle);
     expect(wizardInstance.wand).toBe(wandTwo);
     expect(wizardInstance.wands).toHaveLength(2);
-    expect(wizardInstance.wands![0]).toBe(wandOne);
-    expect(wizardInstance.wands![1]).toBe(wandTwo);
+    expect(wizardInstance.wands[0]).toBe(wandOne);
+    expect(wizardInstance.wands[1]).toBe(wandTwo);
+  });
+
+  it("should perform method injection with @Optional and @OptionalAll", () => {
+    // Caste will inherit the scope from Wizard, and thus it won't be
+    // instantiated one-off by the container
+    class Castle {}
+
+    @Scoped(Scope.Container)
+    class Wizard {
+      castle?: Castle;
+      wands?: Wand[];
+
+      setCastle(@Optional(Castle) castle?: Castle): void {
+        this.castle = castle;
+      }
+
+      setWands(@OptionalAll(forwardRef(() => Wand)) wands: Wand[]): void {
+        this.wands = wands;
+      }
+    }
+
+    class Wand {
+      constructor(readonly name: string) {}
+    }
+
+    const wand = new Wand("one");
+    container.register(Wand, { useValue: wand });
+    container.register(Wizard);
+
+    expect(container.isRegistered(Castle)).toBe(false);
+    expect(container.isRegistered(Wand)).toBe(true);
+    expect(container.isRegistered(Wizard)).toBe(true);
+
+    const wizardInstance = container.resolve(Wizard);
+    expect(wizardInstance).toBeInstanceOf(Wizard);
+    expect(wizardInstance.castle).toBeUndefined();
+    expect(wizardInstance.wands).toHaveLength(1);
+    expect(wizardInstance.wands![0]).toBe(wand);
+  });
+
+  it("should throw when @Inject is applied to static methods", () => {
+    expect(() => {
+      const Wand = Type<string>("Wand");
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {
+        static setWand(@Inject(Wand) _wand: string): void {}
+      }
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise] @Inject cannot be used on static member Wizard.setWand]`,
+    );
+  });
+
+  it("should throw when @Optional is applied to static methods", () => {
+    expect(() => {
+      const Wand = Type<string>("Wand");
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {
+        static setWand(@Optional(Wand) _wand: string | undefined): void {}
+      }
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise] @Optional cannot be used on static member Wizard.setWand]`,
+    );
   });
 
   it("should throw when @InjectAll is applied to static methods", () => {
     expect(() => {
-      const Wand = Type<string>("Wands");
+      const Wand = Type<string>("Wand");
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {
@@ -269,6 +387,19 @@ describe("Container", () => {
       }
     }).toThrowErrorMatchingInlineSnapshot(
       `[Error: [di-wise] @InjectAll cannot be used on static member Wizard.setWands]`,
+    );
+  });
+
+  it("should throw when @OptionalAll is applied to static methods", () => {
+    expect(() => {
+      const Wand = Type<string>("Wand");
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {
+        static setWands(@OptionalAll(Wand) _wands: string[]): void {}
+      }
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise] @OptionalAll cannot be used on static member Wizard.setWands]`,
     );
   });
 
@@ -291,7 +422,7 @@ describe("Container", () => {
     );
   });
 
-  it("should throw when not all constructor params are decorated with @InjectAll", () => {
+  it("should throw when not all constructor params are decorated with @Inject/@InjectAll", () => {
     expect(() => {
       class Wand {}
 
@@ -310,6 +441,25 @@ describe("Container", () => {
     );
   });
 
+  it("should throw when not all constructor params are decorated with @Optional/@OptionalAll", () => {
+    expect(() => {
+      class Wand {}
+
+      @AutoRegister()
+      class Wizard {
+        constructor(
+          @OptionalAll(Wand) readonly wands: Wand[],
+          @Optional(Wand) readonly wand: Wand,
+          private spell: string,
+        ) {}
+      }
+
+      container.resolve(Wizard);
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise] expected 3 decorated constructor parameters in Wizard, but found 2]`,
+    );
+  });
+
   it("should throw when not all method params are decorated with @Inject/@InjectAll", () => {
     expect(() => {
       class Wand {}
@@ -317,7 +467,23 @@ describe("Container", () => {
 
       @AutoRegister()
       class Wizard {
-        set(@Inject(Wand) _wand: Wand, @InjectAll(Spell) _spell: Spell, _other: string): void {}
+        set(@Inject(Wand) _wand: Wand, @InjectAll(Spell) _spells: Spell[], _other: string): void {}
+      }
+
+      container.resolve(Wizard);
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise] expected 3 decorated method parameters in Wizard.set, but found 2]`,
+    );
+  });
+
+  it("should throw when not all method params are decorated with @Optional/@OptionalAll", () => {
+    expect(() => {
+      class Wand {}
+      class Spell {}
+
+      @AutoRegister()
+      class Wizard {
+        set(@Optional(Wand) _wand: Wand, @OptionalAll(Spell) _spells: Spell[], _other: string): void {}
       }
 
       container.resolve(Wizard);
@@ -341,7 +507,6 @@ describe("Container", () => {
     class Wizard {}
 
     container.register(Wizard, { useClass: Wizard });
-
     container.register(Wizard, { useClass: Wizard }, { scope: Scope.Transient });
 
     const registration = container.registry.get(Wizard)!;
@@ -393,50 +558,58 @@ describe("Container", () => {
     const Env = Type<string>("Env");
 
     expect(() => container.resolve(Env)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] unregistered tokens: Type<Env>]`,
+      `[Error: [di-wise] unregistered token Type<Env>]`,
     );
 
-    expect(container.resolveAll(Env)).toEqual([]);
+    expect(() => container.resolveAll(Env)).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise] unregistered token Type<Env>]`,
+    );
   });
 
   it("should resolve all tokens", () => {
-    const Character = Type<{ name: string }>("Character");
+    const Character = Type<{ name: string }>("Person");
 
     @Injectable(Character)
     class Wizard {
       name = "Wizard";
     }
 
-    @Injectable(ref(() => Character))
+    // Injectable decorators can be stacked
+    @Injectable(forwardRef(() => Person))
+    @Injectable(forwardRef(() => [Character]))
     class Witch {
       name = "Witch";
     }
 
+    const Person = Type<{ name: string }>("Character");
+
     container.register(Wizard);
     container.register(Witch);
+
+    const persons = container.resolveAll(Person);
+    expect(persons).toHaveLength(1);
+    expect(persons[0]!.name).toBe("Witch");
 
     const characters = container.resolveAll(Character);
     expect(characters).toHaveLength(2);
     expect(characters.map(({ name }) => name)).toEqual(["Wizard", "Witch"]);
   });
 
-  it("should resolve all tokens with a class fallback", () => {
+  it("should resolve auto-registered classes", () => {
     const container = createContainer({
       defaultScope: Scope.Container,
       autoRegister: true,
     });
 
-    const Character = Type<{}>("Character");
-
     class Wizard {}
 
-    expect(container.resolveAll(Character, Wizard)).toEqual([container.resolve(Wizard)]);
+    expect(container.resolveAll(Wizard)).toEqual([container.resolve(Wizard)]);
   });
 
-  it("should return empty array if null or undefined is resolved", () => {
-    const Character = Type<{}>("Character");
-    expect(container.resolveAll(Character, NULL)).toEqual([]);
-    expect(container.resolveAll(Character, UNDEFINED)).toEqual([]);
+  it("should return empty array if resolution is optional", () => {
+    @Scoped(Scope.Container)
+    class Character {}
+    expect(container.resolveAll(Character, true)).toEqual([]);
   });
 
   it("should resolve existing providers", () => {
@@ -448,9 +621,7 @@ describe("Container", () => {
 
     // We should not be able to register a token pointing to itself,
     // as it would cause a circular dependency error
-    expect(() =>
-      container.register(Wizard, { useExisting: Wizard }),
-    ).toThrowErrorMatchingInlineSnapshot(
+    expect(() => container.register(Wizard, { useExisting: Wizard })).toThrowErrorMatchingInlineSnapshot(
       `[Error: [di-wise] the useExisting token Type<Wizard> cannot be the same as the token being registered]`,
     );
 
@@ -574,12 +745,6 @@ describe("Container", () => {
     expect(wizard.wand.decoration).toBe(wizard.decoration);
   });
 
-  it("should resolve a default value", () => {
-    const Env = Type<string>("Env");
-    const env = container.resolve(Env, Value("development"));
-    expect(env).toBe("development");
-  });
-
   it("should dispose itself and its registrations", () => {
     class Wand {
       calls = 0;
@@ -601,11 +766,7 @@ describe("Container", () => {
 
     const container = createContainer();
     const wizardToken = Type<Wizard>("SecondaryWizard");
-    container.register(
-      wizardToken,
-      { useFactory: () => inject(Wizard) },
-      { scope: Scope.Container },
-    );
+    container.register(wizardToken, { useFactory: () => inject(Wizard) }, { scope: Scope.Container });
     container.register(Wizard);
     container.register(Wand);
 

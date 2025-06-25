@@ -2,7 +2,7 @@ import { DefaultContainer } from "./defaultContainer";
 import type { ClassProvider, ExistingProvider, FactoryProvider, ValueProvider } from "./provider";
 import type { RegistrationOptions, Registry } from "./registry";
 import { Scope } from "./scope";
-import type { Constructor, Token, TokenList } from "./token";
+import type { Constructor, Token } from "./token";
 
 /**
  * Options for creating a container.
@@ -48,7 +48,7 @@ export interface Container {
   getParent(): Container | undefined;
 
   /**
-   * Creates a child container with the same configuration.
+   * Creates a child container with the same configuration as this container.
    */
   createChild(): Container;
 
@@ -160,121 +160,106 @@ export interface Container {
   unregister<Value>(token: Token<Value>): Value[];
 
   /**
-   * Resolves a class token to a single instance.
+   * Resolves the given class to the instance associated with it.
    *
    * If the class is registered in this container or any of its parent containers,
    * an instance is created using the most recent registration.
    *
-   * If the class is not registered and {@link ContainerOptions.autoRegister} is true,
-   * it is registered automatically. Otherwise, the resolution fails.
-   *
+   * If the class is not registered, but it is decorated with {@link AutoRegister},
+   * or {@link ContainerOptions.autoRegister} is true, the class is registered automatically.
+   * Otherwise, resolution fails.
    * The scope for the automatic registration is determined by either
-   * {@link ContainerOptions.defaultScope} or the {@link Scoped} decorator on the class.
+   * the {@link Scoped} decorator on the class, or {@link ContainerOptions.defaultScope}.
+   *
+   * If `optional` is false or is not passed and the class is not registered in the container
+   * (and could not be auto-registered), an error is thrown.
+   * Otherwise, if `optional` is true, `undefined` is returned.
    *
    * The resolution behavior depends on the {@link Provider} used during registration:
    * - For {@link ValueProvider}, the explicitly provided instance is returned.
    * - For {@link FactoryProvider}, the factory function is invoked to create the instance.
-   * - For {@link ClassProvider}, a new instance of the class is created according to its scope (see just below).
+   * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
    * - For {@link ExistingProvider}, the instance is resolved by referring to another registered token.
    *
-   * If the token is registered with _container_ scope, the resolved instance
-   * is cached in the container's internal registry.
+   * If the class is registered with _container_ scope, the resolved instance is cached
+   * in the container's internal registry.
    */
-  resolve<Instance extends object>(Class: Constructor<Instance>): Instance;
+  resolve<Instance extends object>(Class: Constructor<Instance>, optional?: false): Instance;
+  resolve<Instance extends object>(Class: Constructor<Instance>, optional: true): Instance | undefined;
+  resolve<Instance extends object>(Class: Constructor<Instance>, optional: boolean): Instance | undefined;
 
   /**
-   * Resolves a token to its value.
+   * Resolves the given token to the value associated with it.
    *
    * If the token is registered in this container or any of its parent containers,
    * its value is resolved using the most recent registration.
    *
-   * If the token is not registered, the resolution fails.
+   * If `optional` is false or not passed and the token is not registered in the container,
+   * an error is thrown. Otherwise, if `optional` is true, `undefined` is returned.
    *
    * The resolution behavior depends on the {@link Provider} used during registration:
    * - For {@link ValueProvider}, the explicitly provided value is returned.
    * - For {@link FactoryProvider}, the factory function is invoked to create the value.
-   * - For {@link ClassProvider}, a new instance of the class is created according to its scope (see just below).
+   * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
    * - For {@link ExistingProvider}, the value is resolved by referring to another registered token.
    *
-   * If the token is registered with _container_ scope, the resolved value
-   * is cached in the container's internal registry.
+   * If the token is registered with _container_ scope, the resolved value is cached
+   * in the container's internal registry.
    */
-  resolve<Value>(token: Token<Value>): Value;
+  resolve<Value>(token: Token<Value>, optional?: false): Value;
+  resolve<Value>(token: Token<Value>, optional: true): Value | undefined;
+  resolve<Value>(token: Token<Value>, optional: boolean): Value | undefined;
 
   /**
-   * Resolves a token to its value by sequentially checking each token in the provided list
-   * until a registered one is found: if the first token is not registered, resolution moves
-   * to the next token, and so on.
+   * Resolves the given class to all instances provided by the registrations associated with it.
    *
-   * If none of the tokens are registered, resolution fails.
+   * If the class is not registered, but it is decorated with {@link AutoRegister},
+   * or {@link ContainerOptions.autoRegister} is true, the class is registered automatically.
+   * Otherwise, resolution fails.
+   * The scope for the automatic registration is determined by either
+   * the {@link Scoped} decorator on the class, or {@link ContainerOptions.defaultScope}.
    *
-   * If one of the tokens is registered in this container or any of its parent containers,
-   * its value is resolved using the most recent registration.
-   *
-   * The resolution behavior depends on the {@link Provider} used during registration:
-   * - For {@link ValueProvider}, the explicitly provided value is returned.
-   * - For {@link FactoryProvider}, the factory function is invoked to create the value.
-   * - For {@link ClassProvider}, a new instance of the class is created according to its scope (see just below).
-   * - For {@link ExistingProvider}, the value is resolved by referring to another registered token.
-   *
-   * If the token is registered with _container_ scope, the resolved value
-   * is cached in the container's internal registry.
-   */
-  resolve<Values extends [unknown, ...unknown[]]>(...tokens: TokenList<Values>): Values[number];
-
-  /**
-   * Resolves a class token to the instances created by all its registered providers.
-   *
-   * If no providers are registered for the token, an empty array is returned.
+   * If `optional` is false or is not passed and the class is not registered in the container
+   * (and could not be auto-registered), an error is thrown.
+   * Otherwise, if `optional` is true, an empty array is returned.
    *
    * The resolution behavior depends on the {@link Provider} used during registration:
    * - For {@link ValueProvider}, the explicitly provided instance is returned.
    * - For {@link FactoryProvider}, the factory function is invoked to create the instance.
-   * - For {@link ClassProvider}, a new instance of the class is created according to its scope (see just below).
+   * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
    * - For {@link ExistingProvider}, the instance is resolved by referring to another registered token.
    *
-   * If the token is registered with _container_ scope, the resolved instance
-   * is cached in the container's internal registry.
+   * If the class is registered with _container_ scope, the resolved instances are cached
+   * in the container's internal registry.
    *
    * A separate instance of the class is created for each provider.
    *
    * @see The documentation for `resolve(Class: Constructor)`
    */
-  resolveAll<Instance extends object>(Class: Constructor<Instance>): Instance[];
+  resolveAll<Instance extends object>(Class: Constructor<Instance>, optional?: false): Instance[];
+  resolveAll<Instance extends object>(Class: Constructor<Instance>, optional: true): Instance[];
+  resolveAll<Instance extends object>(Class: Constructor<Instance>, optional: boolean): Instance[];
 
   /**
-   * Resolves a token to the values created by all its registered providers.
+   * Resolves the given token to all values provided by the registrations associated with it.
    *
-   * If no providers are registered for the token, an empty array is returned.
+   * If `optional` is false or not passed and the token is not registered in the container,
+   * an error is thrown. Otherwise, if `optional` is true, an empty array is returned.
    *
    * The resolution behavior depends on the {@link Provider} used during registration:
    * - For {@link ValueProvider}, the explicitly provided value is returned.
    * - For {@link FactoryProvider}, the factory function is invoked to create the value.
    * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
    * - For {@link ExistingProvider}, the value is resolved by referring to another registered token.
+   *
+   * If the token is registered with _container_ scope, the resolved values are cached
+   * in the container's internal registry.
    *
    * @see The documentation for `resolve(token: Token)`
    */
-  resolveAll<Value>(token: Token<Value>): NonNullable<Value>[];
-
-  /**
-   * Resolves a token to the values created by all its registered providers by sequentially checking
-   * each token in the provided list until a registered one is found: if the first token is not
-   * registered, resolution moves to the next token, and so on.
-   *
-   * If none of the tokens are registered, an empty array is returned.
-   *
-   * The resolution behavior depends on the {@link Provider} used during registration:
-   * - For {@link ValueProvider}, the explicitly provided value is returned.
-   * - For {@link FactoryProvider}, the factory function is invoked to create the value.
-   * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
-   * - For {@link ExistingProvider}, the value is resolved by referring to another registered token.
-   *
-   * @see The documentation for `resolve(...tokens: TokenList)`
-   */
-  resolveAll<Values extends [unknown, ...unknown[]]>(
-    ...tokens: TokenList<Values>
-  ): NonNullable<Values[number]>[];
+  resolveAll<Value>(token: Token<Value>, optional?: false): NonNullable<Value>[];
+  resolveAll<Value>(token: Token<Value>, optional: true): NonNullable<Value>[];
+  resolveAll<Value>(token: Token<Value>, optional: boolean): NonNullable<Value>[];
 
   /**
    * Disposes this container and all its cached values.

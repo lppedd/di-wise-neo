@@ -1,14 +1,8 @@
 import { assert } from "./errors";
-import {
-  type FactoryProvider,
-  NullProvider,
-  type Provider,
-  UndefinedProvider,
-  type ValueProvider,
-} from "./provider";
+import type { FactoryProvider, Provider } from "./provider";
 import { Scope } from "./scope";
-import { type Constructor, NULL, type Token, Type, UNDEFINED } from "./token";
-import type { TokensRef } from "./tokensRef";
+import { type Constructor, type Token, Type } from "./token";
+import type { TokenRef } from "./tokensRef";
 import { getTypeName } from "./utils/typeName";
 import type { ValueRef } from "./valueRef";
 
@@ -24,8 +18,8 @@ export interface RegistrationOptions {
 
 // @internal
 export interface Dependency {
-  readonly tokensRef: TokensRef;
-  readonly type: "Inject" | "InjectAll";
+  readonly decorator: "Inject" | "InjectAll" | "Optional" | "OptionalAll";
+  readonly tokenRef: TokenRef;
 }
 
 // @internal
@@ -150,39 +144,5 @@ export function Build<Value>(factory: (...args: []) => Value): Type<Value> {
   return token;
 }
 
-/**
- * Create a one-off type token from a value.
- *
- * Used for providing default values.
- *
- * @example
- * ```ts
- * class Wizard {
- *   name = inject(Name, Value("Harry"));
- * }
- *
- * const wizard = container.resolve(Wizard);
- * wizard.name; // => "Harry"
- * ```
- *
- * @__NO_SIDE_EFFECTS__
- */
-export function Value<T>(value: T): Type<T> {
-  const token = Type<T>(`Value<${getTypeName(value)}>`);
-  const provider: ValueProvider<T> = {
-    useValue: value,
-  };
-
-  internals.set(token, {
-    provider: provider,
-  });
-
-  return token;
-}
-
-const internals = new WeakMap<Token, Registration>([
-  [NULL, { provider: NullProvider }],
-  [UNDEFINED, { provider: UndefinedProvider }],
-]);
-
+const internals = new WeakMap<Token, Registration>();
 const builders = new WeakSet<Provider>();
