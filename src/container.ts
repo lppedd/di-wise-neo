@@ -38,6 +38,11 @@ export interface Container {
   readonly registry: Registry;
 
   /**
+   * The options used to create this container.
+   */
+  readonly options: ContainerOptions;
+
+  /**
    * Whether this container is disposed.
    */
   readonly isDisposed: boolean;
@@ -48,9 +53,11 @@ export interface Container {
   getParent(): Container | undefined;
 
   /**
-   * Creates a child container with the same configuration as this container.
+   * Creates a new child container that inherits this container's options.
+   *
+   * You can pass specific options to override the inherited ones.
    */
-  createChild(): Container;
+  createChild(options?: Partial<ContainerOptions>): Container;
 
   /**
    * Clears and returns all distinct cached values from this container's internal registry.

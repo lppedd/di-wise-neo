@@ -30,6 +30,21 @@ describe("Container", () => {
     container.resetRegistry();
   });
 
+  it("should create child container with different options", () => {
+    expect(container.options.autoRegister).toBe(false);
+    expect(container.options.defaultScope).toBe(Scope.Inherited);
+
+    const child = container.createChild({
+      autoRegister: true,
+      defaultScope: Scope.Container,
+    });
+
+    expect(child.options.autoRegister).toBe(true);
+    expect(child.options.defaultScope).toBe(Scope.Container);
+
+    child.dispose();
+  });
+
   it("should handle hierarchical injection", () => {
     const parent = createContainer({
       defaultScope: Scope.Container,

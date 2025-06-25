@@ -45,6 +45,12 @@ export class DefaultContainer implements Container {
     return this.myRegistry;
   }
 
+  get options(): ContainerOptions {
+    return {
+      ...this.myOptions,
+    };
+  }
+
   get isDisposed(): boolean {
     return this.myDisposed;
   }
@@ -53,10 +59,11 @@ export class DefaultContainer implements Container {
     return this.myParent;
   }
 
-  createChild(): Container {
+  createChild(options?: Partial<ContainerOptions>): Container {
     this.checkDisposed();
     const container = new DefaultContainer(this, {
       ...this.myOptions,
+      ...options,
     });
 
     this.myChildren.add(container);
