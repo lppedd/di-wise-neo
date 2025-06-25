@@ -360,7 +360,7 @@ describe("Container", () => {
         static setWand(@Inject(Wand) _wand: string): void {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] @Inject cannot be used on static member Wizard.setWand]`,
+      `[Error: [di-wise-neo] @Inject cannot be used on static member Wizard.setWand]`,
     );
   });
 
@@ -373,7 +373,7 @@ describe("Container", () => {
         static setWand(@Optional(Wand) _wand: string | undefined): void {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] @Optional cannot be used on static member Wizard.setWand]`,
+      `[Error: [di-wise-neo] @Optional cannot be used on static member Wizard.setWand]`,
     );
   });
 
@@ -386,7 +386,7 @@ describe("Container", () => {
         static setWands(@InjectAll(Wand) _wands: string[]): void {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] @InjectAll cannot be used on static member Wizard.setWands]`,
+      `[Error: [di-wise-neo] @InjectAll cannot be used on static member Wizard.setWands]`,
     );
   });
 
@@ -399,7 +399,7 @@ describe("Container", () => {
         static setWands(@OptionalAll(Wand) _wands: string[]): void {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] @OptionalAll cannot be used on static member Wizard.setWands]`,
+      `[Error: [di-wise-neo] @OptionalAll cannot be used on static member Wizard.setWands]`,
     );
   });
 
@@ -418,7 +418,7 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] expected 2 decorated constructor parameters in Wizard, but found 1]`,
+      `[Error: [di-wise-neo] expected 2 decorated constructor parameters in Wizard, but found 1]`,
     );
   });
 
@@ -437,7 +437,7 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] expected 3 decorated constructor parameters in Wizard, but found 2]`,
+      `[Error: [di-wise-neo] expected 3 decorated constructor parameters in Wizard, but found 2]`,
     );
   });
 
@@ -456,7 +456,7 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] expected 3 decorated constructor parameters in Wizard, but found 2]`,
+      `[Error: [di-wise-neo] expected 3 decorated constructor parameters in Wizard, but found 2]`,
     );
   });
 
@@ -472,7 +472,7 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] expected 3 decorated method parameters in Wizard.set, but found 2]`,
+      `[Error: [di-wise-neo] expected 3 decorated method parameters in Wizard.set, but found 2]`,
     );
   });
 
@@ -488,7 +488,7 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] expected 3 decorated method parameters in Wizard.set, but found 2]`,
+      `[Error: [di-wise-neo] expected 3 decorated method parameters in Wizard.set, but found 2]`,
     );
   });
 
@@ -547,10 +547,10 @@ describe("Container", () => {
     class Wizard {}
 
     expect(() => container.resolve(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] unregistered class Wizard cannot be resolved in container scope]`,
+      `[Error: [di-wise-neo] unregistered class Wizard cannot be resolved in container scope]`,
     );
     expect(() => container.resolveAll(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] unregistered class Wizard cannot be resolved in container scope]`,
+      `[Error: [di-wise-neo] unregistered class Wizard cannot be resolved in container scope]`,
     );
   });
 
@@ -558,11 +558,11 @@ describe("Container", () => {
     const Env = Type<string>("Env");
 
     expect(() => container.resolve(Env)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] unregistered token Type<Env>]`,
+      `[Error: [di-wise-neo] unregistered token Type<Env>]`,
     );
 
     expect(() => container.resolveAll(Env)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] unregistered token Type<Env>]`,
+      `[Error: [di-wise-neo] unregistered token Type<Env>]`,
     );
   });
 
@@ -622,7 +622,7 @@ describe("Container", () => {
     // We should not be able to register a token pointing to itself,
     // as it would cause a circular dependency error
     expect(() => container.register(Wizard, { useExisting: Wizard })).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] the useExisting token Type<Wizard> cannot be the same as the token being registered]`,
+      `[Error: [di-wise-neo] the useExisting token Type<Wizard> cannot be the same as the token being registered]`,
     );
 
     container.register(Wizard, { useExisting: WizardImpl });
@@ -639,7 +639,7 @@ describe("Container", () => {
     // the error should include the original cause
     expect(() => container.resolve(Registered)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise] token resolution error encountered while resolving Registered
+      [Error: [di-wise-neo] token resolution error encountered while resolving Registered
         [cause] the aliased token NotRegistered is not registered]
       `,
     );
@@ -650,7 +650,7 @@ describe("Container", () => {
     // non-registered token will throw an error.
     expect(() => container.resolveAll(Registered)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise] token resolution error encountered while resolving Registered
+      [Error: [di-wise-neo] token resolution error encountered while resolving Registered
         [cause] the aliased token NotRegistered is not registered]
       `,
     );
@@ -675,7 +675,7 @@ describe("Container", () => {
 
     expect(() => container.resolveAll(Character)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise] token resolution error encountered while resolving Type<Character>
+      [Error: [di-wise-neo] token resolution error encountered while resolving Type<Character>
         [cause] circular dependency detected]
       `,
     );
@@ -724,7 +724,7 @@ describe("Container", () => {
     }
 
     expect(() => container.resolve(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] circular dependency detected]`,
+      `[Error: [di-wise-neo] circular dependency detected]`,
     );
   });
 
@@ -787,10 +787,10 @@ describe("Container", () => {
     expect(container.isDisposed).toBe(true);
     expect(child.isDisposed).toBe(true);
     expect(() => container.resolve(Wand)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] the container is disposed]`,
+      `[Error: [di-wise-neo] the container is disposed]`,
     );
     expect(() => child.resolve(Wand)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise] the container is disposed]`,
+      `[Error: [di-wise-neo] the container is disposed]`,
     );
 
     expect(wizardInstance.calls).toBe(1);

@@ -37,11 +37,11 @@ function isError(value: any): value is Error {
 }
 
 function tag(message: string): string {
-  return `[di-wise] ${message}`;
+  return `[di-wise-neo] ${message}`;
 }
 
 function untag(message: string): string {
-  return message.startsWith("[di-wise]") //
-    ? message.substring(9).trimStart()
+  return message.startsWith("[di-wise-neo]") //
+    ? message.substring(13).trimStart()
     : message;
 }

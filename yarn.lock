@@ -1582,9 +1582,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"di-wise@workspace:.":
+"di-wise-neo@workspace:.":
   version: 0.0.0-use.local
-  resolution: "di-wise@workspace:."
+  resolution: "di-wise-neo@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.20.0"
     "@stylistic/eslint-plugin": "npm:^3.1.0"

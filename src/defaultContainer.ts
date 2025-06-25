@@ -19,7 +19,7 @@ import { type Constructor, isConstructor, type Token } from "./token";
 import { isDisposable } from "./utils/disposable";
 
 /**
- * The default implementation of a di-wise {@link Container}.
+ * The default implementation of a di-wise-neo {@link Container}.
  */
 export class DefaultContainer implements Container {
   // eslint-disable-next-line no-use-before-define
