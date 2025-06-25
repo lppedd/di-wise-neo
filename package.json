@@ -1,7 +1,7 @@
 {
   "name": "di-wise-neo",
   "version": "0.2.8",
-  "description": "Lightweight, typesafe, and flexible dependency injection library for JavaScript and TypeScript",
+  "description": "Lightweight, type-safe, flexible dependency injection library for TypeScript and JavaScript",
   "files": [
     "dist",
     "src",

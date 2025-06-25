@@ -1,467 +1,180 @@
-# di-wise 🧙‍♀️
+<!--suppress HtmlDeprecatedAttribute -->
+<div align="center">
+  <h1>di-wise-neo</h1>
+  <p>Lightweight, type-safe, flexible dependency injection library for TypeScript and JavaScript</p>
+  <img src="./.github/images/neo-wall.jpg" title="di-wise-neo" alt="di-wise-neo" style="border: 3px solid black; border-radius: 15px;" />
+  <div><sub>yes, I like The Matrix</sub></div>
+</div>
 
-[![NPM Version](https://img.shields.io/npm/v/di-wise.svg?color=blue&logo=npm)](https://www.npmjs.com/package/di-wise)
-[![npm package minimized gzipped size](https://img.shields.io/bundlejs/size/di-wise@latest.svg?label=bundle%20size)](https://bundlejs.com/?q=di-wise)
-[![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/exuanbo/di-wise/test.yml.svg?branch=main)](https://github.com/exuanbo/di-wise/actions)
-[![Codecov (with branch)](https://img.shields.io/codecov/c/gh/exuanbo/di-wise/main.svg?token=65EfrU4Qnl)](https://app.codecov.io/gh/exuanbo/di-wise/tree/main/src)
-
-Lightweight and flexible dependency injection library for JavaScript and TypeScript, w/wo ECMAScript decorators.
+> [!NOTE]
+>
+> **di-wise-neo** is a fork of [di-wise][di-wise] with the goal of providing
+> a simpler yet richer API, also thanks to TypeScript's experimental decorators.
+> Shout out to [@exuanbo](https://github.com/exuanbo) for the strong foundations!
 
 ## Table of Contents
 
-- [di-wise 🧙‍♀️](#di-wise-️)
-  - [Table of Contents](#table-of-contents)
-  - [Installation](#installation)
-  - [Features](#features)
-    - [Zero dependencies](#zero-dependencies)
-    - [Modern decorator implementation](#modern-decorator-implementation)
-    - [Context-based DI system](#context-based-di-system)
-    - [Multiple provider types](#multiple-provider-types)
-    - [Hierarchical injection](#hierarchical-injection)
-    - [Full control over registration and caching](#full-control-over-registration-and-caching)
-    - [Various injection scopes](#various-injection-scopes)
-      - [Inherited (default)](#inherited-default)
-      - [Transient](#transient)
-      - [Resolution](#resolution)
-      - [Container](#container)
-    - [Flexible token-based injection](#flexible-token-based-injection)
-    - [Automatic circular dependency resolution](#automatic-circular-dependency-resolution)
-    - [Dynamic injection](#dynamic-injection)
-    - [Constructor Injection](#constructor-injection)
-    - [Middleware](#middleware)
-  - [Usage](#usage)
-  - [API](#api)
-  - [Credits](#credits)
-  - [License](#license)
+- [Why forking](#why-forking)
+- [Installation](#installation)
+- [Ergonomics](#ergonomics)
+- [Quickstart](#quickstart)
+- [Credits](#credits)
+- [License](#license)
+
+## Why forking
+
+I've been developing VS Code extensions for a while as part of my daily work.
+It's enjoyable work! However, extensions always reach that tipping point where
+feature bloat, and the many different UI interactions which arise from that,
+make writing, reading, and understanding the codebase a challenge.
+
+Part of the problem is the crazy amount of parameter passing, and the many exported
+global values floating around waiting to be imported and to generate yet another
+coupling point.
+
+My background with Java is full of such cases, that have been (partially) mitigated
+by introducing dependency-injection libraries based on Java's powerful Contexts and
+Dependency Injection (see [Weld][cdi-weld], the reference implementation).
+
+So why not apply the same concept to our TypeScript projects?  
+I've posted on Reddit just to get a feel of what the ecosystem offers, and was
+pointed to libraries such as [tsyringe][tsyringe], [InversifyJS][InversifyJS], or [Awilix][Awilix].
+I've also explored on my own and discovered [redi][redi] and [di-wise][di-wise].
+
+What I was looking for is a lightweight solution that offers:
+
+- full type safety
+- scoped resolution of dependencies
+- optional decorator support for constructor and method injection.  
+  Yes I know, forget type-safety with decorators, but they are extremely
+  intuitive to pick up for Java devs.
+- no dependency on [reflect-metadata][reflect-metadata], as I'm an ESBuild user
+  and ESBuild [does not][esbuild-issue] support `emitDecoratorMetadata`
+
+Unfortunately both [tsyringe][tsyringe] and [InversifyJS][InversifyJS] require
+[reflect-metadata][reflect-metadata] to run correctly. [Awilix][Awilix] looks good,
+but it's probably too much for what I need to do, and it does not support decorators.
+Plus, the API just didn't click for me.
+
+[redi][redi] focuses _only_ on constructor injection via decorators, which is nice.
+However, it falls short when it comes to type safety and resolution scopes:
+it only supports singletons, with a decorator-based trick to create fresh instances.
+
+And lastly, [di-wise][di-wise]. This small library was quite the surprise! Easy to pick up,
+no scope creep, injection context support, and full type safety via Angular-like
+`inject<T>()` functions (that's more like a service locator, but whatever).
+The only problems are the slightly overcomplicated API - especially regarding typings - and
+the use of ECMAScript Stage 3 decorators, which do not support decorating method parameters :sob:
+
+So what's the right move? Forking the best pick and refactoring it to suite my
+production needs.
 
 ## Installation
 
-```sh
-npm install di-wise
-
-pnpm add di-wise
-
-yarn add di-wise
-```
-
-Also available on [JSR](https://jsr.io/@exuanbo/di-wise):
+npm:
 
 ```sh
-deno add jsr:@exuanbo/di-wise
+npm install @lppedd/di-wise-neo
 ```
 
-## Features
+pnpm:
 
-### Zero dependencies
+```sh
+pnpm add @lppedd/di-wise-neo
+```
 
-- No need for [`reflect-metadata`](https://www.npmjs.com/package/reflect-metadata)
-- No TypeScript legacy [`experimentalDecorators`](https://www.typescriptlang.org/tsconfig/#experimentalDecorators) required
+yarn:
 
-### Modern decorator implementation
+```sh
+yarn add @lppedd/di-wise-neo
+```
 
-- Built on ECMAScript Stage 3 Decorators: [tc39/proposal-decorators](https://github.com/tc39/proposal-decorators)
-- Native support in TypeScript [5.0+](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators), swc [1.3.47+](https://swc.rs/docs/configuration/compilation#jsctransformdecoratorversion), and esbuild [0.21.0+](https://github.com/evanw/esbuild/releases/tag/v0.21.0)
+## Ergonomics
 
-### Context-based DI system
+- Does **not** depend on other libraries
+- Does **not** use [reflect-metadata](https://www.npmjs.com/package/reflect-metadata) to drive decorators
+- **Can** be used from JavaScript with function-based injection
 
-- Flexible decorator-based or function-based injection
-- Full type inference support ✨
-- Optional decorators with equivalent function alternatives
+## Quickstart
 
-Example:
-
-<!-- prettier-ignore -->
 ```ts
-import {createContainer, Inject, inject, Injectable, Scope, Scoped, Type} from "di-wise";
+//
+// A couple of classes to cover the example
+//
 
-interface Spell {
-  cast(): void;
+export class ExtensionContext { /* ... */ }
+
+// Both the secret store and the contribution registrar
+// require the extension context to read and set values
+
+export class SecretStore {
+  // We can use function-based injection, which gives us type safety
+  readonly context = inject(ExtensionContext);
+
+  // Or even
+  // constructor(readonly context = inject(ExtensionContext)) {}
+
+  /* ... */
 }
-const Spell = Type<Spell>("Spell");
 
-@Scoped(Scope.Container)
-@Injectable(Spell)
-class Fireball implements Spell {
-  cast() {
-    console.log("🔥");
+export class ContributionRegistrar {
+  // We can also opt to use decorator-based constructor injection
+  constructor(@Inject(ExtensionContext) readonly context: ExtensionContext) {}
+
+  registerCommand(id: string, fn: () => void): void {
+    if (this.context.extensionMode !== ExtensionMode.Production) {
+      /* ... */
+    }
+  }
+
+  // Or method injection. The @Optional decorator injects "T | undefined".
+  protected withSecretStore(@Optional(SecretStore) store: SecretStore | undefined): void {
+    if (store.isSet("key")) {
+      /* ... */
+    }
   }
 }
 
-class Wizard {
-  @Inject(Wand)
-  wand!: Wand;
+//
+// Using di-wise-neo
+//
 
-  // Equivalent to
-  wand = inject(Wand);
-
-  constructor(spell = inject(Spell)) {
-    // inject() can be used anywhere during construction
-    this.wand.store(spell);
-  }
-}
-
-const container = createContainer();
-container.register(Fireball);
-
-// Under the hood
-[Fireball, Spell].forEach((token) => {
-  container.register(
-    token,
-    {useClass: Fireball},
-    {scope: Scope.Container},
-  );
+// Create a new DI container
+const container = createContainer({
+  // Optionally override the default "transient" registration scope.
+  // I prefer to use "container" (a.k.a. singleton) scope, but "transient" is the better default.
+  defaultScope: Scope.Container
 });
 
-const wizard = container.resolve(Wizard);
-wizard.wand.activate(); // => 🔥
+// Register our managed dependencies into the container
+container.register(ExtensionContext)
+         .register(SecretStore)
+         .register(ContributionRegistrar);
+
+// Get the contribution registrar.
+// The container will create a new managed instance for us, with all dependencies injected.
+const registrar = container.resolve(ContributionRegistrar);
+registrar.registerCommand("my.command", () => { console.log("hey!"); });
 ```
-
-### Multiple provider types
-
-- Class, Factory, and Value providers
-- Built-in helpers for one-off providers: `Build()`, `Value()`
-- Seamless integration with existing classes
-
-Example:
-
-```ts
-import {Build, createContainer, inject, Value} from "di-wise";
-
-class Wizard {
-  equipment = inject(
-    Cloak,
-    // Provide a default value
-    Value({
-      activate() {
-        console.log("👻");
-      },
-    }),
-  );
-
-  wand: Wand;
-
-  constructor(wand: Wand) {
-    this.wand = wand;
-  }
-}
-
-const container = createContainer();
-
-const wizard = container.resolve(
-  Build(() => {
-    // inject() can be used in factory functions
-    const wand = inject(Wand);
-    return new Wizard(wand);
-  }),
-);
-
-wizard.equipment.activate(); // => 👻
-```
-
-### Hierarchical injection
-
-- Parent-child container relationships
-- Automatic token resolution through the container hierarchy
-- Isolated registration with shared dependencies
-
-Example:
-
-<!-- prettier-ignore -->
-```ts
-import {createContainer, inject, Injectable, Type} from "di-wise";
-
-const MagicSchool = Type<string>("MagicSchool");
-const Spell = Type<{cast(): void}>("Spell");
-
-// Parent container with shared config
-const hogwarts = createContainer();
-hogwarts.register(MagicSchool, {useValue: "Hogwarts"});
-
-@Injectable(Spell)
-class Fireball {
-  school = inject(MagicSchool);
-  cast() {
-    console.log(`🔥 from ${this.school}`);
-  }
-}
-
-// Child containers with isolated spells
-const gryffindor = hogwarts.createChild();
-gryffindor.register(Fireball);
-
-const slytherin = hogwarts.createChild();
-slytherin.register(Spell, {
-  useValue: {cast: () => console.log("🐍")},
-});
-
-gryffindor.resolve(Spell).cast(); // => 🔥 from Hogwarts
-slytherin.resolve(Spell).cast();  // => 🐍
-```
-
-### Full control over registration and caching
-
-- Explicit container management without global state
-- Fine-grained control over instance lifecycle
-- Transparent registry access for testing
-
-### Various injection scopes
-
-- Flexible scoping system: `Inherited` (default), `Transient`, `Resolution`, `Container`
-- Smart scope resolution for dependencies
-- Configurable default scopes per container
-
-Example for singleton pattern:
-
-```ts
-import {createContainer, Scope} from "di-wise";
-
-export const singletons = createContainer({
-  defaultScope: Scope.Container,
-  autoRegister: true,
-});
-
-// Always resolves to the same instance
-const wizard = singletons.resolve(Wizard);
-```
-
-#### Inherited (default)
-
-Inherits the scope from its dependent. If there is no dependent (top-level resolution), behaves like `Transient`.
-
-<details>
-<summary>Example</summary>
-
-<!-- prettier-ignore -->
-```ts
-import {createContainer, Scope, Scoped} from "di-wise";
-
-@Scoped(Scope.Container)
-class Wizard {
-  wand = inject(Wand);
-}
-
-const container = createContainer();
-container.register(
-  Wand,
-  {useClass: Wand},
-  {scope: Scope.Inherited},
-);
-container.register(Wizard);
-
-// Dependency Wand will be resolved with "Container" scope
-const wizard = container.resolve(Wizard);
-```
-
-</details>
-
-#### Transient
-
-Creates a new instance every time the dependency is requested. No caching occurs.
-
-#### Resolution
-
-Creates one instance per resolution graph. The same instance will be reused within a single dependency resolution, but new instances are created for separate resolutions.
-
-<details>
-<summary>Example</summary>
-
-```ts
-@Scoped(Scope.Resolution)
-class Wand {}
-
-class Inventory {
-  wand = inject(Wand);
-}
-
-class Wizard {
-  inventory = inject(Inventory);
-  wand = inject(Wand);
-}
-
-const container = createContainer();
-const wizard = container.resolve(Wizard);
-
-expect(wizard.inventory.wand).toBe(wizard.wand);
-```
-
-</details>
-
-#### Container
-
-Creates one instance per container (singleton pattern). The instance is cached and reused for all subsequent resolutions within the same container.
-
-### Flexible token-based injection
-
-- Multiple token resolution with union type inference ✨
-- Support for optional dependencies via `Type.Null` and `Type.Undefined`
-- Interface-based token system
-
-Example:
-
-```ts
-import {inject, Type} from "di-wise";
-
-class Wizard {
-  wand = inject(Wand, Type.Null);
-  // ^? (property) Wizard.wand: Wand | null
-
-  spells = injectAll(Spell, Type.Null);
-  // ^? (property) Wizard.spells: Spell[]
-  // => []
-}
-```
-
-### Automatic circular dependency resolution
-
-- Smart handling of circular dependencies
-- Multiple resolution strategies (`@Inject()` or `inject.by()`)
-- Maintains type safety
-
-Example:
-
-```ts
-import {createContainer, Inject, inject} from "di-wise";
-
-class Wand {
-  owner = inject(Wizard);
-}
-
-class Wizard {
-  @Inject(Wand)
-  wand!: Wand;
-
-  // Equivalent to
-  wand = inject.by(this, Wand);
-}
-
-const container = createContainer();
-const wizard = container.resolve(Wizard);
-
-expect(wizard.wand.owner).toBe(wizard);
-```
-
-### Dynamic injection
-
-- On-demand dependency resolution via `Injector`
-- Context-aware lazy loading
-- Preserves proper scoping and circular dependency handling
-
-Example:
-
-```ts
-import {createContainer, inject, Injector} from "di-wise";
-
-class Wizard {
-  private injector = inject(Injector);
-  private wand?: Wand;
-
-  getWand() {
-    // Lazy load wand only when needed
-    return (this.wand ??= this.injector.inject(Wand));
-  }
-
-  castAllSpells() {
-    // Get all registered spells
-    const spells = this.injector.injectAll(Spell);
-    spells.forEach((spell) => spell.cast());
-  }
-}
-
-const container = createContainer();
-const wizard = container.resolve(Wizard);
-
-wizard.getWand(); // => Wand
-```
-
-The injector maintains the same resolution context as its injection point, allowing proper handling of scopes and circular dependencies:
-
-```ts
-import {createContainer, inject, Injector} from "di-wise";
-
-class Wand {
-  owner = inject(Wizard);
-}
-
-class Wizard {
-  private injector = inject.by(this, Injector);
-
-  getWand() {
-    return this.injector.inject(Wand);
-  }
-}
-
-const container = createContainer();
-const wizard = container.resolve(Wizard);
-
-const wand = wizard.getWand();
-expect(wand.owner).toBe(wizard);
-```
-
-### Constructor Injection
-
-See discussion [Does di-wise support constructor injection? #12](https://github.com/exuanbo/di-wise/discussions/12#discussioncomment-11202986)
-
-### Middleware
-
-- Extensible container behavior through middleware
-- Composable middleware chain with predictable execution order
-- Full access to container lifecycle
-
-Example:
-
-```ts
-import {applyMiddleware, createContainer, type Middleware} from "di-wise";
-
-const logger: Middleware = (composer, _api) => {
-  composer
-    .use("resolve", (next) => (token) => {
-      console.log("Resolving:", token.name);
-      const result = next(token);
-      console.log("Resolved:", token.name);
-      return result;
-    })
-    .use("resolveAll", (next) => (token) => {
-      console.log("Resolving all:", token.name);
-      const result = next(token);
-      console.log("Resolved all:", token.name);
-      return result;
-    });
-};
-
-const performanceTracker: Middleware = (composer, _api) => {
-  composer.use("resolve", (next) => (token) => {
-    const start = performance.now();
-    const result = next(token);
-    const end = performance.now();
-    console.log(`Resolution time for ${token.name}: ${end - start}ms`);
-    return result;
-  });
-};
-
-const container = applyMiddleware(createContainer(), [logger, performanceTracker]);
-
-// Use the container with applied middlewares
-const wizard = container.resolve(Wizard);
-```
-
-Middlewares are applied in array order but execute in reverse order, allowing outer middlewares to wrap and control the behavior of inner middlewares.
-
-## Usage
-
-🏗️ WIP (PR welcome)
-
-## API
-
-See [API documentation](https://exuanbo.github.io/di-wise/modules.html).
 
 ## Credits
 
-Inspired by:
-
-- [jeffijoe/awilix](https://github.com/jeffijoe/awilix)
-- [inversify/InversifyJS](https://github.com/inversify/InversifyJS)
-- [microsoft/tsyringe](https://github.com/microsoft/tsyringe)
+**di-wise-neo** is a fork of [di-wise][di-wise].  
+All credits to the original author for focusing on a clean architecture and on code quality.
 
 ## License
 
-[MIT License](https://github.com/exuanbo/di-wise/blob/main/LICENSE) @ 2024-Present [Xuanbo Cheng](https://github.com/exuanbo)
+[MIT License](https://github.com/lppedd/di-wise-neo/blob/main/LICENSE)
+
+2025-present [Edoardo Luppi](https://github.com/lppedd)  
+2024-2025 [Xuanbo Cheng](https://github.com/exuanbo)
+
+<!-- @formatter:off -->
+[cdi-weld]: https://weld.cdi-spec.org
+[tsyringe]: https://github.com/microsoft/tsyringe
+[Awilix]: https://github.com/jeffijoe/awilix
+[InversifyJS]: https://github.com/inversify/InversifyJS
+[redi]: https://github.com/wzhudev/redi
+[di-wise]: https://github.com/exuanbo/di-wise
+[reflect-metadata]: https://github.com/microsoft/reflect-metadata
+[esbuild-issue]: https://github.com/evanw/esbuild/issues/257
