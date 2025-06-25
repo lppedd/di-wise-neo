@@ -129,7 +129,7 @@ export class ContributionRegistrar {
 
   // Or method injection. The @Optional decorator injects "T | undefined".
   protected withSecretStore(@Optional(SecretStore) store: SecretStore | undefined): void {
-    if (store.isSet("key")) {
+    if (store?.isSet("key")) {
       /* ... */
     }
   }
@@ -143,7 +143,7 @@ export class ContributionRegistrar {
 const container = createContainer({
   // Optionally override the default "transient" registration scope.
   // I prefer to use "container" (a.k.a. singleton) scope, but "transient" is the better default.
-  defaultScope: Scope.Container
+  defaultScope: Scope.Container,
 });
 
 // Register our managed dependencies into the container
@@ -164,7 +164,7 @@ All credits to the original author for focusing on a clean architecture and on c
 
 ## License
 
-[MIT License](https://github.com/lppedd/di-wise-neo/blob/main/LICENSE)
+[MIT license](https://github.com/lppedd/di-wise-neo/blob/main/LICENSE)
 
 2025-present [Edoardo Luppi](https://github.com/lppedd)  
 2024-2025 [Xuanbo Cheng](https://github.com/exuanbo)
