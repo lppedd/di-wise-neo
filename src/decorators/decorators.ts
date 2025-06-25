@@ -1,11 +1,11 @@
 import { assert } from "../errors";
 import { getMetadata } from "../metadata";
-import type { Constructor, Token, Tokens } from "../token";
-import { isTokensRef, ref } from "../tokensRef";
+import type { Constructor, Token } from "../token";
+import { forwardRef, isTokenRef, type TokenRef } from "../tokensRef";
 
 export function processDecoratedParameter(
-  type: "Inject" | "InjectAll",
-  args: unknown[],
+  decorator: "Inject" | "InjectAll" | "Optional" | "OptionalAll",
+  token: Token | TokenRef,
   target: object,
   propertyKey: string | symbol | undefined,
   parameterIndex: number,
@@ -13,19 +13,17 @@ export function processDecoratedParameter(
   // Error out immediately if the decorator has been applied
   // to a static property or a static method
   if (propertyKey !== undefined && typeof target === "function") {
-    assert(false, `@${type} cannot be used on static member ${target.name}.${String(propertyKey)}`);
+    assert(false, `@${decorator} cannot be used on static member ${target.name}.${String(propertyKey)}`);
   }
 
-  const tokensRef = isTokensRef(args[0]) //
-    ? args[0]
-    : ref(() => args as Token | Tokens);
+  const tokenRef = isTokenRef(token) ? token : forwardRef(() => token);
 
   if (propertyKey === undefined) {
     // Constructor
     const metadata = getMetadata(target as Constructor<any>);
     metadata.dependencies.constructor.push({
-      tokensRef: tokensRef,
-      type: type,
+      decorator: decorator,
+      tokenRef: tokenRef,
       index: parameterIndex,
     });
   } else {
@@ -40,8 +38,8 @@ export function processDecoratedParameter(
     }
 
     dep.push({
-      tokensRef: tokensRef,
-      type: type,
+      decorator: decorator,
+      tokenRef: tokenRef,
       index: parameterIndex,
     });
   }

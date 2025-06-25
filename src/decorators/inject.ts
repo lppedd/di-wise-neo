@@ -1,35 +1,42 @@
-import type { Constructor, Token, TokenList } from "../token";
-import type { TokensRef } from "../tokensRef";
+import type { Constructor, Token } from "../token";
+import type { TokenRef } from "../tokensRef";
 import { processDecoratedParameter } from "./decorators";
 
 /**
- * Decorator for injecting an instance of a class.
+ * Parameter decorator that injects the instance associated with the given class.
+ *
+ * Throws an error if the class is not registered in the container.
  */
 export function Inject<Instance extends object>(Class: Constructor<Instance>): ParameterDecorator;
 
 /**
- * Decorator for injecting the value of a token.
+ * Parameter decorator that injects the value associated with the given token.
+ *
+ * Throws an error if the token is not registered in the container.
  */
 export function Inject<Value>(token: Token<Value>): ParameterDecorator;
 
 /**
- * Decorator for injecting a value by sequentially checking each token
- * in the provided list until a registered one is found.
- */
-export function Inject<Values extends [unknown, ...unknown[]]>(
-  ...tokens: TokenList<Values>
-): ParameterDecorator;
-
-/**
- * Decorator for injecting a value by sequentially checking each token
- * in the provided list until a registered one is found.
+ * Parameter decorator that injects the value associated with the given token.
  *
- * Allows referencing tokens that are declared after this usage.
+ * Allows referencing a token that is declared later in the file by using
+ * the {@link forwardRef} helper function.
+ *
+ * Throws an error if the token is not registered in the container.
+ *
+ * @example
+ * ```ts
+ * class Wizard {
+ *   constructor(@Inject(forwardRef(() => Wand)) readonly wand: Wand) {}
+ * }
+ * // Other code...
+ * class Wand {}
+ * ```
  */
-export function Inject<Value>(tokens: TokensRef<Value>): ParameterDecorator;
+export function Inject<Value>(tokens: TokenRef<Value>): ParameterDecorator;
 
-export function Inject(...args: unknown[]): ParameterDecorator {
+export function Inject<T>(token: Token<T> | TokenRef<T>): ParameterDecorator {
   return function (target, propertyKey, parameterIndex: number): void {
-    processDecoratedParameter("Inject", args, target, propertyKey, parameterIndex);
+    processDecoratedParameter("Inject", token, target, propertyKey, parameterIndex);
   };
 }

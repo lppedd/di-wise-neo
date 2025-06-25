@@ -1,5 +1,5 @@
 // @internal
-export function createContext<T extends {}>(): readonly [
+export function createInjectionContext<T extends {}>(): readonly [
   (next: T) => () => T | null,
   () => T | null,
 ] {

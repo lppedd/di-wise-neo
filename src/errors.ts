@@ -14,17 +14,12 @@ export function expectNever(value: never): never {
 }
 
 // @internal
-export function throwUnregisteredError(tokens: Token[]): never {
-  const tokenNames = tokens.map((token) => token.name).join(", ");
-  const suffix = tokenNames.length === 0 ? "no tokens received" : tokenNames;
-  throw new Error(tag(`unregistered tokens: ${suffix}`));
+export function throwUnregisteredError(token: Token): never {
+  throw new Error(tag(`unregistered token ${token.name}`));
 }
 
 // @internal
-export function throwExistingUnregisteredError(
-  sourceToken: Token,
-  targetTokenOrError: Token | Error,
-): never {
+export function throwExistingUnregisteredError(sourceToken: Token, targetTokenOrError: Token | Error): never {
   let message = tag(`token resolution error encountered while resolving ${sourceToken.name}`);
 
   if (isError(targetTokenOrError)) {

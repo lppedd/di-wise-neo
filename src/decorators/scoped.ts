@@ -3,10 +3,9 @@ import type { Scope } from "../scope";
 import type { Constructor } from "../token";
 
 /**
- * Decorator for setting the scope of a class when registering it.
+ * Class decorator for setting the scope of the decorated type when registering it.
  *
- * The scope specified by this decorator is overridden by explicit
- * registration options, if provided.
+ * The scope set by this decorator can be overridden by explicit registration options, if provided.
  *
  * @example
  * ```ts

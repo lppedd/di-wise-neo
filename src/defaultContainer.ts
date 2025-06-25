@@ -1,14 +1,11 @@
 import type { Container, ContainerOptions } from "./container";
-import {
-  assert,
-  expectNever,
-  throwExistingUnregisteredError,
-  throwUnregisteredError,
-} from "./errors";
+import { assert, expectNever, throwExistingUnregisteredError, throwUnregisteredError } from "./errors";
 import { injectBy } from "./inject";
 import { injectAll } from "./injectAll";
 import { createResolution, provideInjectionContext, useInjectionContext } from "./injectionContext";
 import { getMetadata } from "./metadata";
+import { optionalBy } from "./optional";
+import { optionalAll } from "./optionalAll";
 import {
   isClassProvider,
   isExistingProvider,
@@ -18,7 +15,7 @@ import {
 } from "./provider";
 import { isBuilder, type Registration, type RegistrationOptions, Registry } from "./registry";
 import { Scope } from "./scope";
-import { type Constructor, isConstructor, type Token, type Tokens } from "./token";
+import { type Constructor, isConstructor, type Token } from "./token";
 import { isDisposable } from "./utils/disposable";
 
 /**
@@ -134,12 +131,10 @@ export class DefaultContainer implements Container {
 
   isRegistered(token: Token): boolean {
     this.checkDisposed();
-    return !!this.registry.get(token);
+    return this.registry.get(token) !== undefined;
   }
 
-  register<T>(
-    ...args: [Constructor<T & object>] | [Token<T>, Provider<T>, RegistrationOptions?]
-  ): this {
+  register<T>(...args: [Constructor<T & object>] | [Token<T>, Provider<T>, RegistrationOptions?]): this {
     this.checkDisposed();
 
     if (args.length == 1) {
@@ -220,42 +215,39 @@ export class DefaultContainer implements Container {
     return Array.from(values);
   }
 
-  resolve<T>(...tokens: Token<T>[]): T {
+  resolve<T>(token: Token<T>, optional?: boolean): T | undefined {
     this.checkDisposed();
+    const registration = this.registry.get(token);
 
-    for (const token of tokens) {
-      const registration = this.registry.get(token);
-
-      if (registration) {
-        return this.resolveRegistration(token, registration);
-      }
-
-      if (isConstructor(token)) {
-        return this.instantiateClass(token);
-      }
+    if (registration) {
+      return this.resolveRegistration(token, registration);
     }
 
-    throwUnregisteredError(tokens);
+    if (isConstructor(token)) {
+      return this.instantiateClass(token, optional);
+    }
+
+    return optional ? undefined : throwUnregisteredError(token);
   }
 
-  resolveAll<T>(...tokens: Token<T>[]): NonNullable<T>[] {
+  resolveAll<T>(token: Token<T>, optional?: boolean): NonNullable<T>[] {
     this.checkDisposed();
+    const registrations = this.registry.getAll(token);
 
-    for (const token of tokens) {
-      const registrations = this.registry.getAll(token);
-
-      if (registrations) {
-        return registrations
-          .map((registration) => this.resolveRegistration(token, registration))
-          .filter((value) => value != null);
-      }
-
-      if (isConstructor(token)) {
-        return [this.instantiateClass(token)];
-      }
+    if (registrations) {
+      return registrations
+        .map((registration) => this.resolveRegistration(token, registration))
+        .filter((value) => value != null);
     }
 
-    return [];
+    if (isConstructor(token)) {
+      const instance = this.instantiateClass(token, optional);
+      return instance === undefined // = could not resolve, but since it is optional
+        ? []
+        : [instance];
+    }
+
+    return optional ? [] : throwUnregisteredError(token);
   }
 
   dispose(): void {
@@ -322,7 +314,7 @@ export class DefaultContainer implements Container {
     }
   }
 
-  private instantiateClass<T extends object>(Class: Constructor<T>): T {
+  private instantiateClass<T extends object>(Class: Constructor<T>, optional?: boolean): T | undefined {
     const metadata = getMetadata(Class);
 
     if (metadata.autoRegister ?? this.myOptions.autoRegister) {
@@ -330,18 +322,25 @@ export class DefaultContainer implements Container {
       return (this as Container).resolve(Class);
     }
 
-    const options: RegistrationOptions = {
-      scope: this.resolveScope(metadata.scope),
-    };
+    const scope = this.resolveScope(metadata.scope);
+
+    if (optional && scope === Scope.Container) {
+      // It would not be possible to resolve the class in container scope,
+      // as that would require prior registration.
+      // However, since resolution is marked optional, we simply return undefined.
+      return undefined;
+    }
 
     assert(
-      options.scope != Scope.Container,
+      scope !== Scope.Container,
       `unregistered class ${Class.name} cannot be resolved in container scope`,
     );
 
     const registration: Registration<T> = {
       provider: metadata.provider,
-      options: options,
+      options: {
+        scope: scope,
+      },
       dependencies: metadata.dependencies,
     };
 
@@ -440,7 +439,7 @@ export class DefaultContainer implements Container {
   private resolveScope(
     scope = this.myOptions.defaultScope,
     context = useInjectionContext(),
-  ): Exclude<Scope, "Inherited"> {
+  ): Exclude<Scope, typeof Scope.Inherited> {
     if (scope == Scope.Inherited) {
       const dependentFrame = context?.resolution.stack.peek();
       return dependentFrame?.scope || Scope.Transient;
@@ -461,16 +460,24 @@ export class DefaultContainer implements Container {
         // If not, we cannot safely create an instance.
         const ctor = registration.provider.useClass;
         assert(ctor.length === ctorDeps.length, () => {
-          let msg = `expected ${ctor.length} decorated constructor parameters in ${ctor.name}, `;
-          msg += `but found ${ctorDeps.length}`;
-          return msg;
+          const msg = `expected ${ctor.length} decorated constructor parameters in ${ctor.name}`;
+          return msg + `, but found ${ctorDeps.length}`;
         });
 
         return ctorDeps
           .sort((a, b) => a.index - b.index)
-          .map(({ type, tokensRef }) => {
-            const tokens = tokensRef.getRefTokens();
-            return type === "Inject" ? this.resolve(...tokens) : this.resolveAll(...tokens);
+          .map((dep) => {
+            const token = dep.tokenRef.getRefToken();
+            switch (dep.decorator) {
+              case "Inject":
+                return this.resolve(token);
+              case "InjectAll":
+                return this.resolveAll(token);
+              case "Optional":
+                return this.resolve(token, true);
+              case "OptionalAll":
+                return this.resolveAll(token, true);
+            }
           });
       }
     }
@@ -492,17 +499,24 @@ export class DefaultContainer implements Container {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         const method = (instance as any)[key] as Function;
         assert(methodDeps.length === method.length, () => {
-          let msg = `expected ${method.length} decorated method parameters `;
-          msg += `in ${ctor.name}.${String(key)}, `;
-          msg += `but found ${methodDeps.length}`;
-          return msg;
+          const msg = `expected ${method.length} decorated method parameters`;
+          return msg + ` in ${ctor.name}.${String(key)}, but found ${methodDeps.length}`;
         });
 
         const args = methodDeps
           .sort((a, b) => a.index - b.index)
-          .map(({ type, tokensRef }) => {
-            const tokens = Array.from(tokensRef.getRefTokens()) as Tokens;
-            return type === "Inject" ? injectBy(instance, ...tokens) : injectAll(...tokens);
+          .map((dep) => {
+            const token = dep.tokenRef.getRefToken();
+            switch (dep.decorator) {
+              case "Inject":
+                return injectBy(instance, token);
+              case "InjectAll":
+                return injectAll(token);
+              case "Optional":
+                return optionalBy(instance, token);
+              case "OptionalAll":
+                return optionalAll(token);
+            }
           });
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call

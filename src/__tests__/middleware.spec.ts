@@ -8,9 +8,7 @@ import {
   injectAll,
   type Middleware,
   type Token,
-  Type,
 } from "..";
-import { resolveAllThrow } from "../middlewares";
 
 describe("Middleware", () => {
   let container: Container;
@@ -84,21 +82,5 @@ describe("Middleware", () => {
       ["[A] post resolve    Wizard {wand: Wand {decorations: [Decoration {}]}}"],
       ["[B] post resolve    Wizard {wand: Wand {decorations: [Decoration {}]}}"],
     ]);
-  });
-
-  describe("resolveAllThrow", () => {
-    it("should throw when resolving all for an unregistered token", () => {
-      applyMiddleware(container, [resolveAllThrow]);
-
-      const NonRegistered = Type("NonRegistered");
-      expect(() => container.resolveAll(NonRegistered)).toThrowErrorMatchingInlineSnapshot(
-        `[Error: [di-wise] unregistered tokens: Type<NonRegistered>]`,
-      );
-
-      const Registered = Type<string>("Registered");
-      container.register(Registered, { useValue: "Success" });
-
-      expect(container.resolveAll(Registered)).toEqual(["Success"]);
-    });
   });
 });

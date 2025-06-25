@@ -46,7 +46,7 @@ export interface Constructor<Instance extends object> {
 /**
  * Token type.
  */
-export type Token<Value = any> = Value extends object
+export type Token<Value = any> = [Value] extends [object] // Avoids distributive union behavior
   ? Type<Value> | Constructor<Value>
   : Type<Value>;
 
@@ -54,10 +54,6 @@ export type Token<Value = any> = Value extends object
  * Describes a {@link Token} array with at least one element.
  */
 export type Tokens<Value = any> = [Token<Value>, ...Token<Value>[]];
-
-export type TokenList<Values extends [unknown, ...unknown[]]> = {
-  [Index in keyof Values]: Token<Values[Index]>;
-};
 
 /**
  * Create a type token.
@@ -82,29 +78,7 @@ export function Type<T>(typeName: string): Type<T> {
   return type;
 }
 
-/**
- * Type token of `null`.
- *
- * @example
- * ```ts
- * container.resolve(NULL); // => null
- * ```
- */
-export const NULL: Type<null> = Type<null>("null");
-
-/**
- * Type token of `undefined`.
- *
- * @example
- * ```ts
- * container.resolve(UNDEFINED); // => undefined
- * ```
- */
-export const UNDEFINED: Type<undefined> = Type<undefined>("undefined");
-
 // @internal
-export function isConstructor<T>(
-  token: Type<T> | Constructor<T & object>,
-): token is Constructor<T & object> {
+export function isConstructor<T>(token: Type<T> | Constructor<T & object>): token is Constructor<T & object> {
   return typeof token == "function";
 }
