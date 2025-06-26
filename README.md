@@ -21,6 +21,7 @@
 - [Container scopes](#container-scopes)
 - [Token registration](#token-registration)
 - [Function-based injection](#function-based-injection)
+- [Decorator-based injection](#decorator-based-injection)
 - [Credits](#credits)
 - [License](#license)
 
@@ -329,8 +330,96 @@ has never been registered in the container.
 
 ```ts
 export class ExtensionContext {
-  // The type does not change, but the call does not fail
+  // The type does not change compared to injectAll(T), but the call does not fail
   readonly stores /*: Store[] */ = optionalAll(Store);
+
+  /* ... */
+}
+```
+
+## Decorator-based injection
+
+You can also perform dependency injection using TypeScript's experimental decorators.
+
+**di-wise-neo** supports decorating constructor's and instance method's parameters.  
+It does not support property injection by design.
+
+### `@Inject(Token)`
+
+Injects the value associated with a token, throwing an error if the token is not
+registered in the container.
+
+```ts
+export class ProcessManager {
+  constructor(@Inject(PID) readonly rootPID: number) {}
+
+  /* ... */
+
+  // The method is called immediately after instance construction
+  notifyListener(@Inject(ProcessListener) listeners: ProcessListener): void {
+    listener.processStarted(this.rootPID);
+  }
+}
+```
+
+If `PID` cannot be resolved, a resolution error with detailed information is thrown.
+
+### `@InjectAll(Token)`
+
+Injects all values associated with a token, throwing an error if the token has
+never been registered in the container.
+
+```ts
+export class ExtensionContext {
+  constructor(@InjectAll(Store) readonly stores: Store[]) {}
+
+  /* ... */
+
+  clearStorage(): void {
+    this.stores.forEach((store) => store.clear());
+  }
+}
+```
+
+### `@Optional(Token)`
+
+Injects the value associated with a token, or `undefined` if the token is not
+registered in the container.
+
+```ts
+export class ProcessManager {
+  constructor(@Optional(PID) readonly rootPID: number | undefined) {}
+
+  /* ... */
+}
+```
+
+### `@OptionalAll(Token)`
+
+Injects all values associated with a token, or an **empty array** if the token
+has never been registered in the container.
+
+```ts
+export class ExtensionContext {
+  // The type does not change compared to @InjectAll, but construction does not fail
+  constructor(@OptionalAll(Store) readonly stores: Store[]) {}
+
+  /* ... */
+}
+```
+
+### Forward references
+
+Sometimes you may need to reference a token or class that is declared later in the file.  
+Normally, attempting to do that would result in a `ReferenceError`:
+
+> ReferenceError: Cannot access 'Store' before initialization
+
+We can work around this problem by using the `forwardRef` helper function:
+
+```ts
+export class ExtensionContext {
+  constructor(@OptionalAll(forwardRef(() => Store)) readonly stores: Store[]) {}
 
   /* ... */
 }
