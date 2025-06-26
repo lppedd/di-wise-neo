@@ -31,6 +31,7 @@
 - [Token registration](#token-registration)
 - [Function-based injection](#function-based-injection)
 - [Decorator-based injection](#decorator-based-injection)
+- [Behavioral decorators](#behavioral-decorators)
 - [Testing support](#testing-support)
 
 ## Why yet another library
@@ -84,7 +85,7 @@ production needs.
 ## Installation
 
 ```sh
-npm install @lppedd/di-wise-neo
+npm i @lppedd/di-wise-neo
 ```
 
 ```sh
@@ -148,7 +149,7 @@ const container = createContainer({
   defaultScope: Scope.Container,
 });
 
-// Register our managed dependencies into the container
+// Register our managed dependencies in the container
 container.register(ExtensionContext)
          .register(SecretStore)
          .register(ContributionRegistrar);
@@ -431,6 +432,51 @@ export class ExtensionContext {
 
   /* ... */
 }
+```
+
+## Behavioral decorators
+
+The library includes two behavioral decorators that influence how classes are registered in the container.
+These decorators attach metadata to the class type, which is then interpreted by the container during registration.
+
+### `@Scoped`
+
+Specifies a default scope for the decorated class:
+
+```ts
+@Scoped(Scope.Container)
+export class ExtensionContext {
+  /* ... */
+}
+```
+
+Applying `@Scoped(Scope.Container)` to the `ExtensionContext` class instructs the DI container
+to register it with the **Container** scope by default.
+
+This default can be overridden by explicitly providing registration options:
+
+```ts
+container.register(
+  ExtensionContext,
+  { useClass: ExtensionContext },
+  { scope: Scope.Resolution },
+);
+```
+
+In this example, `ExtensionContext` will be registered with **Resolution** scope instead.
+
+### `@AutoRegister`
+
+Enables automatic registration of the decorated class if it has not been registered explicitly.
+
+```ts
+@AutoRegister()
+export class ExtensionContext {
+  /* ... */
+}
+
+// Resolve the class without prior registration. It works!
+container.resolve(ExtensionContext);
 ```
 
 ## Testing support
