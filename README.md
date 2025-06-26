@@ -482,7 +482,7 @@ container.resolve(ExtensionContext);
 ## Testing support
 
 Testing is an important part of software development, and dependency injection is meant to make it easier.  
-The **di-wise-neo** container API exposes methods to more easily integrate with testing scenarios.
+The container API exposes methods to more easily integrate with testing scenarios.
 
 ### `resetRegistry`
 
