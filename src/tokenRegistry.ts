@@ -86,10 +86,10 @@ export class TokenRegistry {
   }
 
   deleteAll(): [Token[], Registration[]] {
-    const keys = Array.from(this.myMap.keys());
+    const tokens = Array.from(this.myMap.keys());
     const registrations = Array.from(this.myMap.values()).flat();
     this.myMap.clear();
-    return [keys, registrations];
+    return [tokens, registrations];
   }
 
   clearRegistrations(): unknown[] {
