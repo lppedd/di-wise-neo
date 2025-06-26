@@ -20,6 +20,7 @@
 - [Quickstart](#quickstart)
 - [Container scopes](#container-scopes)
 - [Token registration](#token-registration)
+- [Function-based injection](#function-based-injection)
 - [Credits](#credits)
 - [License](#license)
 
@@ -259,6 +260,81 @@ container.register(TaskID, {
 ```
 
 The container will translate `TaskID` to `PID` before resolving the value.
+
+## Function-based injection
+
+The primary way to perform dependency injection in **di-wise-neo** is through
+functions like `inject(T)`, `injectAll(T)`, `optional(T)`, and `optionalAll(T)`.
+This approach is recommended because it preserves full type safety.
+
+### Injection context
+
+All injection functions must be invoked inside an _injection context_, which stores
+the currently active container.  
+The _injection context_ is available in these situations:
+
+- inside the `constructor` of a class instantiated by the DI container
+- in property initializers of such classes
+- within factory functions used by `FactoryProvider`
+
+### `inject<T>(Token): T`
+
+Injects the value associated with a token, throwing an error if the token is not
+registered in the container.
+
+```ts
+export class ProcessManager {
+  constructor(readonly rootPID /*: number */ = inject(PID)) {}
+
+  /* ... */
+}
+```
+
+If `PID` cannot be resolved, a resolution error with detailed information is thrown.
+
+### `injectAll<T>(Token): T[]`
+
+Injects all values associated with a token, throwing an error if the token has
+never been registered in the container.
+
+```ts
+export class ExtensionContext {
+  readonly stores /*: Store[] */ = injectAll(Store);
+
+  /* ... */
+
+  clearStorage(): void {
+    this.stores.forEach((store) => store.clear());
+  }
+}
+```
+
+### `optional<T>(Token): T`
+
+Injects the value associated with a token, or `undefined` if the token is not
+registered in the container.
+
+```ts
+export class ProcessManager {
+  constructor(readonly rootPID /*: number | undefined */ = optional(PID)) {}
+
+  /* ... */
+}
+```
+
+### `optionalAll<T>(Token): T[]`
+
+Injects all values associated with a token, or an **empty array** if the token
+has never been registered in the container.
+
+```ts
+export class ExtensionContext {
+  // The type does not change, but the call does not fail
+  readonly stores /*: Store[] */ = optionalAll(Store);
+
+  /* ... */
+}
+```
 
 ## Credits
 
