@@ -63,7 +63,7 @@ export interface Container {
    * Clears and returns all distinct cached values from this container's internal registry.
    * Values from {@link ValueProvider} registrations are not included, as they are never cached.
    *
-   * Note that this only affects this container. The parent containers, if any, are not affected.
+   * Note that only this container is affected. Parent containers, if any, remain unchanged.
    */
   clearCache(): unknown[];
 
@@ -99,7 +99,7 @@ export interface Container {
    * Returns an array of distinct cached values that were stored within the removed registrations.
    * Values from {@link ValueProvider} registrations are not included, as they are not cached.
    *
-   * Note that this only affects this container. The parent containers, if any, are not affected.
+   * Note that only this container is affected. Parent containers, if any, remain unchanged.
    */
   resetRegistry(): unknown[];
 
@@ -162,7 +162,7 @@ export interface Container {
    * Returns an array of distinct cached values that were stored within the removed registrations.
    * Values from {@link ValueProvider} registrations are not included, as they are not cached.
    *
-   * Note that this only affects this container. The parent containers, if any, are not affected.
+   * Note that only this container is affected. Parent containers, if any, remain unchanged.
    */
   unregister<Value>(token: Token<Value>): Value[];
 
