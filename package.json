@@ -1,7 +1,32 @@
 {
-  "name": "di-wise-neo",
+  "name": "@lppedd/di-wise-neo",
   "version": "0.2.8",
+  "license": "MIT",
   "description": "Lightweight, type-safe, flexible dependency injection library for TypeScript and JavaScript",
+  "author": "Edoardo Luppi <lp.edoardo@gmail.com>",
+  "homepage": "https://github.com/lppedd/di-wise-neo",
+  "bugs": {
+    "url": "https://github.com/lppedd/di-wise-neo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lppedd/di-wise-neo.git"
+  },
+  "keywords": [
+    "di",
+    "ioc",
+    "dependency injection",
+    "inversion of control",
+    "dependency",
+    "injection",
+    "injector",
+    "container",
+    "typescript",
+    "experimental",
+    "decorator",
+    "decorators",
+    "di-wise-neo"
+  ],
   "files": [
     "dist",
     "src",
@@ -22,7 +47,6 @@
       }
     }
   },
-  "sideEffects": false,
   "scripts": {
     "build": "tsc --noEmit && bunchee --sourcemap",
     "test": "vitest --coverage",
@@ -32,30 +56,6 @@
     "format:check": "prettier \"**/*.{json,md,yml}\" --check --cache",
     "typedoc": "typedoc src/index.ts --includeVersion"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/lppedd/di-wise-neo.git"
-  },
-  "keywords": [
-    "di",
-    "ioc",
-    "dependency injection",
-    "inversion of control",
-    "dependency",
-    "injection",
-    "injector",
-    "container",
-    "typescript",
-    "experimental",
-    "decorator",
-    "decorators"
-  ],
-  "author": "Edoardo Luppi <lp.edoardo@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/lppedd/di-wise-neo/issues"
-  },
-  "homepage": "https://github.com/lppedd/di-wise-neo",
   "devDependencies": {
     "@eslint/js": "^9.20.0",
     "@stylistic/eslint-plugin": "^3.1.0",
@@ -72,5 +72,6 @@
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.24.0",
     "vitest": "^3.0.5"
-  }
+  },
+  "sideEffects": false
 }
