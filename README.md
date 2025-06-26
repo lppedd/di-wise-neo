@@ -22,6 +22,7 @@
 - [Token registration](#token-registration)
 - [Function-based injection](#function-based-injection)
 - [Decorator-based injection](#decorator-based-injection)
+- [Testing](#testing)
 - [Credits](#credits)
 - [License](#license)
 
@@ -423,6 +424,46 @@ export class ExtensionContext {
 
   /* ... */
 }
+```
+
+## Testing
+
+Testing is an important part of software development, and dependency injection is meant to make it easier.  
+The **di-wise-neo** container API exposes methods to more easily integrate with testing scenarios.
+
+### `resetRegistry`
+
+Removes all registrations from the container's internal registry, effectively resetting it to its initial state.  
+This is useful for ensuring isolation between tests.
+
+```ts
+describe("My test suite", () => {
+  const container = createContainer();
+
+  afterEach(() => {
+    container.resetRegistry();
+  });
+
+  /* ... */
+});
+```
+
+### `dispose`
+
+Another way to ensure isolation between tests is to completely replace the DI container after each test run.  
+The **di-wise-neo** container supports being _disposed_, preventing further registrations or resolutions.
+
+```ts
+describe("My test suite", () => {
+  let container = createContainer();
+
+  afterEach(() => {
+    container.dispose();
+    container = createContainer();
+  });
+
+  /* ... */
+});
 ```
 
 ## Credits
