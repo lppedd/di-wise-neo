@@ -1,10 +1,11 @@
 import { assert } from "../errors";
 import { getMetadata } from "../metadata";
 import type { Constructor, Token } from "../token";
+import type { Decorator } from "../tokenRegistry";
 import { forwardRef, isTokenRef, type TokenRef } from "../tokensRef";
 
 export function processDecoratedParameter(
-  decorator: "Inject" | "InjectAll" | "Optional" | "OptionalAll",
+  decorator: Decorator,
   token: Token | TokenRef,
   target: object,
   propertyKey: string | symbol | undefined,

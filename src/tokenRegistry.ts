@@ -17,13 +17,13 @@ export interface RegistrationOptions {
 }
 
 // @internal
-export interface Dependency {
-  readonly decorator: "Inject" | "InjectAll" | "Optional" | "OptionalAll";
-  readonly tokenRef: TokenRef;
-}
+export type Decorator = "Inject" | "InjectAll" | "Optional" | "OptionalAll";
 
 // @internal
-export interface MethodDependency extends Dependency {
+export interface MethodDependency {
+  readonly decorator: Decorator;
+  readonly tokenRef: TokenRef;
+
   // The index of the annotated parameter (zero-based)
   readonly index: number;
 }
