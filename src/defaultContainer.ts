@@ -1,4 +1,4 @@
-import type { Container, ContainerOptions, RegistrationOptions } from "./container";
+import type { Container, ContainerOptions } from "./container";
 import { assert, expectNever, throwExistingUnregisteredError, throwUnregisteredError } from "./errors";
 import { injectBy } from "./inject";
 import { injectAll } from "./injectAll";
@@ -15,7 +15,7 @@ import {
 } from "./provider";
 import { Scope } from "./scope";
 import { type Constructor, isConstructor, type Token } from "./token";
-import { isBuilder, type Registration, TokenRegistry } from "./tokenRegistry";
+import { isBuilder, type Registration, type RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 import { isDisposable } from "./utils/disposable";
 
 /**

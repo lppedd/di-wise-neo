@@ -1,4 +1,3 @@
-import type { RegistrationOptions } from "./container";
 import { assert } from "./errors";
 import type { FactoryProvider, Provider } from "./provider";
 import { Scope } from "./scope";
@@ -6,6 +5,16 @@ import { type Constructor, type Token, Type } from "./token";
 import type { TokenRef } from "./tokensRef";
 import { getTypeName } from "./utils/typeName";
 import type { ValueRef } from "./valueRef";
+
+/**
+ * Token registration options.
+ */
+export interface RegistrationOptions {
+  /**
+   * The scope of the registration.
+   */
+  readonly scope?: Scope;
+}
 
 // @internal
 export type Decorator = "Inject" | "InjectAll" | "Optional" | "OptionalAll";

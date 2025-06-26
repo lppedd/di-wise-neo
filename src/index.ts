@@ -1,4 +1,4 @@
-export type { Container, ContainerOptions, RegistrationOptions } from "./container";
+export type { Container, ContainerOptions } from "./container";
 export { createContainer } from "./container";
 export { AutoRegister, Inject, Injectable, InjectAll, Optional, OptionalAll, Scoped } from "./decorators";
 export { inject, injectBy } from "./inject";
@@ -10,6 +10,7 @@ export type { ClassProvider, ExistingProvider, FactoryProvider, Provider, ValueP
 export { Scope } from "./scope";
 export type { Constructor, Token, Tokens } from "./token";
 export { Type } from "./token";
+export type { RegistrationOptions } from "./tokenRegistry";
 export { Build } from "./tokenRegistry";
 export type { TokenRef, TokensRef } from "./tokensRef";
 export { forwardRef } from "./tokensRef";

@@ -2,7 +2,7 @@ import { DefaultContainer } from "./defaultContainer";
 import type { ClassProvider, ExistingProvider, FactoryProvider, ValueProvider } from "./provider";
 import { Scope } from "./scope";
 import type { Constructor, Token } from "./token";
-import type { TokenRegistry } from "./tokenRegistry";
+import type { RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 
 /**
  * Container creation options.
@@ -21,16 +21,6 @@ export interface ContainerOptions {
    * @defaultValue Scope.Inherited
    */
   readonly defaultScope: Scope;
-}
-
-/**
- * Token registration options.
- */
-export interface RegistrationOptions {
-  /**
-   * The scope of the registration.
-   */
-  readonly scope?: Scope;
 }
 
 /**
