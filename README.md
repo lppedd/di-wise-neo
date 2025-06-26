@@ -220,14 +220,14 @@ Alternatively, use an explicit `ClassProvider` object - useful when registering
 an interface or abstract type:
 
 ```ts
-const Store = createType<Store>("Store");
-container.register(Store, {
+const IStore = createType<Store>("Store");
+container.register(IStore, {
   useClass: SecretStore, // class SecretStore implements Store
 });
 ```
 
-Upon resolving `Store`, the container creates an instance of `SecretStore`,
-caching it according to the configured scope.
+Upon resolving `IStore` - which represents the `Store` interface - the container
+creates an instance of `SecretStore`, caching it according to the configured scope.
 
 ### FactoryProvider
 
@@ -310,7 +310,7 @@ never been registered in the container.
 
 ```ts
 export class ExtensionContext {
-  readonly stores /*: Store[] */ = injectAll(Store);
+  readonly stores /*: Store[] */ = injectAll(IStore);
 
   /* ... */
 
@@ -341,7 +341,7 @@ has never been registered in the container.
 ```ts
 export class ExtensionContext {
   // The type does not change compared to injectAll(T), but the call does not fail
-  readonly stores /*: Store[] */ = optionalAll(Store);
+  readonly stores /*: Store[] */ = optionalAll(IStore);
 
   /* ... */
 }
@@ -366,7 +366,7 @@ export class ProcessManager {
   /* ... */
 
   // The method is called immediately after instance construction
-  notifyListener(@Inject(ProcessListener) listeners: ProcessListener): void {
+  notifyListener(@Inject(ProcessListener) listener: ProcessListener): void {
     listener.processStarted(this.rootPID);
   }
 }
@@ -381,7 +381,7 @@ never been registered in the container.
 
 ```ts
 export class ExtensionContext {
-  constructor(@InjectAll(Store) readonly stores: Store[]) {}
+  constructor(@InjectAll(IStore) readonly stores: Store[]) {}
 
   /* ... */
 
@@ -412,7 +412,7 @@ has never been registered in the container.
 ```ts
 export class ExtensionContext {
   // The type does not change compared to @InjectAll, but construction does not fail
-  constructor(@OptionalAll(Store) readonly stores: Store[]) {}
+  constructor(@OptionalAll(IStore) readonly stores: Store[]) {}
 
   /* ... */
 }
@@ -423,13 +423,13 @@ export class ExtensionContext {
 Sometimes you may need to reference a token or class that is declared later in the file.  
 Normally, attempting to do that would result in a `ReferenceError`:
 
-> ReferenceError: Cannot access 'Store' before initialization
+> ReferenceError: Cannot access 'IStore' before initialization
 
 We can work around this problem by using the `forwardRef` helper function:
 
 ```ts
 export class ExtensionContext {
-  constructor(@OptionalAll(forwardRef(() => Store)) readonly stores: Store[]) {}
+  constructor(@OptionalAll(forwardRef(() => IStore)) readonly stores: Store[]) {}
 
   /* ... */
 }
