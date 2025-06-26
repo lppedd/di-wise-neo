@@ -1,8 +1,8 @@
 import { DefaultContainer } from "./defaultContainer";
 import type { ClassProvider, ExistingProvider, FactoryProvider, ValueProvider } from "./provider";
-import type { RegistrationOptions, Registry } from "./registry";
 import { Scope } from "./scope";
 import type { Constructor, Token } from "./token";
+import type { RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 
 /**
  * Options for creating a container.
@@ -35,7 +35,7 @@ export interface Container {
   /**
    * @internal
    */
-  readonly registry: Registry;
+  readonly registry: TokenRegistry;
 
   /**
    * The options used to create this container.

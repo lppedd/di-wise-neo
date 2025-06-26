@@ -42,16 +42,14 @@ export interface Registration<T = any> {
   readonly dependencies?: Dependencies;
 }
 
-// eslint-disable-next-line no-use-before-define
-export type RegistrationMap = Omit<Map<Token, Registration[]>, keyof Registry>;
-
-export class Registry {
+// @internal
+export class TokenRegistry {
   private readonly myMap = new Map<Token, Registration[]>();
 
-  constructor(private readonly parent: Registry | undefined) {}
+  constructor(private readonly parent: TokenRegistry | undefined) {}
 
-  get map(): RegistrationMap {
-    return this.myMap;
+  clear(): void {
+    this.myMap.clear();
   }
 
   get<T>(token: Token<T>): Registration<T> | undefined {
@@ -95,6 +93,10 @@ export class Registry {
     const registrations = Array.from(this.myMap.values()).flat();
     this.myMap.clear();
     return registrations;
+  }
+
+  values(): MapIterator<Registration[]> {
+    return this.myMap.values();
   }
 
   private getAllFromHierarchy<T>(token: Token<T>): Registration<T>[] | undefined {

@@ -1,7 +1,7 @@
 import type { ClassProvider } from "./provider";
-import type { Dependencies } from "./registry";
 import type { Scope } from "./scope";
 import type { Constructor } from "./token";
+import type { Dependencies } from "./tokenRegistry";
 import type { TokensRef } from "./tokensRef";
 
 export interface Metadata<This extends object = any> {

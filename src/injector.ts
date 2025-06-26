@@ -3,8 +3,8 @@ import { injectAll } from "./injectAll";
 import { ensureInjectionContext, provideInjectionContext, useInjectionContext } from "./injectionContext";
 import { optional } from "./optional";
 import { optionalAll } from "./optionalAll";
-import { Build } from "./registry";
 import type { Constructor, Token, Type } from "./token";
+import { Build } from "./tokenRegistry";
 
 /**
  * Injector API.

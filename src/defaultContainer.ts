@@ -13,9 +13,9 @@ import {
   isValueProvider,
   type Provider,
 } from "./provider";
-import { isBuilder, type Registration, type RegistrationOptions, Registry } from "./registry";
 import { Scope } from "./scope";
 import { type Constructor, isConstructor, type Token } from "./token";
+import { isBuilder, type Registration, type RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 import { isDisposable } from "./utils/disposable";
 
 /**
@@ -25,7 +25,7 @@ export class DefaultContainer implements Container {
   // eslint-disable-next-line no-use-before-define
   private readonly myChildren: Set<DefaultContainer> = new Set();
   private readonly myOptions: ContainerOptions;
-  private readonly myRegistry: Registry;
+  private readonly myTokenRegistry: TokenRegistry;
   private myDisposed: boolean = false;
 
   constructor(
@@ -38,11 +38,11 @@ export class DefaultContainer implements Container {
       ...options,
     };
 
-    this.myRegistry = new Registry(this.myParent?.registry);
+    this.myTokenRegistry = new TokenRegistry(this.myParent?.myTokenRegistry);
   }
 
-  get registry(): Registry {
-    return this.myRegistry;
+  get registry(): TokenRegistry {
+    return this.myTokenRegistry;
   }
 
   get options(): ContainerOptions {
@@ -74,7 +74,7 @@ export class DefaultContainer implements Container {
     this.checkDisposed();
     const values = new Set<unknown>();
 
-    for (const registrations of this.registry.map.values()) {
+    for (const registrations of this.myTokenRegistry.values()) {
       for (let i = 0; i < registrations.length; i++) {
         const registration = registrations[i]!;
         const value = registration.value;
@@ -95,13 +95,13 @@ export class DefaultContainer implements Container {
 
   getCached<T>(token: Token<T>): T | undefined {
     this.checkDisposed();
-    const registration = this.registry.get(token);
+    const registration = this.myTokenRegistry.get(token);
     return registration?.value?.current;
   }
 
   getAllCached<T>(token: Token<T>): T[] {
     this.checkDisposed();
-    const registrations = this.registry.getAll(token);
+    const registrations = this.myTokenRegistry.getAll(token);
 
     if (!registrations) {
       return [];
@@ -122,7 +122,7 @@ export class DefaultContainer implements Container {
 
   resetRegistry(): unknown[] {
     this.checkDisposed();
-    const registrations = this.registry.deleteAll();
+    const registrations = this.myTokenRegistry.deleteAll();
     const values = new Set<unknown>();
 
     for (const registration of registrations) {
@@ -138,7 +138,7 @@ export class DefaultContainer implements Container {
 
   isRegistered(token: Token): boolean {
     this.checkDisposed();
-    return this.registry.get(token) !== undefined;
+    return this.myTokenRegistry.get(token) !== undefined;
   }
 
   register<T>(...args: [Constructor<T & object>] | [Token<T>, Provider<T>, RegistrationOptions?]): this {
@@ -149,7 +149,7 @@ export class DefaultContainer implements Container {
       const metadata = getMetadata(Class);
 
       // Register the class itself
-      this.registry.set(Class, {
+      this.myTokenRegistry.set(Class, {
         // The provider is of type ClassProvider, initialized by getMetadata
         provider: metadata.provider,
         options: {
@@ -161,7 +161,7 @@ export class DefaultContainer implements Container {
       // Register the additional tokens specified via class decorators.
       // These tokens will point to the original Class token and will have the same scope.
       for (const token of metadata.tokensRef.getRefTokens()) {
-        this.registry.set(token, {
+        this.myTokenRegistry.set(token, {
           provider: {
             useExisting: Class,
           },
@@ -173,7 +173,7 @@ export class DefaultContainer implements Container {
       if (isClassProvider(provider)) {
         const Class = provider.useClass;
         const metadata = getMetadata(Class);
-        this.registry.set(token, {
+        this.myTokenRegistry.set(token, {
           provider: metadata.provider,
           options: {
             // The explicit registration options override what is specified
@@ -191,7 +191,7 @@ export class DefaultContainer implements Container {
           );
         }
 
-        this.registry.set(token, {
+        this.myTokenRegistry.set(token, {
           provider: provider,
           options: options,
         });
@@ -203,7 +203,7 @@ export class DefaultContainer implements Container {
 
   unregister<T>(token: Token<T>): T[] {
     this.checkDisposed();
-    const registrations = this.registry.delete(token);
+    const registrations = this.myTokenRegistry.delete(token);
 
     if (!registrations) {
       return [];
@@ -224,7 +224,7 @@ export class DefaultContainer implements Container {
 
   resolve<T>(token: Token<T>, optional?: boolean): T | undefined {
     this.checkDisposed();
-    const registration = this.registry.get(token);
+    const registration = this.myTokenRegistry.get(token);
 
     if (registration) {
       return this.resolveRegistration(token, registration);
@@ -239,7 +239,7 @@ export class DefaultContainer implements Container {
 
   resolveAll<T>(token: Token<T>, optional?: boolean): NonNullable<T>[] {
     this.checkDisposed();
-    const registrations = this.registry.getAll(token);
+    const registrations = this.myTokenRegistry.getAll(token);
 
     if (registrations) {
       return registrations
@@ -273,11 +273,10 @@ export class DefaultContainer implements Container {
     this.myParent?.myChildren?.delete(this);
     this.myDisposed = true;
 
-    const registry = this.registry;
     const disposedRefs = new Set<any>();
 
     // Dispose all resolved (aka instantiated) tokens that implement the Disposable interface
-    for (const registrations of registry.map.values()) {
+    for (const registrations of this.myTokenRegistry.values()) {
       for (const registration of registrations) {
         const value = registration.value?.current;
 
@@ -290,7 +289,7 @@ export class DefaultContainer implements Container {
 
     // Allow values to be GCed
     disposedRefs.clear();
-    registry.map.clear();
+    this.myTokenRegistry.clear();
   }
 
   private resolveRegistration<T>(token: Token<T>, registration: Registration<T>): T {
@@ -299,7 +298,7 @@ export class DefaultContainer implements Container {
 
     while (isExistingProvider(currProvider)) {
       const targetToken = currProvider.useExisting;
-      currRegistration = this.registry.get(targetToken);
+      currRegistration = this.myTokenRegistry.get(targetToken);
 
       if (!currRegistration) {
         throwExistingUnregisteredError(token, targetToken);
