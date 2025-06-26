@@ -5,7 +5,7 @@ import { afterEach, assert, describe, expect, it } from "vitest";
 
 import {
   AutoRegister,
-  Build,
+  build,
   createContainer,
   createType,
   forwardRef,
@@ -709,11 +709,11 @@ describe("Container", () => {
     const child = container.createChild();
 
     container.resolve(
-      Build(() => {
+      build(() => {
         const context = useInjectionContext()!;
 
         child.resolve(
-          Build(() => {
+          build(() => {
             const innerContext = useInjectionContext()!;
             expect(innerContext).not.toBe(context);
             expect(innerContext.container).toBe(child);

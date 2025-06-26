@@ -3,7 +3,7 @@
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { Build, createContainer, Inject, inject, injectAll, injectBy, Injector, Optional, Scope, Scoped } from "..";
+import { build, createContainer, Inject, inject, injectAll, injectBy, Injector, Optional, Scope, Scoped } from "..";
 import { useInjectionContext } from "../injectionContext";
 import { optional, optionalBy } from "../optional";
 
@@ -108,7 +108,7 @@ describe("inject", () => {
       wand = injectBy(this, Wand);
     }
 
-    expect(() => container.resolve(Build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(
+    expect(() => container.resolve(build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(
       `[Error: [di-wise-neo] circular dependency detected]`,
     );
   });
@@ -122,7 +122,7 @@ describe("inject", () => {
       wand = optionalBy(this, Wand);
     }
 
-    expect(() => container.resolve(Build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(
+    expect(() => container.resolve(build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(
       `[Error: [di-wise-neo] circular dependency detected]`,
     );
   });
@@ -146,11 +146,11 @@ describe("inject", () => {
       class Wizard {
         injector = inject(Injector);
 
-        context = inject(Build(useInjectionContext));
+        context = inject(build(useInjectionContext));
 
         constructor() {
           this.injector.inject(
-            Build(() => {
+            build(() => {
               expect(useInjectionContext()).toBe(this.context);
             }),
           );

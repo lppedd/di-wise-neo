@@ -4,7 +4,7 @@ import { ensureInjectionContext, provideInjectionContext, useInjectionContext } 
 import { optional } from "./optional";
 import { optionalAll } from "./optionalAll";
 import type { Constructor, Token, Type } from "./token";
-import { Build } from "./tokenRegistry";
+import { build } from "./tokenRegistry";
 
 /**
  * Injector API.
@@ -81,7 +81,7 @@ export interface Injector {
  * wizard.getWand(); // => Wand
  * ```
  */
-export const Injector: Type<Injector> = /*@__PURE__*/ Build(function Injector() {
+export const Injector: Type<Injector> = /*@__PURE__*/ build(function Injector() {
   const context = ensureInjectionContext(Injector);
   const resolution = context.resolution;
 

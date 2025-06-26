@@ -132,7 +132,7 @@ export function isBuilder(provider: Provider): boolean {
  * ```ts
  * class Wizard {
  *   wand = inject(
- *     Build(() => {
+ *     build(() => {
  *       const wand = inject(Wand);
  *       wand.owner = this;
  *       // ...
@@ -144,7 +144,7 @@ export function isBuilder(provider: Provider): boolean {
  *
  * @__NO_SIDE_EFFECTS__
  */
-export function Build<Value>(factory: (...args: []) => Value): Type<Value> {
+export function build<Value>(factory: (...args: []) => Value): Type<Value> {
   const token = createType<Value>(`Build<${getTypeName(factory)}>`);
   const provider: FactoryProvider<Value> = {
     useFactory: factory,
