@@ -22,6 +22,7 @@
 
 - [Why yet another library](#why-yet-another-library)
 - [Installation](#installation)
+- [API reference](#api-reference)
 - [Ergonomics](#ergonomics)
 - [Quickstart](#quickstart)
 - [Container scopes](#container-scopes)
@@ -92,6 +93,9 @@ pnpm add @lppedd/di-wise-neo
 ```sh
 yarn add @lppedd/di-wise-neo
 ```
+## API reference
+
+You can find the complete API reference at https://lppedd.github.io/di-wise-neo
 
 ## Ergonomics
 
