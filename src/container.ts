@@ -193,7 +193,7 @@ export interface Container {
    */
   resolve<Instance extends object>(Class: Constructor<Instance>, optional?: false): Instance;
   resolve<Instance extends object>(Class: Constructor<Instance>, optional: true): Instance | undefined;
-  resolve<Instance extends object>(Class: Constructor<Instance>, optional: boolean): Instance | undefined;
+  resolve<Instance extends object>(Class: Constructor<Instance>, optional?: boolean): Instance | undefined;
 
   /**
    * Resolves the given token to the value associated with it.
@@ -215,7 +215,7 @@ export interface Container {
    */
   resolve<Value>(token: Token<Value>, optional?: false): Value;
   resolve<Value>(token: Token<Value>, optional: true): Value | undefined;
-  resolve<Value>(token: Token<Value>, optional: boolean): Value | undefined;
+  resolve<Value>(token: Token<Value>, optional?: boolean): Value | undefined;
 
   /**
    * Resolves the given class to all instances provided by the registrations associated with it.
@@ -245,7 +245,7 @@ export interface Container {
    */
   resolveAll<Instance extends object>(Class: Constructor<Instance>, optional?: false): Instance[];
   resolveAll<Instance extends object>(Class: Constructor<Instance>, optional: true): Instance[];
-  resolveAll<Instance extends object>(Class: Constructor<Instance>, optional: boolean): Instance[];
+  resolveAll<Instance extends object>(Class: Constructor<Instance>, optional?: boolean): Instance[];
 
   /**
    * Resolves the given token to all values provided by the registrations associated with it.
@@ -266,7 +266,7 @@ export interface Container {
    */
   resolveAll<Value>(token: Token<Value>, optional?: false): NonNullable<Value>[];
   resolveAll<Value>(token: Token<Value>, optional: true): NonNullable<Value>[];
-  resolveAll<Value>(token: Token<Value>, optional: boolean): NonNullable<Value>[];
+  resolveAll<Value>(token: Token<Value>, optional?: boolean): NonNullable<Value>[];
 
   /**
    * Disposes this container and all its cached values.
