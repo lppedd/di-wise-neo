@@ -19,6 +19,7 @@
 - [Ergonomics](#ergonomics)
 - [Quickstart](#quickstart)
 - [Container scopes](#container-scopes)
+- [Token registration](#token-registration)
 - [Credits](#credits)
 - [License](#license)
 
@@ -179,6 +180,85 @@ If the value is not found in the current container, it is looked up in the paren
 and so on.
 
 It effectively behaves like a **singleton** scope, but allows container-specific overrides.
+
+## Token registration
+
+The container allows registering tokens via _providers_. The generic usage is:
+
+```ts
+container.register(/* ... */);
+```
+
+An explicit **scope** can be specified using the third argument, when applicable.  
+If omitted, the default scope is **Transient**.
+
+```ts
+container.register(token, provider, { scope: Scope.Resolution });
+```
+
+### ClassProvider
+
+You can register a class by passing it directly to the `register` method:
+
+```ts
+container.register(SecretStore);
+```
+
+Alternatively, use an explicit `ClassProvider` object - useful when registering
+an interface or abstract type:
+
+```ts
+const Store = Type<Store>("Store");
+container.register(Store, {
+  useClass: SecretStore, // class SecretStore implements Store
+});
+```
+
+Upon resolving `Store`, the container creates an instance of `SecretStore`,
+caching it according to the configured scope.
+
+### FactoryProvider
+
+A lazily computed value can be registered using a factory function:
+
+```ts
+const Env = Type<string>("Env")
+container.register(Env, {
+  useFactory: () => isNode() ? "Node.js" : "browser",
+});
+```
+
+The factory function is invoked upon token resolution, and its result is cached
+according to the configured scope.
+
+### ValueProvider
+
+A static value - always taken as-is and unaffected by scopes - can be registered using:
+
+```ts
+const PID = Type<number>("PID");
+const processId = spawnProcess();
+container.register(PID, {
+  useValue: processId,
+});
+```
+
+This is especially useful when injecting third-party values that are not created
+through the DI container.
+
+### ExistingProvider
+
+Registers an alias to another token, allowing multiple identifiers to resolve to the same value.  
+Using the previous `PID` example, we can register a `TaskID` alias:
+
+```ts
+const TaskID = Type<number>("TaskID");
+container.register(TaskID, {
+  useExisting: PID,
+});
+```
+
+The container will translate `TaskID` to `PID` before resolving the value.
 
 ## Credits
 
