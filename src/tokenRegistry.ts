@@ -105,8 +105,8 @@ export class TokenRegistry {
         }
 
         registrations[i] = {
-          provider: registration.provider,
-          options: registration.options,
+          ...registration,
+          value: undefined,
         };
       }
     }
