@@ -8,10 +8,7 @@
 [![npm gzipped size](https://img.shields.io/bundlejs/size/@lppedd/di-wise-neo)](https://bundlejs.com/?q=@lppedd/di-wise-neo)
 [![license](https://img.shields.io/github/license/lppedd/di-wise-neo?color=blue)](https://github.com/lppedd/di-wise-neo/blob/main/LICENSE)
 
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./.github/images/neo-wall.jpg">
-    <img src="./.github/images/neo-wall.jpg" alt="di-wise-neo" style="border: 3px solid black; border-radius: 15px;" />
-  </picture>
+  <img src="./.github/images/neo-wall.jpg" alt="di-wise-neo" style="border: 3px solid black; border-radius: 15px;" />
   <div><sub>yes, I like The Matrix</sub></div>
 </div>
 
