@@ -43,14 +43,14 @@ export interface Container {
   readonly options: ContainerOptions;
 
   /**
+   * The parent container, or `undefined` if this is the root container.
+   */
+  readonly parent: Container | undefined;
+
+  /**
    * Whether this container is disposed.
    */
   readonly isDisposed: boolean;
-
-  /**
-   * Returns the parent container, if any.
-   */
-  getParent(): Container | undefined;
 
   /**
    * Creates a new child container that inherits this container's options.

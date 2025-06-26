@@ -70,7 +70,7 @@ describe("Container", () => {
     expect(wizardInstance).toBe(parent.resolve(Wizard));
 
     // Verify the child-parent relationship
-    expect(child.getParent()).toBe(parent);
+    expect(child.parent).toBe(parent);
   });
 
   it("should get the cached values but keep the registrations", () => {

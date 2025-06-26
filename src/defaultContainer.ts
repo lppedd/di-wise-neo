@@ -51,12 +51,12 @@ export class DefaultContainer implements Container {
     };
   }
 
-  get isDisposed(): boolean {
-    return this.myDisposed;
+  get parent(): Container | undefined {
+    return this.myParent;
   }
 
-  getParent(): Container | undefined {
-    return this.myParent;
+  get isDisposed(): boolean {
+    return this.myDisposed;
   }
 
   createChild(options?: Partial<ContainerOptions>): Container {
