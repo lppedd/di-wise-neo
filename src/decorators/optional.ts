@@ -24,7 +24,7 @@ export function Optional<Value>(token: Token<Value>): ParameterDecorator;
  * @example
  * ```ts
  * class Wizard {
- *   constructor(@Optional(forwardRef(() => Wand)) readonly wand: Wand) {}
+ *   constructor(@Optional(forwardRef(() => Wand)) readonly wand: Wand | undefined) {}
  * }
  * // Other code...
  * class Wand {}
