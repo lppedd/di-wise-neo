@@ -72,25 +72,7 @@ export class DefaultContainer implements Container {
 
   clearCache(): unknown[] {
     this.checkDisposed();
-    const values = new Set<unknown>();
-
-    for (const registrations of this.myTokenRegistry.values()) {
-      for (let i = 0; i < registrations.length; i++) {
-        const registration = registrations[i]!;
-        const value = registration.value;
-
-        if (value) {
-          values.add(value.current);
-        }
-
-        registrations[i] = {
-          provider: registration.provider,
-          options: registration.options,
-        };
-      }
-    }
-
-    return Array.from(values);
+    return this.myTokenRegistry.clearRegistrations();
   }
 
   getCached<T>(token: Token<T>): T | undefined {

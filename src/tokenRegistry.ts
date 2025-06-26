@@ -46,7 +46,7 @@ export class TokenRegistry {
 
   getAll<T>(token: Token<T>): Registration<T>[] | undefined {
     const internal = internals.get(token);
-    return (internal && [internal]) || this.getAllFromHierarchy(token);
+    return (internal && [internal]) || this.getAllFromParent(token);
   }
 
   //
@@ -83,13 +83,31 @@ export class TokenRegistry {
     return [keys, registrations];
   }
 
-  values(): MapIterator<Registration[]> {
-    return this.myMap.values();
+  clearRegistrations(): unknown[] {
+    const values = new Set<unknown>();
+
+    for (const registrations of this.myMap.values()) {
+      for (let i = 0; i < registrations.length; i++) {
+        const registration = registrations[i]!;
+        const value = registration.value;
+
+        if (value) {
+          values.add(value.current);
+        }
+
+        registrations[i] = {
+          provider: registration.provider,
+          options: registration.options,
+        };
+      }
+    }
+
+    return Array.from(values);
   }
 
-  private getAllFromHierarchy<T>(token: Token<T>): Registration<T>[] | undefined {
+  private getAllFromParent<T>(token: Token<T>): Registration<T>[] | undefined {
     const registrations = this.myMap.get(token);
-    return registrations || this.parent?.getAllFromHierarchy(token);
+    return registrations || this.parent?.getAllFromParent(token);
   }
 }
 
