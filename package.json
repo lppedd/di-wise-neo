@@ -47,7 +47,7 @@
   },
   "scripts": {
     "build": "tsc --noEmit && bunchee --sourcemap",
-    "test": "vitest --coverage",
+    "test": "npm run build && vitest --coverage",
     "lint": "eslint . --fix --cache",
     "lint:ci": "eslint . --max-warnings 0 --cache --cache-location ./node_modules/.cache/eslint/.eslintcache",
     "format": "prettier \"**/*.{json,md,yml}\" --write --log-level warn --cache",
