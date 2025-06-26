@@ -28,9 +28,7 @@
     "di-wise-neo"
   ],
   "files": [
-    "dist",
-    "src",
-    "!src/__tests__"
+    "dist"
   ],
   "main": "./dist/cjs/index.js",
   "module": "./dist/es/index.mjs",
