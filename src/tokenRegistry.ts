@@ -39,10 +39,6 @@ export class TokenRegistry {
 
   constructor(private readonly parent: TokenRegistry | undefined) {}
 
-  clear(): void {
-    this.myMap.clear();
-  }
-
   get<T>(token: Token<T>): Registration<T> | undefined {
     // To clarify, at(-1) means we take the last added registration for this token
     return this.getAll(token)?.at(-1);
@@ -80,10 +76,11 @@ export class TokenRegistry {
     return registrations;
   }
 
-  deleteAll(): Registration[] {
+  deleteAll(): [Token[], Registration[]] {
+    const keys = Array.from(this.myMap.keys());
     const registrations = Array.from(this.myMap.values()).flat();
     this.myMap.clear();
-    return registrations;
+    return [keys, registrations];
   }
 
   values(): MapIterator<Registration[]> {

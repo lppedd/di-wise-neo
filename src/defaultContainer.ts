@@ -122,7 +122,7 @@ export class DefaultContainer implements Container {
 
   resetRegistry(): unknown[] {
     this.checkDisposed();
-    const registrations = this.myTokenRegistry.deleteAll();
+    const [, registrations] = this.myTokenRegistry.deleteAll();
     const values = new Set<unknown>();
 
     for (const registration of registrations) {
@@ -273,23 +273,21 @@ export class DefaultContainer implements Container {
     this.myParent?.myChildren?.delete(this);
     this.myDisposed = true;
 
+    const [, registrations] = this.myTokenRegistry.deleteAll();
     const disposedRefs = new Set<any>();
 
     // Dispose all resolved (aka instantiated) tokens that implement the Disposable interface
-    for (const registrations of this.myTokenRegistry.values()) {
-      for (const registration of registrations) {
-        const value = registration.value?.current;
+    for (const registration of registrations) {
+      const value = registration.value?.current;
 
-        if (isDisposable(value) && !disposedRefs.has(value)) {
-          disposedRefs.add(value);
-          value.dispose();
-        }
+      if (isDisposable(value) && !disposedRefs.has(value)) {
+        disposedRefs.add(value);
+        value.dispose();
       }
     }
 
     // Allow values to be GCed
     disposedRefs.clear();
-    this.myTokenRegistry.clear();
   }
 
   private resolveRegistration<T>(token: Token<T>, registration: Registration<T>): T {
