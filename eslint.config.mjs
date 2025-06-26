@@ -7,22 +7,22 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    name: "exuanbo/languages",
+    name: "di-wise-neo/languages",
     languageOptions: {
       ecmaVersion: 2022,
       globals: globals.es2022,
     },
   },
   {
-    name: "exuanbo/ignores",
+    name: "di-wise-neo/ignores",
     ignores: ["coverage", "dist", "docs"],
   },
   {
-    name: "exuanbo/files",
+    name: "di-wise-neo/files",
     files: ["**/*.?(c|m){j,t}s"],
   },
   {
-    name: "exuanbo/eslint",
+    name: "di-wise-neo/eslint",
     extends: [
       {
         name: "eslint/recommended",
@@ -43,7 +43,7 @@ export default tseslint.config(
     },
   },
   {
-    name: "exuanbo/typescript",
+    name: "di-wise-neo/typescript",
     extends: tseslint.configs.recommendedTypeChecked,
     languageOptions: {
       parserOptions: {
