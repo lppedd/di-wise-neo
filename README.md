@@ -71,19 +71,13 @@ production needs.
 
 ## Installation
 
-npm:
-
 ```sh
 npm install @lppedd/di-wise-neo
 ```
 
-pnpm:
-
 ```sh
 pnpm add @lppedd/di-wise-neo
 ```
-
-yarn:
 
 ```sh
 yarn add @lppedd/di-wise-neo
@@ -121,11 +115,7 @@ export class ContributionRegistrar {
   // We can also opt to use decorator-based constructor injection
   constructor(@Inject(ExtensionContext) readonly context: ExtensionContext) {}
 
-  registerCommand(id: string, fn: () => void): void {
-    if (this.context.extensionMode !== ExtensionMode.Production) {
-      /* ... */
-    }
-  }
+  /* ... */
 
   // Or method injection. The @Optional decorator injects "T | undefined".
   protected withSecretStore(@Optional(SecretStore) store: SecretStore | undefined): void {
