@@ -2,25 +2,25 @@ import { invariant } from "./invariant";
 
 // @internal
 export class KeyedStack<K extends object, V> {
-  private readonly entries = new Array<{ key: K; value: V }>();
-  private readonly keys = new WeakSet<K>();
+  private readonly myEntries = new Array<{ key: K; value: V }>();
+  private readonly myKeys = new WeakSet<K>();
 
   has(key: K): boolean {
-    return this.keys.has(key);
+    return this.myKeys.has(key);
   }
 
   peek(): V | undefined {
-    const entry = this.entries.at(-1);
+    const entry = this.myEntries.at(-1);
     return entry?.value;
   }
 
   push(key: K, value: V): () => void {
     invariant(!this.has(key));
-    this.keys.add(key);
-    this.entries.push({ key, value });
+    this.myKeys.add(key);
+    this.myEntries.push({ key, value });
     return () => {
-      this.entries.pop();
-      this.keys.delete(key);
+      this.myEntries.pop();
+      this.myKeys.delete(key);
     };
   }
 }
