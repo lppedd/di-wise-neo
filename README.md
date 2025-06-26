@@ -18,6 +18,7 @@
 - [Installation](#installation)
 - [Ergonomics](#ergonomics)
 - [Quickstart](#quickstart)
+- [Container scopes](#container-scopes)
 - [Credits](#credits)
 - [License](#license)
 
@@ -147,6 +148,38 @@ const registrar = container.resolve(ContributionRegistrar);
 registrar.registerCommand("my.command", () => { console.log("hey!"); });
 ```
 
+## Container scopes
+
+The [Container][source-container] supports four **scope** types that determine how and when
+values are cached and reused.
+
+### Inherited
+
+Inherits the scope from the requesting (dependent) token.  
+If there is no dependent (i.e., during top-level resolution), it behaves like **Transient**.
+
+### Transient
+
+Creates a new value every time the dependency is resolved, which means values are never cached.
+
+- a class registered via `ClassProvider` is instantiated on each resolution
+- a factory function registered via `FactoryProvider` is invoked on each resolution
+- a value registered via `ValueProvider` is always returned as-is
+
+### Resolution
+
+Creates and caches a single value per resolution graph.  
+The same value is reused during a single resolution request, but a new one is created
+for each separate request.
+
+### Container
+
+Creates and caches a single value per container.  
+If the value is not found in the current container, it is looked up in the parent container,
+and so on.
+
+It effectively behaves like a **singleton** scope, but allows container-specific overrides.
+
 ## Credits
 
 **di-wise-neo** is a fork of [di-wise][di-wise].  
@@ -168,3 +201,4 @@ All credits to the original author for focusing on a clean architecture and on c
 [di-wise]: https://github.com/exuanbo/di-wise
 [reflect-metadata]: https://github.com/microsoft/reflect-metadata
 [esbuild-issue]: https://github.com/evanw/esbuild/issues/257
+[source-container]: https://github.com/lppedd/di-wise-neo/blob/main/src/container.ts#L29
