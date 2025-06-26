@@ -7,6 +7,7 @@ import {
   AutoRegister,
   Build,
   createContainer,
+  createType,
   forwardRef,
   Inject,
   inject,
@@ -16,8 +17,7 @@ import {
   Optional,
   OptionalAll,
   Scope,
-  Scoped,
-  Type
+  Scoped
 } from "..";
 import { useInjectionContext } from "../injectionContext";
 import { optional } from "../optional";
@@ -50,7 +50,7 @@ describe("Container", () => {
       defaultScope: Scope.Container,
     });
 
-    const Env = Type<string>("Env");
+    const Env = createType<string>("Env");
     class Wizard {
       count = 0;
     }
@@ -111,10 +111,10 @@ describe("Container", () => {
   });
 
   it("should get primitive cached values", () => {
-    const Env = Type<string>("Env");
-    const Port = Type<number>("Port");
-    const Null = Type<null>("Null");
-    const Undefined = Type<undefined>("Undefined");
+    const Env = createType<string>("Env");
+    const Port = createType<number>("Port");
+    const Null = createType<null>("Null");
+    const Undefined = createType<undefined>("Undefined");
 
     container.register(Env, { useFactory: () => "" }, { scope: Scope.Container });
     container.register(Port, { useFactory: () => 0 }, { scope: Scope.Container });
@@ -154,8 +154,8 @@ describe("Container", () => {
   });
 
   it("should register all tokens", () => {
-    const Character = Type<{}>("Character");
-    const Dumbledore = Type<{}>("Dumbledore");
+    const Character = createType<{}>("Character");
+    const Dumbledore = createType<{}>("Dumbledore");
 
     @Injectable(Character, Dumbledore)
     @Scoped(Scope.Container)
@@ -174,8 +174,8 @@ describe("Container", () => {
   });
 
   it("should use the same provider for the same class", () => {
-    const Character = Type<{}>("Character");
-    const Hero = Type<{}>("Hero");
+    const Character = createType<{}>("Character");
+    const Hero = createType<{}>("Hero");
 
     class Wizard {}
 
@@ -231,7 +231,7 @@ describe("Container", () => {
   });
 
   it("should perform constructor injection with @Inject and @InjectAll", () => {
-    const Spell = Type<string>("Spell");
+    const Spell = createType<string>("Spell");
 
     @Scoped(Scope.Container)
     class Wizard {
@@ -259,7 +259,7 @@ describe("Container", () => {
   });
 
   it("should perform constructor injection with @Optional and @OptionalAll", () => {
-    const Spell = Type<string>("Spell");
+    const Spell = createType<string>("Spell");
 
     @Scoped(Scope.Container)
     class Wizard {
@@ -368,7 +368,7 @@ describe("Container", () => {
 
   it("should throw when @Inject is applied to static methods", () => {
     expect(() => {
-      const Wand = Type<string>("Wand");
+      const Wand = createType<string>("Wand");
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {
@@ -381,7 +381,7 @@ describe("Container", () => {
 
   it("should throw when @Optional is applied to static methods", () => {
     expect(() => {
-      const Wand = Type<string>("Wand");
+      const Wand = createType<string>("Wand");
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {
@@ -394,7 +394,7 @@ describe("Container", () => {
 
   it("should throw when @InjectAll is applied to static methods", () => {
     expect(() => {
-      const Wand = Type<string>("Wand");
+      const Wand = createType<string>("Wand");
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {
@@ -407,7 +407,7 @@ describe("Container", () => {
 
   it("should throw when @OptionalAll is applied to static methods", () => {
     expect(() => {
-      const Wand = Type<string>("Wand");
+      const Wand = createType<string>("Wand");
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {
@@ -529,7 +529,7 @@ describe("Container", () => {
   });
 
   it("should unregister tokens", () => {
-    const Env = Type<string>("Env");
+    const Env = createType<string>("Env");
 
     @Scoped(Scope.Container)
     class Product {
@@ -570,7 +570,7 @@ describe("Container", () => {
   });
 
   it("should throw error when the token is not registered", () => {
-    const Env = Type<string>("Env");
+    const Env = createType<string>("Env");
 
     expect(() => container.resolve(Env)).toThrowErrorMatchingInlineSnapshot(
       `[Error: [di-wise-neo] unregistered token Type<Env>]`,
@@ -582,7 +582,7 @@ describe("Container", () => {
   });
 
   it("should resolve all tokens", () => {
-    const Character = Type<{ name: string }>("Person");
+    const Character = createType<{ name: string }>("Person");
 
     @Injectable(Character)
     class Wizard {
@@ -596,7 +596,7 @@ describe("Container", () => {
       name = "Witch";
     }
 
-    const Person = Type<{ name: string }>("Character");
+    const Person = createType<{ name: string }>("Character");
 
     container.register(Wizard);
     container.register(Witch);
@@ -630,7 +630,7 @@ describe("Container", () => {
   it("should resolve existing providers", () => {
     @Scoped(Scope.Container)
     class WizardImpl {}
-    const Wizard = Type<WizardImpl>("Wizard");
+    const Wizard = createType<WizardImpl>("Wizard");
 
     container.register(WizardImpl);
 
@@ -682,7 +682,7 @@ describe("Container", () => {
       dep = inject(Wand);
     }
 
-    const Character = Type<Wizard>("Character");
+    const Character = createType<Wizard>("Character");
 
     container.register(Wand);
     container.register(Wizard);
@@ -699,7 +699,7 @@ describe("Container", () => {
   it("should resolve factory providers", () => {
     class WizardImpl {}
 
-    const Wizard = Type<WizardImpl>("Wizard");
+    const Wizard = createType<WizardImpl>("Wizard");
 
     container.register(Wizard, { useFactory: () => new WizardImpl() });
     expect(container.resolve(Wizard)).toBeInstanceOf(WizardImpl);
@@ -780,13 +780,13 @@ describe("Container", () => {
     }
 
     const container = createContainer();
-    const wizardToken = Type<Wizard>("SecondaryWizard");
+    const wizardToken = createType<Wizard>("SecondaryWizard");
     container.register(wizardToken, { useFactory: () => inject(Wizard) }, { scope: Scope.Container });
     container.register(Wizard);
     container.register(Wand);
 
     const value = new Wand();
-    const valueToken = Type<Wand>("ValueWand");
+    const valueToken = createType<Wand>("ValueWand");
     container.register(valueToken, { useValue: value });
 
     const wizardInstance = container.resolve(Wizard);

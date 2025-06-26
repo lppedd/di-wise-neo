@@ -1,7 +1,7 @@
 import { assert } from "./errors";
 import type { FactoryProvider, Provider } from "./provider";
 import { Scope } from "./scope";
-import { type Constructor, type Token, Type } from "./token";
+import { type Constructor, createType, type Token, type Type } from "./token";
 import type { TokenRef } from "./tokensRef";
 import { getTypeName } from "./utils/typeName";
 import type { ValueRef } from "./valueRef";
@@ -145,7 +145,7 @@ export function isBuilder(provider: Provider): boolean {
  * @__NO_SIDE_EFFECTS__
  */
 export function Build<Value>(factory: (...args: []) => Value): Type<Value> {
-  const token = Type<Value>(`Build<${getTypeName(factory)}>`);
+  const token = createType<Value>(`Build<${getTypeName(factory)}>`);
   const provider: FactoryProvider<Value> = {
     useFactory: factory,
   };

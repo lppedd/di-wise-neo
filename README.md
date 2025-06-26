@@ -220,7 +220,7 @@ Alternatively, use an explicit `ClassProvider` object - useful when registering
 an interface or abstract type:
 
 ```ts
-const Store = Type<Store>("Store");
+const Store = createType<Store>("Store");
 container.register(Store, {
   useClass: SecretStore, // class SecretStore implements Store
 });
@@ -234,7 +234,7 @@ caching it according to the configured scope.
 A lazily computed value can be registered using a factory function:
 
 ```ts
-const Env = Type<string>("Env")
+const Env = createType<string>("Env")
 container.register(Env, {
   useFactory: () => isNode() ? "Node.js" : "browser",
 });
@@ -248,7 +248,7 @@ according to the configured scope.
 A static value - always taken as-is and unaffected by scopes - can be registered using:
 
 ```ts
-const PID = Type<number>("PID");
+const PID = createType<number>("PID");
 const processId = spawnProcess();
 container.register(PID, {
   useValue: processId,
@@ -264,7 +264,7 @@ Registers an alias to another token, allowing multiple identifiers to resolve to
 Using the previous `PID` example, we can register a `TaskID` alias:
 
 ```ts
-const TaskID = Type<number>("TaskID");
+const TaskID = createType<number>("TaskID");
 container.register(TaskID, {
   useExisting: PID,
 });

@@ -12,8 +12,8 @@ export interface Type<A> {
    *
    * @example
    * ```ts
-   * const A = Type<A>("A");
-   * const B = Type<B>("B");
+   * const A = createType<A>("A");
+   * const B = createType<B>("B");
    *
    * A.inter("I", B); // => Type<A & B>
    * ```
@@ -25,8 +25,8 @@ export interface Type<A> {
    *
    * @example
    * ```ts
-   * const A = Type<A>("A");
-   * const B = Type<B>("B");
+   * const A = createType<A>("A");
+   * const B = createType<B>("B");
    *
    * A.union("U", B); // => Type<A | B>
    * ```
@@ -60,16 +60,16 @@ export type Tokens<Value = any> = [Token<Value>, ...Token<Value>[]];
  *
  * @example
  * ```ts
- * const Spell = Type<Spell>("Spell");
+ * const Spell = createType<Spell>("Spell");
  * ```
  *
  * @__NO_SIDE_EFFECTS__
  */
-export function Type<T>(typeName: string): Type<T> {
+export function createType<T>(typeName: string): Type<T> {
   const type = {
     name: `Type<${typeName}>`,
-    inter: Type,
-    union: Type,
+    inter: createType,
+    union: createType,
     toString(): string {
       return type.name;
     },
