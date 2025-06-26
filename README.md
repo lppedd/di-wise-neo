@@ -8,13 +8,13 @@
 
 > [!NOTE]
 >
-> **di-wise-neo** is a fork of [di-wise][di-wise] with the goal of providing
-> a simpler yet richer API, also thanks to TypeScript's experimental decorators.
-> Shout out to [@exuanbo](https://github.com/exuanbo) for the strong foundations!
+> **di-wise-neo** is a fork of [di-wise][di-wise], aiming to provide a simpler yet more powerful API,
+> in part thanks to TypeScript's experimental decorators. Shout out to [@exuanbo](https://github.com/exuanbo)
+> for the strong foundations!
 
 ## Table of Contents
 
-- [Why forking](#why-forking)
+- [Why yet another library](#why-yet-another-library)
 - [Installation](#installation)
 - [Ergonomics](#ergonomics)
 - [Quickstart](#quickstart)
@@ -22,11 +22,9 @@
 - [Token registration](#token-registration)
 - [Function-based injection](#function-based-injection)
 - [Decorator-based injection](#decorator-based-injection)
-- [Testing](#testing)
-- [Credits](#credits)
-- [License](#license)
+- [Testing support](#testing-support)
 
-## Why forking
+## Why yet another library
 
 I've been developing VS Code extensions for a while as part of my daily work.
 It's enjoyable work! However, extensions always reach that tipping point where
@@ -426,7 +424,7 @@ export class ExtensionContext {
 }
 ```
 
-## Testing
+## Testing support
 
 Testing is an important part of software development, and dependency injection is meant to make it easier.  
 The **di-wise-neo** container API exposes methods to more easily integrate with testing scenarios.
