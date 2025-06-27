@@ -23,7 +23,7 @@
 - [Why yet another library](#why-yet-another-library)
 - [Installation](#installation)
 - [API reference](#api-reference)
-- [Ergonomics](#ergonomics)
+- [Ergonomics & Requirements](#ergonomics)
 - [Quickstart](#quickstart)
 - [Container scopes](#container-scopes)
 - [Token registration](#token-registration)
@@ -102,6 +102,11 @@ You can find the complete API reference at https://lppedd.github.io/di-wise-neo
 - Does **not** depend on other libraries
 - Does **not** use [reflect-metadata](https://www.npmjs.com/package/reflect-metadata) to drive decorators
 - **Can** be used from JavaScript with function-based injection
+
+### Requirements
+
+- When using decorator-based injection, `experimentalDecorators` must be enabled in your `tsconfig.json` file
+- The JavaScript environment must support features such as `Array.flat`, `WeakSet`, `WeakMap`, `Set`, and `Map`
 
 ## Quickstart
 
