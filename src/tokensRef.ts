@@ -10,10 +10,17 @@ export interface TokenRef<Value = any> {
 }
 
 /**
- * Allows referencing a token that is declared later in the file by wrapping it in a function.
+ * Allows referencing tokens that are declared later in the file by wrapping them
+ * in a lazily evaluated function.
  */
 export function forwardRef<Value>(token: () => Tokens<Value>): TokensRef<Value>;
+
+/**
+ * Allows referencing a token that is declared later in the file by wrapping it
+ * in a lazily evaluated function.
+ */
 export function forwardRef<Value>(token: () => Token<Value>): TokenRef<Value>;
+
 export function forwardRef<Value>(
   token: () => Token<Value> | Tokens<Value>,
 ): TokensRef<Value> & TokenRef<Value> {

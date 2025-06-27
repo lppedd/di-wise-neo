@@ -8,13 +8,6 @@ export interface ClassProvider<Instance extends object> {
 }
 
 /**
- * Provides a value for a token via another existing token.
- */
-export interface ExistingProvider<Value> {
-  readonly useExisting: Token<Value>;
-}
-
-/**
  * Provides a value for a token via a factory function.
  *
  * The factory function runs inside the injection context
@@ -25,10 +18,19 @@ export interface FactoryProvider<Value> {
 }
 
 /**
- * Provides a direct - already constructed - value for a token.
+ * Provides a static - already constructed - value for a token.
  */
 export interface ValueProvider<T> {
   readonly useValue: T;
+}
+
+/**
+ * Aliases another registered token.
+ *
+ * Resolving this token will return the value of the aliased one.
+ */
+export interface ExistingProvider<Value> {
+  readonly useExisting: Token<Value>;
 }
 
 /**
@@ -36,18 +38,13 @@ export interface ValueProvider<T> {
  */
 export type Provider<Value = any> =
   | ClassProvider<Value & object>
-  | ExistingProvider<Value>
   | FactoryProvider<Value>
-  | ValueProvider<Value>;
+  | ValueProvider<Value>
+  | ExistingProvider<Value>;
 
 // @internal
 export function isClassProvider<T>(provider: Provider<T>): provider is ClassProvider<T & object> {
   return "useClass" in provider;
-}
-
-// @internal
-export function isExistingProvider<T>(provider: Provider<T>): provider is ExistingProvider<T> {
-  return "useExisting" in provider;
 }
 
 // @internal
@@ -58,4 +55,9 @@ export function isFactoryProvider<T>(provider: Provider<T>): provider is Factory
 // @internal
 export function isValueProvider<T>(provider: Provider<T>): provider is ValueProvider<T> {
   return "useValue" in provider;
+}
+
+// @internal
+export function isExistingProvider<T>(provider: Provider<T>): provider is ExistingProvider<T> {
+  return "useExisting" in provider;
 }

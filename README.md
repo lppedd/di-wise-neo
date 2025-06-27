@@ -93,9 +93,10 @@ pnpm add @lppedd/di-wise-neo
 ```sh
 yarn add @lppedd/di-wise-neo
 ```
+
 ## API reference
 
-You can find the complete API reference at https://lppedd.github.io/di-wise-neo
+You can find the complete API reference at [lppedd.github.io/di-wise-neo](https://lppedd.github.io/di-wise-neo)
 
 ## Ergonomics
 

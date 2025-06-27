@@ -3,12 +3,12 @@
  */
 export interface Type<A> {
   /**
-   * Name of the type.
+   * The name of the type.
    */
   readonly name: string;
 
   /**
-   * Create an intersection type from another type.
+   * Creates an intersection type from another type.
    *
    * @example
    * ```ts
@@ -21,7 +21,7 @@ export interface Type<A> {
   inter<B>(typeName: string, B: Type<B>): Type<A & B>;
 
   /**
-   * Create a union type from another type.
+   * Creates a union type from another type.
    *
    * @example
    * ```ts
@@ -56,11 +56,11 @@ export type Token<Value = any> = [Value] extends [object] // Avoids distributive
 export type Tokens<Value = any> = [Token<Value>, ...Token<Value>[]];
 
 /**
- * Create a type token.
+ * Creates a type token.
  *
  * @example
  * ```ts
- * const Spell = createType<Spell>("Spell");
+ * const ISpell = createType<Spell>("Spell");
  * ```
  *
  * @__NO_SIDE_EFFECTS__

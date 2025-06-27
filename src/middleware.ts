@@ -5,7 +5,7 @@ import type { Container } from "./container";
  */
 export interface MiddlewareComposer {
   /**
-   * Add a middleware function to the composer.
+   * Adds a middleware function to the composer.
    */
   use<MethodKey extends keyof Container>(
     key: MethodKey,
@@ -38,7 +38,7 @@ export interface Middleware {
 }
 
 /**
- * Apply middleware functions to a container.
+ * Applies middleware functions to a container.
  *
  * Middlewares are applied in array order, but execute in reverse order.
  *
