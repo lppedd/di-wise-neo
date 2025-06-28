@@ -1,16 +1,16 @@
 <!--suppress HtmlDeprecatedAttribute -->
+<h1 align="center">di-wise-neo</h1>
+<p align="center">Lightweight, type-safe, flexible dependency injection library for TypeScript and JavaScript</p>
 <div align="center">
-  <h1>di-wise-neo</h1>
-  <p>Lightweight, type-safe, flexible dependency injection library for TypeScript and JavaScript</p>
 
 [![test](https://img.shields.io/github/actions/workflow/status/lppedd/di-wise-neo/test.yml.svg?branch=main)](https://github.com/lppedd/di-wise-neo/actions/workflows/test.yml)
 [![npm](https://img.shields.io/npm/v/@lppedd/di-wise-neo?color=%23de1f1f&logo=npm)](https://www.npmjs.com/package/@lppedd/di-wise-neo)
 [![npm gzipped size](https://img.shields.io/bundlejs/size/@lppedd/di-wise-neo)](https://bundlejs.com/?q=@lppedd/di-wise-neo)
 [![license](https://img.shields.io/github/license/lppedd/di-wise-neo?color=blue)](https://github.com/lppedd/di-wise-neo/blob/main/LICENSE)
 
-  <img src="./.github/images/neo-wall.jpg" alt="di-wise-neo" style="border: 3px solid black; border-radius: 15px;" />
-  <div><sub>yes, I like The Matrix</sub></div>
 </div>
+<img src="./.github/images/neo-wall.jpg" alt="di-wise-neo" style="border: 3px solid black; border-radius: 15px;" />
+<div><sub>yes, I like The Matrix</sub></div>
 
 > [!NOTE]
 >
