@@ -10,8 +10,8 @@ export interface ClassProvider<Instance extends object> {
 /**
  * Provides a value for a token via a factory function.
  *
- * The factory function runs inside the injection context
- * and can thus access dependencies via {@link inject}.
+ * The factory function runs inside the injection context and can
+ * thus access dependencies via {@link inject}-like functions.
  */
 export interface FactoryProvider<Value> {
   readonly useFactory: (...args: []) => Value;

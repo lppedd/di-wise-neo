@@ -694,15 +694,54 @@ describe("Container", () => {
         [cause] circular dependency detected]
       `,
     );
+
+    container.resetRegistry();
+    container.registerClass(Wand);
+    container.registerClass(Wizard);
+    container.registerAlias(Wizard, [Character]);
+
+    expect(() => container.resolveAll(Character)).toThrowErrorMatchingInlineSnapshot(
+      `
+      [Error: [di-wise-neo] token resolution error encountered while resolving Type<Character>
+        [cause] circular dependency detected]
+      `,
+    );
+  });
+
+  it("should resolve class providers", () => {
+    class WizardImpl {}
+    const Wizard = createType<WizardImpl>("Wizard");
+
+    container.register(Wizard, { useClass: WizardImpl });
+    expect(container.resolve(Wizard)).toBeInstanceOf(WizardImpl);
+
+    container.resetRegistry();
+    container.registerClass(Wizard, WizardImpl);
+    expect(container.resolve(Wizard)).toBeInstanceOf(WizardImpl);
   });
 
   it("should resolve factory providers", () => {
     class WizardImpl {}
-
+    class WizardImpl2 {}
     const Wizard = createType<WizardImpl>("Wizard");
 
     container.register(Wizard, { useFactory: () => new WizardImpl() });
     expect(container.resolve(Wizard)).toBeInstanceOf(WizardImpl);
+
+    container.resetRegistry();
+    container.registerFactory(Wizard, () => new WizardImpl2());
+    expect(container.resolve(Wizard)).toBeInstanceOf(WizardImpl2);
+  });
+
+  it("should resolve value providers", () => {
+    const Env = createType<string>("Env");
+
+    container.register(Env, { useValue: "development" });
+    expect(container.resolve(Env)).toBe("development");
+
+    container.resetRegistry();
+    container.registerValue(Env, "production");
+    expect(container.resolve(Env)).toBe("production");
   });
 
   it("should switch context", () => {

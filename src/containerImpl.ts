@@ -14,7 +14,7 @@ import {
   type Provider,
 } from "./provider";
 import { Scope } from "./scope";
-import { type Constructor, isConstructor, type Token } from "./token";
+import { type Constructor, isConstructor, type Token, type Tokens } from "./token";
 import { isBuilder, type Registration, type RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 import { isDisposable } from "./utils/disposable";
 
@@ -121,7 +121,41 @@ export class ContainerImpl implements Container {
     return this.myTokenRegistry.get(token) !== undefined;
   }
 
-  register<T>(...args: [Constructor<T & object>] | [Token<T>, Provider<T>, RegistrationOptions?]): this {
+  registerClass<T extends object, V extends T>(
+    token: Token<T>,
+    Class?: Constructor<V>,
+    options?: RegistrationOptions,
+  ): void {
+    // This mess will go away once/if we remove the register method
+    // in favor of the multiple specialized ones
+    if (Class) {
+      const ctor = (Class ?? token) as Constructor<any>;
+      this.register(token, { useClass: ctor }, options);
+    } else {
+      this.register(token as Constructor<any>);
+    }
+  }
+
+  registerFactory<T, V extends T>(
+    token: Token<T>,
+    factory: (...args: []) => V,
+    options?: RegistrationOptions,
+  ): void {
+    this.register(token, { useFactory: factory }, options);
+  }
+
+  registerValue<T, V extends T>(token: Token<T>, value: V): void {
+    this.register(token, { useValue: value });
+  }
+
+  registerAlias<T, V extends T>(targetToken: Token<V>, aliasTokens: Tokens<T>): void {
+    // De-duplicate tokens
+    for (const alias of new Set(aliasTokens)) {
+      this.register(alias, { useExisting: targetToken });
+    }
+  }
+
+  register<T>(...args: [Constructor<T & object>] | [Token<T>, Provider<T>, RegistrationOptions?]): Container {
     this.checkDisposed();
 
     if (args.length == 1) {

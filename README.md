@@ -250,7 +250,7 @@ according to the configured scope.
 
 ### ValueProvider
 
-A static value - always taken as-is and unaffected by scopes - can be registered using:
+A fixed value - always taken as-is and unaffected by scopes - can be registered using:
 
 ```ts
 const PID = createType<number>("PID");
