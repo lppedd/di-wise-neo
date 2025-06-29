@@ -21,16 +21,15 @@ import { isDisposable } from "./utils/disposable";
 /**
  * The default implementation of a di-wise-neo {@link Container}.
  */
-export class DefaultContainer implements Container {
-  private readonly myChildren: Set<DefaultContainer> = new Set();
+export class ContainerImpl implements Container {
+  private readonly myParent?: ContainerImpl;
+  private readonly myChildren: Set<ContainerImpl> = new Set();
   private readonly myOptions: ContainerOptions;
   private readonly myTokenRegistry: TokenRegistry;
   private myDisposed: boolean = false;
 
-  constructor(
-    private readonly myParent: DefaultContainer | undefined,
-    options: Partial<ContainerOptions>,
-  ) {
+  constructor(parent: ContainerImpl | undefined, options: Partial<ContainerOptions>) {
+    this.myParent = parent;
     this.myOptions = {
       autoRegister: false,
       defaultScope: Scope.Inherited,
@@ -60,7 +59,7 @@ export class DefaultContainer implements Container {
 
   createChild(options?: Partial<ContainerOptions>): Container {
     this.checkDisposed();
-    const container = new DefaultContainer(this, {
+    const container = new ContainerImpl(this, {
       ...this.myOptions,
       ...options,
     });

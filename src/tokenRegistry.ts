@@ -44,9 +44,12 @@ export interface Registration<T = any> {
 
 // @internal
 export class TokenRegistry {
+  private readonly myParent?: TokenRegistry;
   private readonly myMap = new Map<Token, Registration[]>();
 
-  constructor(private readonly parent: TokenRegistry | undefined) {}
+  constructor(parent: TokenRegistry | undefined) {
+    this.myParent = parent;
+  }
 
   get<T>(token: Token<T>): Registration<T> | undefined {
     // To clarify, at(-1) means we take the last added registration for this token
@@ -116,7 +119,7 @@ export class TokenRegistry {
 
   private getAllFromParent<T>(token: Token<T>): Registration<T>[] | undefined {
     const registrations = this.myMap.get(token);
-    return registrations || this.parent?.getAllFromParent(token);
+    return registrations || this.myParent?.getAllFromParent(token);
   }
 }
 

@@ -1,4 +1,4 @@
-import { DefaultContainer } from "./defaultContainer";
+import { ContainerImpl } from "./containerImpl";
 import type { ClassProvider, ExistingProvider, FactoryProvider, ValueProvider } from "./provider";
 import { Scope } from "./scope";
 import type { Constructor, Token } from "./token";
@@ -288,5 +288,5 @@ export function createContainer(
     defaultScope: Scope.Inherited,
   },
 ): Container {
-  return new DefaultContainer(undefined, options);
+  return new ContainerImpl(undefined, options);
 }
