@@ -122,64 +122,51 @@ export class DefaultContainer implements Container {
     return this.myTokenRegistry.get(token) !== undefined;
   }
 
-  register<T>(...args: [Constructor<T & object>] | [Token<T>, Provider<T>, RegistrationOptions?]): this {
+  registerClass<T extends object, V extends T>(
+    token: Constructor<T> | Token<T>,
+    Class?: Constructor<V>,
+    options?: RegistrationOptions,
+  ): void {
     this.checkDisposed();
 
-    if (args.length == 1) {
-      const Class = args[0];
-      const metadata = getMetadata(Class);
-
-      // Register the class itself
-      this.myTokenRegistry.set(Class, {
-        // The provider is of type ClassProvider, initialized by getMetadata
-        provider: metadata.provider,
-        options: {
-          scope: metadata.scope,
-        },
-        dependencies: metadata.dependencies,
-      });
-
-      // Register the additional tokens specified via class decorators.
-      // These tokens will point to the original Class token and will have the same scope.
-      for (const token of metadata.tokensRef.getRefTokens()) {
-        this.myTokenRegistry.set(token, {
-          provider: {
-            useExisting: Class,
-          },
-        });
-      }
+    if (Class) {
+      this.registerTokenToClass(token, Class, options);
     } else {
-      const [token, provider, options] = args;
-
-      if (isClassProvider(provider)) {
-        const Class = provider.useClass;
-        const metadata = getMetadata(Class);
-        this.myTokenRegistry.set(token, {
-          provider: metadata.provider,
-          options: {
-            // The explicit registration options override what is specified
-            // via class decorators (e.g., @Scoped)
-            scope: metadata.scope,
-            ...options,
-          },
-          dependencies: metadata.dependencies,
-        });
-      } else {
-        if (isExistingProvider(provider)) {
-          assert(
-            token !== provider.useExisting,
-            `the useExisting token ${token.name} cannot be the same as the token being registered`,
-          );
-        }
-
-        this.myTokenRegistry.set(token, {
-          provider: provider,
-          options: options,
-        });
-      }
+      assert(isConstructor(token), `internal error: token should be a constructor`);
+      this.registerCtor(token);
     }
+  }
 
-    return this;
+  registerFactory<T, V extends T>(token: Token<T>, factory: () => V, options?: RegistrationOptions): void {
+    this.checkDisposed();
+    this.myTokenRegistry.set(token, {
+      options: options,
+      provider: {
+        useFactory: factory,
+      },
+    });
+  }
+
+  registerValue<T, V extends T>(token: Token<T>, value: V): void {
+    this.checkDisposed();
+    this.myTokenRegistry.set(token, {
+      provider: {
+        useValue: value,
+      },
+    });
+  }
+
+  registerAlias<T, V extends T>(token: Token<T>, aliasedToken: Token<V>): void {
+    this.checkDisposed();
+
+    const same = token === aliasedToken;
+    assert(!same, `the aliased token ${token.name} cannot be the same as the token being registered`);
+
+    this.myTokenRegistry.set(token, {
+      provider: {
+        useExisting: aliasedToken,
+      },
+    });
   }
 
   unregister<T>(token: Token<T>): T[] {
@@ -271,6 +258,48 @@ export class DefaultContainer implements Container {
     disposedRefs.clear();
   }
 
+  private registerTokenToClass<V extends object, T>(
+    token: Token<T>,
+    Class: Constructor<V>,
+    options?: RegistrationOptions,
+  ): void {
+    const metadata = getMetadata(Class);
+    this.myTokenRegistry.set(token, {
+      provider: metadata.provider,
+      options: {
+        // The explicit registration options override what is specified
+        // via class decorators (e.g., @Scoped)
+        scope: metadata.scope,
+        ...options,
+      },
+      dependencies: metadata.dependencies,
+    });
+  }
+
+  private registerCtor<T extends object>(Class: Constructor<T>): void {
+    const metadata = getMetadata(Class);
+
+    // Register the class itself
+    this.myTokenRegistry.set(Class, {
+      // The provider is of type ClassProvider, initialized by getMetadata
+      provider: metadata.provider,
+      options: {
+        scope: metadata.scope,
+      },
+      dependencies: metadata.dependencies,
+    });
+
+    // Register the additional tokens specified via class decorators.
+    // These tokens will point to the original Class token and will have the same scope.
+    for (const aliasToken of metadata.tokensRef.getRefTokens()) {
+      this.myTokenRegistry.set(aliasToken, {
+        provider: {
+          useExisting: Class,
+        },
+      });
+    }
+  }
+
   private resolveRegistration<T>(token: Token<T>, registration: Registration<T>): T {
     let currRegistration: Registration<T> | undefined = registration;
     let currProvider = currRegistration.provider;
@@ -303,7 +332,7 @@ export class DefaultContainer implements Container {
     const metadata = getMetadata(Class);
 
     if (metadata.autoRegister ?? this.myOptions.autoRegister) {
-      this.register(Class);
+      this.registerCtor(Class);
       return (this as Container).resolve(Class);
     }
 

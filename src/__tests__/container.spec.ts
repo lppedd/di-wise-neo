@@ -55,8 +55,8 @@ describe("Container", () => {
       count = 0;
     }
 
-    parent.register(Env, { useValue: "production" });
-    parent.register(Wizard);
+    parent.registerValue(Env, "production");
+    parent.registerClass(Wizard);
 
     const child = parent.createChild();
     expect(child.isRegistered(Env)).toBe(true);
@@ -78,8 +78,8 @@ describe("Container", () => {
     class Wizard {}
 
     // Purposedly register two Wizard(s)
-    container.register(Wizard);
-    container.register(Wizard);
+    container.registerClass(Wizard);
+    container.registerClass(Wizard);
 
     // Resolve all Wizard(s) so the values are cached
     const wizards = container.resolveAll(Wizard);
@@ -116,10 +116,10 @@ describe("Container", () => {
     const Null = createType<null>("Null");
     const Undefined = createType<undefined>("Undefined");
 
-    container.register(Env, { useFactory: () => "" }, { scope: Scope.Container });
-    container.register(Port, { useFactory: () => 0 }, { scope: Scope.Container });
-    container.register(Null, { useFactory: () => null }, { scope: Scope.Container });
-    container.register(Undefined, { useFactory: () => undefined }, { scope: Scope.Container });
+    container.registerFactory(Env, () => "", { scope: Scope.Container });
+    container.registerFactory(Port, () => 0, { scope: Scope.Container });
+    container.registerFactory(Null, () => null, { scope: Scope.Container });
+    container.registerFactory(Undefined, () => undefined, { scope: Scope.Container });
 
     expect(container.resolve(Env)).toBe("");
     expect(container.resolve(Port)).toBe(0);
@@ -161,7 +161,7 @@ describe("Container", () => {
     @Scoped(Scope.Container)
     class Wizard {}
 
-    container.register(Wizard);
+    container.registerClass(Wizard);
 
     expect(container.isRegistered(Character)).toBe(true);
     expect(container.isRegistered(Dumbledore)).toBe(true);
@@ -179,8 +179,8 @@ describe("Container", () => {
 
     class Wizard {}
 
-    container.register(Character, { useClass: Wizard });
-    container.register(Hero, { useClass: Wizard });
+    container.registerClass(Character, Wizard);
+    container.registerClass(Hero, Wizard);
 
     const characterRegistration = container.registry.get(Character)!;
     const heroRegistration = container.registry.get(Hero)!;
@@ -241,9 +241,9 @@ describe("Container", () => {
       ) {}
     }
 
-    container.register(Spell, { useFactory: () => "spell one" });
-    container.register(Spell, { useFactory: () => "spell two" });
-    container.register(Wizard);
+    container.registerFactory(Spell, () => "spell one");
+    container.registerFactory(Spell, () => "spell two");
+    container.registerClass(Wizard);
 
     expect(container.isRegistered(Spell)).toBe(true);
     expect(container.isRegistered(Wizard)).toBe(true);
@@ -269,7 +269,7 @@ describe("Container", () => {
       ) {}
     }
 
-    container.register(Wizard);
+    container.registerClass(Wizard);
 
     expect(container.isRegistered(Spell)).toBe(false);
     expect(container.isRegistered(Wizard)).toBe(true);
@@ -310,10 +310,10 @@ describe("Container", () => {
 
     const wandOne = new Wand("one");
     const wandTwo = new Wand("two");
-    container.register(Castle);
-    container.register(Wand, { useValue: wandOne });
-    container.register(Wand, { useValue: wandTwo });
-    container.register(Wizard);
+    container.registerClass(Castle);
+    container.registerValue(Wand, wandOne);
+    container.registerValue(Wand, wandTwo);
+    container.registerClass(Wizard);
 
     expect(container.isRegistered(Castle)).toBe(true);
     expect(container.isRegistered(Wand)).toBe(true);
@@ -352,8 +352,8 @@ describe("Container", () => {
     }
 
     const wand = new Wand("one");
-    container.register(Wand, { useValue: wand });
-    container.register(Wizard);
+    container.registerValue(Wand, wand);
+    container.registerClass(Wizard);
 
     expect(container.isRegistered(Castle)).toBe(false);
     expect(container.isRegistered(Wand)).toBe(true);
@@ -521,8 +521,8 @@ describe("Container", () => {
     @Scoped(Scope.Container)
     class Wizard {}
 
-    container.register(Wizard, { useClass: Wizard });
-    container.register(Wizard, { useClass: Wizard }, { scope: Scope.Transient });
+    container.registerClass(Wizard, Wizard);
+    container.registerClass(Wizard, Wizard, { scope: Scope.Transient });
 
     const registration = container.registry.get(Wizard)!;
     expect(registration.options?.scope).toBe(Scope.Transient);
@@ -539,8 +539,8 @@ describe("Container", () => {
     // Unregistering an unregistered token should simply return an empty array
     expect(container.unregister(Env)).toEqual([]);
 
-    container.register(Env, { useValue: "production" });
-    container.register(Product, { useClass: Product });
+    container.registerValue(Env, "production");
+    container.registerClass(Product, Product);
 
     expect(container.isRegistered(Env)).toBe(true);
     expect(container.isRegistered(Product)).toBe(true);
@@ -598,8 +598,8 @@ describe("Container", () => {
 
     const Person = createType<{ name: string }>("Character");
 
-    container.register(Wizard);
-    container.register(Witch);
+    container.registerClass(Wizard);
+    container.registerClass(Witch);
 
     const persons = container.resolveAll(Person);
     expect(persons).toHaveLength(1);
@@ -632,15 +632,15 @@ describe("Container", () => {
     class WizardImpl {}
     const Wizard = createType<WizardImpl>("Wizard");
 
-    container.register(WizardImpl);
+    container.registerClass(WizardImpl);
 
     // We should not be able to register a token pointing to itself,
     // as it would cause a circular dependency error
-    expect(() => container.register(Wizard, { useExisting: Wizard })).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] the useExisting token Type<Wizard> cannot be the same as the token being registered]`,
+    expect(() => container.registerAlias(Wizard, Wizard)).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] the aliased token Type<Wizard> cannot be the same as the token being registered]`,
     );
 
-    container.register(Wizard, { useExisting: WizardImpl });
+    container.registerAlias(Wizard, WizardImpl);
     expect(container.resolve(WizardImpl)).toBe(container.resolve(Wizard));
   });
 
@@ -648,7 +648,7 @@ describe("Container", () => {
     class Registered {}
     class NotRegistered {}
 
-    container.register(Registered, { useExisting: NotRegistered });
+    container.registerAlias(Registered, NotRegistered);
 
     // When resolving a token using an ExistingProvider that points to an unregistered token,
     // the error should include the original cause
@@ -684,9 +684,9 @@ describe("Container", () => {
 
     const Character = createType<Wizard>("Character");
 
-    container.register(Wand);
-    container.register(Wizard);
-    container.register(Character, { useExisting: Wizard });
+    container.registerClass(Wand);
+    container.registerClass(Wizard);
+    container.registerAlias(Character, Wizard);
 
     expect(() => container.resolveAll(Character)).toThrowErrorMatchingInlineSnapshot(
       `
@@ -701,7 +701,7 @@ describe("Container", () => {
 
     const Wizard = createType<WizardImpl>("Wizard");
 
-    container.register(Wizard, { useFactory: () => new WizardImpl() });
+    container.registerFactory(Wizard, () => new WizardImpl());
     expect(container.resolve(Wizard)).toBeInstanceOf(WizardImpl);
   });
 
@@ -781,13 +781,13 @@ describe("Container", () => {
 
     const container = createContainer();
     const wizardToken = createType<Wizard>("SecondaryWizard");
-    container.register(wizardToken, { useFactory: () => inject(Wizard) }, { scope: Scope.Container });
-    container.register(Wizard);
-    container.register(Wand);
+    container.registerFactory(wizardToken, () => inject(Wizard), { scope: Scope.Container });
+    container.registerClass(Wizard);
+    container.registerClass(Wand);
 
     const value = new Wand();
     const valueToken = createType<Wand>("ValueWand");
-    container.register(valueToken, { useValue: value });
+    container.registerValue(valueToken, value);
 
     const wizardInstance = container.resolve(Wizard);
     expect(wizardInstance).toBeInstanceOf(Wizard);
@@ -795,7 +795,7 @@ describe("Container", () => {
     expect(wizardInstance).toBe(container.resolve(wizardToken));
 
     const child = container.createChild();
-    child.register(Wand);
+    child.registerClass(Wand);
 
     container.dispose();
 

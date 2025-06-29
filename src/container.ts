@@ -1,5 +1,4 @@
 import { DefaultContainer } from "./defaultContainer";
-import type { ClassProvider, ExistingProvider, FactoryProvider, ValueProvider } from "./provider";
 import { Scope } from "./scope";
 import type { Constructor, Token } from "./token";
 import type { RegistrationOptions, TokenRegistry } from "./tokenRegistry";
@@ -115,35 +114,25 @@ export interface Container {
    * are also registered as aliases. The scope is determined by the {@link Scoped}
    * decorator, if present.
    */
-  register<Instance extends object>(Class: Constructor<Instance>): this;
+  registerClass<Instance extends object>(Class: Constructor<Instance>): void;
 
   /**
    * Registers a {@link ClassProvider} with a token.
    */
-  register<Instance extends object, ProviderInstance extends Instance>(
+  registerClass<Instance extends object, ProvidedInstance extends Instance>(
     token: Token<Instance>,
-    provider: ClassProvider<ProviderInstance>,
+    Class: Constructor<ProvidedInstance>,
     options?: RegistrationOptions,
-  ): this;
+  ): void;
 
   /**
    * Registers a {@link FactoryProvider} with a token.
    */
-  register<Value, ProviderValue extends Value>(
+  registerFactory<Value, ProvidedValue extends Value>(
     token: Token<Value>,
-    provider: FactoryProvider<ProviderValue>,
+    factory: () => ProvidedValue,
     options?: RegistrationOptions,
-  ): this;
-
-  /**
-   * Registers an {@link ExistingProvider} with a token.
-   *
-   * The token will alias the one set in `useExisting`.
-   */
-  register<Value, ProviderValue extends Value>(
-    token: Token<Value>,
-    provider: ExistingProvider<ProviderValue>,
-  ): this;
+  ): void;
 
   /**
    * Registers a {@link ValueProvider} with a token.
@@ -151,10 +140,17 @@ export interface Container {
    * Values provided via `useValue` are never cached (scopes do not apply)
    * and are simply returned as-is.
    */
-  register<Value, ProviderValue extends Value>(
+  registerValue<Value, ProvidedValue extends Value>(token: Token<Value>, value: ProvidedValue): void;
+
+  /**
+   * Registers an {@link ExistingProvider} with a token.
+   *
+   * The token will alias the one set in `useExisting`.
+   */
+  registerAlias<Value, AliasedValue extends Value>(
     token: Token<Value>,
-    provider: ValueProvider<ProviderValue>,
-  ): this;
+    aliasedToken: Token<AliasedValue>,
+  ): void;
 
   /**
    * Removes all registrations for the given token from the container's internal registry.
