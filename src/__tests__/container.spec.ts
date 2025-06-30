@@ -8,6 +8,7 @@ import {
   build,
   createContainer,
   createType,
+  EagerInstantiate,
   forwardRef,
   Inject,
   inject,
@@ -608,6 +609,44 @@ describe("Container", () => {
     const characters = container.resolveAll(Character);
     expect(characters).toHaveLength(2);
     expect(characters.map(({ name }) => name)).toEqual(["Wizard", "Witch"]);
+  });
+
+  it("should instantiate container-scoped @EagerInstantiate classes", () => {
+    let isInstantiated = false;
+
+    @EagerInstantiate
+    @Scoped(Scope.Container)
+    class Wand {
+      constructor() {
+        isInstantiated = true;
+      }
+    }
+
+    container.registerClass(Wand);
+    expect(isInstantiated).toBe(true);
+
+    isInstantiated = false;
+    container.resetRegistry();
+    container.register(Wand, { useClass: Wand });
+    expect(isInstantiated).toBe(true);
+  });
+
+  it("should not instantiate non container-scoped @EagerInstantiate classes", () => {
+    let isInstantiated = false;
+
+    @EagerInstantiate
+    class Wizard {
+      constructor() {
+        isInstantiated = true;
+      }
+    }
+
+    container.registerClass(Wizard);
+    expect(isInstantiated).toBe(false);
+
+    container.resetRegistry();
+    container.register(Wizard, { useClass: Wizard });
+    expect(isInstantiated).toBe(false);
   });
 
   it("should resolve auto-registered classes", () => {

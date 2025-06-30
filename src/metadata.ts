@@ -6,6 +6,7 @@ import type { TokensRef } from "./tokensRef";
 
 // @internal
 export interface Metadata<This extends object = any> {
+  eagerInstantiate?: boolean;
   autoRegister?: boolean;
   scope?: Scope;
   tokensRef: TokensRef<This>;

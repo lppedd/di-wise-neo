@@ -161,16 +161,17 @@ export class ContainerImpl implements Container {
     if (args.length == 1) {
       const Class = args[0];
       const metadata = getMetadata(Class);
-
-      // Register the class itself
-      this.myTokenRegistry.set(Class, {
+      const registration: Registration = {
         // The provider is of type ClassProvider, initialized by getMetadata
         provider: metadata.provider,
         options: {
-          scope: metadata.scope,
+          scope: metadata.scope ?? this.myOptions.defaultScope,
         },
         dependencies: metadata.dependencies,
-      });
+      };
+
+      // Register the class itself
+      this.myTokenRegistry.set(Class, registration);
 
       // Register the additional tokens specified via class decorators.
       // These tokens will point to the original Class token and will have the same scope.
@@ -181,22 +182,33 @@ export class ContainerImpl implements Container {
           },
         });
       }
+
+      // Eager-instantiate only if the class is container-scoped
+      if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
+        this.resolve(Class);
+      }
     } else {
       const [token, provider, options] = args;
 
       if (isClassProvider(provider)) {
-        const Class = provider.useClass;
-        const metadata = getMetadata(Class);
-        this.myTokenRegistry.set(token, {
+        const metadata = getMetadata(provider.useClass);
+        const registration: Registration = {
           provider: metadata.provider,
           options: {
             // The explicit registration options override what is specified
             // via class decorators (e.g., @Scoped)
-            scope: metadata.scope,
+            scope: metadata.scope ?? this.myOptions.defaultScope,
             ...options,
           },
           dependencies: metadata.dependencies,
-        });
+        };
+
+        this.myTokenRegistry.set(token, registration);
+
+        // Eager-instantiate only if the provided class is container-scoped
+        if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
+          this.resolve(token);
+        }
       } else {
         if (isExistingProvider(provider)) {
           assert(

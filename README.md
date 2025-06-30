@@ -485,6 +485,24 @@ export class ExtensionContext {
 container.resolve(ExtensionContext);
 ```
 
+### `@EagerInstantiate`
+
+Marks a class for eager instantiation when registered with **Container** scope.
+
+This causes the container to immediately create and cache the instance of the class
+at registration time, instead of deferring instantiation until the first resolution.
+
+```ts
+@EagerInstantiate
+@Scoped(Scope.Container)
+export class ExtensionContext {
+  /* ... */
+}
+
+// The container immediately creates and caches the instance
+container.register(ExtensionContext);
+```
+
 ## Testing support
 
 Testing is an important part of software development, and dependency injection is meant to make it easier.  
