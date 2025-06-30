@@ -476,7 +476,7 @@ In this example, `ExtensionContext` will be registered with **Resolution** scope
 Enables automatic registration of the decorated class if it has not been registered explicitly.
 
 ```ts
-@AutoRegister()
+@AutoRegister
 export class ExtensionContext {
   /* ... */
 }
