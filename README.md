@@ -503,6 +503,10 @@ export class ExtensionContext {
 container.register(ExtensionContext);
 ```
 
+> [!WARNING]
+> Eager instantiation requires that all dependencies of the class are already registered in the container.  
+> If they are not, registration will fail.
+
 ## Testing support
 
 Testing is an important part of software development, and dependency injection is meant to make it easier.  

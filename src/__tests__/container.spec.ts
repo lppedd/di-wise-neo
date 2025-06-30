@@ -649,6 +649,20 @@ describe("Container", () => {
     expect(isInstantiated).toBe(false);
   });
 
+  it("should throw error if @EagerInstantiate class cannot resolve dependencies", () => {
+    const Castle = createType<string>("Castle");
+
+    @EagerInstantiate
+    @Scoped(Scope.Container)
+    class Wizard {
+      constructor(@Inject(Castle) _castle: string) {}
+    }
+
+    expect(() => container.registerClass(Wizard)).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] unregistered token Type<Castle>]`,
+    );
+  });
+
   it("should resolve auto-registered classes", () => {
     const container = createContainer({
       defaultScope: Scope.Container,
