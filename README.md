@@ -442,7 +442,7 @@ export class ExtensionContext {
 
 ## Behavioral decorators
 
-The library includes two behavioral decorators that influence how classes are registered in the container.
+The library includes three behavioral decorators that influence how classes are registered in the container.
 These decorators attach metadata to the class type, which is then interpreted by the container during registration.
 
 ### `@Scoped`
