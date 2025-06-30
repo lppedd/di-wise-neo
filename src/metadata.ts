@@ -60,6 +60,23 @@ export function getMetadata<T extends object>(Class: Constructor<T>): Metadata<T
     );
   }
 
+  if (metadata.provider.useClass !== Class) {
+    // This is part of the class identity mapping API (see setClassIdentityMapping).
+    //
+    // Scenario:
+    // 1. Metadata is created for class A (the original class) because of a parameter decorator.
+    // 2. Later, because of a class decorator that extends the decorated class, a third-party
+    //    registers a class identity mapping from class B to class A, where B is the class
+    //    generated from the class decorator by extending A.
+    //
+    // We must update useClass to be the extender class B so that instances created by the
+    // DI container match the consumer's registered class. Without this update, the DI
+    // system would instantiate the original class A, causing behavior inconsistencies.
+    //
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    (metadata.provider as any).useClass = Class;
+  }
+
   return metadata;
 }
 
