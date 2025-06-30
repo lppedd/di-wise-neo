@@ -348,8 +348,17 @@ export class ContainerImpl implements Container {
     const metadata = getMetadata(Class);
 
     if (metadata.autoRegister ?? this.myOptions.autoRegister) {
-      this.register(Class);
-      return (this as Container).resolve(Class);
+      // Temporarily set eagerInstantiate to false to avoid resolving the class two times:
+      // one inside register(), and the other just below
+      const eagerInstantiate = metadata.eagerInstantiate;
+      metadata.eagerInstantiate = false;
+
+      try {
+        this.register(Class);
+        return (this as Container).resolve(Class);
+      } finally {
+        metadata.eagerInstantiate = eagerInstantiate;
+      }
     }
 
     const scope = this.resolveScope(metadata.scope);
