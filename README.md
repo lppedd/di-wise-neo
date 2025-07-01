@@ -19,7 +19,6 @@
 
 ## Table of Contents
 
-- [Why yet another library](#why-yet-another-library)
 - [Installation](#installation)
 - [API reference](#api-reference)
 - [Ergonomics & Requirements](#ergonomics)
@@ -79,7 +78,7 @@ the use of ECMAScript Stage 3 decorators, which do not support decorating method
 So what's the right move? Forking the best pick and refactoring it to suite my
 production needs.
 
-## Installation
+### Installation
 
 ```sh
 npm i @lppedd/di-wise-neo
@@ -93,11 +92,11 @@ pnpm add @lppedd/di-wise-neo
 yarn add @lppedd/di-wise-neo
 ```
 
-## API reference
+### API reference
 
 You can find the complete API reference at [lppedd.github.io/di-wise-neo](https://lppedd.github.io/di-wise-neo)
 
-## Ergonomics
+### Ergonomics
 
 - Does **not** depend on other libraries
 - Does **not** use [reflect-metadata](https://www.npmjs.com/package/reflect-metadata) to drive decorators
@@ -281,7 +280,9 @@ The container will translate `TaskID` to `PID` before resolving the value.
 
 The primary way to perform dependency injection in **di-wise-neo** is through
 functions like `inject(T)`, `injectAll(T)`, `optional(T)`, and `optionalAll(T)`.
-This approach is recommended because it preserves full type safety.
+
+> [!TIP]
+> Using injection functions is recommended because it preserves type safety.
 
 ### Injection context
 
