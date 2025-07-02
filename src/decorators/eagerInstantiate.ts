@@ -36,11 +36,10 @@ export function EagerInstantiate(): ClassDecorator {
       );
     });
 
+    metadata.eagerInstantiate = true;
     metadata.scope = {
       value: Scope.Container,
       appliedBy: "EagerInstantiate",
     };
-
-    metadata.eagerInstantiate = true;
   };
 }
