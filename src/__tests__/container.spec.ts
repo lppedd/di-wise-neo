@@ -614,7 +614,7 @@ describe("Container", () => {
   it("should instantiate container-scoped @EagerInstantiate classes", () => {
     let isInstantiated = false;
 
-    @EagerInstantiate
+    @EagerInstantiate()
     @Scoped(Scope.Container)
     class Wand {
       constructor() {
@@ -631,28 +631,56 @@ describe("Container", () => {
     expect(isInstantiated).toBe(true);
   });
 
-  it("should not instantiate non container-scoped @EagerInstantiate classes", () => {
-    let isInstantiated = false;
+  it("should throw error when conflicting class scopes are set by decorators", () => {
+    expect(() => {
+      @Scoped(Scope.Transient)
+      @Scoped(Scope.Container) // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {}
+    }).toThrowErrorMatchingInlineSnapshot(
+      `
+      [Error: [di-wise-neo] class Wizard: Scope.Container was already set by another @Scoped decorator,
+        but @Scoped is trying to set a conflicting Scope.Transient.
+        Only one decorator should set the class scope, or all must agree on the same value.]
+      `,
+    );
 
-    @EagerInstantiate
-    class Wizard {
-      constructor() {
-        isInstantiated = true;
-      }
-    }
+    expect(() => {
+      @EagerInstantiate()
+      @Scoped(Scope.Transient) // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {}
+    }).toThrowErrorMatchingInlineSnapshot(
+      `
+      [Error: [di-wise-neo] class Wizard: Scope.Transient was already set by @Scoped,
+        but @EagerInstantiate is trying to set a conflicting Scope.Container.
+        Only one decorator should set the class scope, or all must agree on the same value.]
+      `,
+    );
 
-    container.registerClass(Wizard);
-    expect(isInstantiated).toBe(false);
+    expect(() => {
+      @Scoped(Scope.Transient)
+      @EagerInstantiate() // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {}
+    }).toThrowErrorMatchingInlineSnapshot(
+      `
+      [Error: [di-wise-neo] class Wizard: Scope.Container was already set by @EagerInstantiate,
+        but @Scoped is trying to set a conflicting Scope.Transient.
+        Only one decorator should set the class scope, or all must agree on the same value.]
+      `,
+    );
+  });
 
-    container.resetRegistry();
-    container.register(Wizard, { useClass: Wizard });
-    expect(isInstantiated).toBe(false);
+  it("should not throw error if multiple decorators set the same scope", () => {
+    @Scoped(Scope.Container)
+    @EagerInstantiate()
+    @Scoped(Scope.Container)
+    @Scoped(Scope.Container) // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    class Wizard {}
   });
 
   it("should throw error if @EagerInstantiate class cannot resolve dependencies", () => {
     const Castle = createType<string>("Castle");
 
-    @EagerInstantiate
+    @EagerInstantiate()
     @Scoped(Scope.Container)
     class Wizard {
       constructor(@Inject(Castle) _castle: string) {}

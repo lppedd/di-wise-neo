@@ -165,7 +165,7 @@ export class ContainerImpl implements Container {
         // The provider is of type ClassProvider, initialized by getMetadata
         provider: metadata.provider,
         options: {
-          scope: metadata.scope ?? this.myOptions.defaultScope,
+          scope: metadata.scope?.value ?? this.myOptions.defaultScope,
         },
         dependencies: metadata.dependencies,
       };
@@ -197,7 +197,7 @@ export class ContainerImpl implements Container {
           options: {
             // The explicit registration options override what is specified
             // via class decorators (e.g., @Scoped)
-            scope: metadata.scope ?? this.myOptions.defaultScope,
+            scope: metadata.scope?.value ?? this.myOptions.defaultScope,
             ...options,
           },
           dependencies: metadata.dependencies,
@@ -361,7 +361,7 @@ export class ContainerImpl implements Container {
       }
     }
 
-    const scope = this.resolveScope(metadata.scope);
+    const scope = this.resolveScope(metadata.scope?.value);
 
     if (optional && scope === Scope.Container) {
       // It would not be possible to resolve the class in container scope,

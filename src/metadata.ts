@@ -5,10 +5,16 @@ import type { Dependencies } from "./tokenRegistry";
 import type { TokensRef } from "./tokensRef";
 
 // @internal
+export interface ScopeMetadata {
+  readonly value: Scope;
+  readonly appliedBy: "Scoped" | "EagerInstantiate";
+}
+
+// @internal
 export interface Metadata<This extends object = any> {
   eagerInstantiate?: boolean;
   autoRegister?: boolean;
-  scope?: Scope;
+  scope?: ScopeMetadata;
   tokensRef: TokensRef<This>;
   provider: ClassProvider<This>;
   dependencies: Dependencies;
