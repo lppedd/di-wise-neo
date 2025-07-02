@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.0
+
+- Converted `@EagerInstantiate` to a decorator factory for consistency and future extensibility.  
+  Action: replace all usages of `@EagerInstantiate` with `@EagerInstantiate()`.
+- Converted `@AutoRegister` to a decorator factory for consistency and future extensibility.  
+  Action: replace all usages of `@AutoRegister` with `@AutoRegister()`.
+- Set `@EagerInstantiate()` to automatically assign the decorated class scope to **Container**.
+- Reported conflicts when multiple decorators set conflicting scopes.
+
 ## 0.5.3
 
 Internal changes for better extensibility.
