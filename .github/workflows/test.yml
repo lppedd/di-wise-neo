@@ -22,3 +22,6 @@ jobs:
           node-version-file: ".nvmrc"
       - run: npm install
       - run: npm run test
+      - uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
