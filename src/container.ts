@@ -167,7 +167,8 @@ export interface Container {
    * Tokens provided via the {@link Injectable} decorator applied to the class
    * are also registered as aliases.
    *
-   * The scope is determined by the {@link Scoped} decorator, if present.
+   * The scope is determined by the {@link Scoped} decorator - if present -
+   * or by the {@link ContainerOptions.defaultScope} value.
    *
    * @see registerClass
    */
@@ -177,8 +178,8 @@ export interface Container {
    * Registers a {@link ClassProvider} with a token.
    *
    * The default registration scope is determined by the {@link Scoped} decorator
-   * applied to the provided class, if present, but it can be overridden by
-   * passing explicit registration options.
+   * applied to the provided class - if present - or by the {@link ContainerOptions.defaultScope}
+   * value, but it can be overridden by passing explicit registration options.
    *
    * @see registerClass
    */
