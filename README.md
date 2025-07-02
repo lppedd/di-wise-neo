@@ -474,10 +474,11 @@ In this example, `ExtensionContext` will be registered with **Resolution** scope
 
 ### `@AutoRegister`
 
-Enables automatic registration of the decorated class if it has not been registered explicitly.
+Enables automatic registration of the decorated class when it is resolved,
+if it has not been registered beforehand.
 
 ```ts
-@AutoRegister
+@AutoRegister()
 export class ExtensionContext {
   /* ... */
 }
@@ -488,19 +489,20 @@ container.resolve(ExtensionContext);
 
 ### `@EagerInstantiate`
 
-Marks a class for eager instantiation when registered with **Container** scope.
+Sets the default class scope to **Container** and marks the class for eager instantiation
+upon registration.
 
 This causes the container to immediately create and cache the instance of the class
 at registration time, instead of deferring instantiation until the first resolution.
 
 ```ts
-@EagerInstantiate
-@Scoped(Scope.Container)
+@EagerInstantiate()
 export class ExtensionContext {
   /* ... */
 }
 
-// The container immediately creates and caches the instance
+// ExtensionContext is registered with Container scope,
+// and an instance is immediately created and cached by the container
 container.register(ExtensionContext);
 ```
 
