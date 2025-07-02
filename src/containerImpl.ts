@@ -185,7 +185,7 @@ export class ContainerImpl implements Container {
 
       // Eager-instantiate only if the class is container-scoped
       if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
-        this.resolve(Class);
+        this.resolveProviderValue(registration, registration.provider);
       }
     } else {
       const [token, provider, options] = args;
@@ -207,7 +207,7 @@ export class ContainerImpl implements Container {
 
         // Eager-instantiate only if the provided class is container-scoped
         if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
-          this.resolve(token);
+          this.resolveProviderValue(registration, registration.provider);
         }
       } else {
         if (isExistingProvider(provider)) {
