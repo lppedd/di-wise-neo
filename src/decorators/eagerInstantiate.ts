@@ -17,7 +17,7 @@ import type { Constructor } from "../token";
  *
  * // Wizard is registered with Container scope, and an instance
  * // is immediately created and cached by the container
- * const wizard = container.register(Wizard);
+ * container.register(Wizard);
  * ```
  *
  * @__NO_SIDE_EFFECTS__
