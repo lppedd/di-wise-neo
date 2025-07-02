@@ -7,7 +7,7 @@ import type { Constructor } from "../token";
  *
  * @example
  * ```ts
- * @AutoRegister
+ * @AutoRegister()
  * class Wizard {}
  *
  * const wizard = container.resolve(Wizard);
@@ -16,7 +16,9 @@ import type { Constructor } from "../token";
  *
  * @__NO_SIDE_EFFECTS__
  */
-export function AutoRegister<Ctor extends Constructor<any>>(Class: Ctor): void {
-  const metadata = getMetadata(Class);
-  metadata.autoRegister = true;
+export function AutoRegister(): ClassDecorator {
+  return function (Class): void {
+    const metadata = getMetadata(Class as any as Constructor<any>);
+    metadata.autoRegister = true;
+  };
 }

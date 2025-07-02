@@ -189,10 +189,10 @@ describe("Container", () => {
   });
 
   it("should perform constructor injection using inject and injectAll", () => {
-    @AutoRegister
+    @AutoRegister()
     class Wand {}
 
-    @AutoRegister
+    @AutoRegister()
     class Wizard {
       constructor(
         readonly wand = inject(Wand),
@@ -211,10 +211,10 @@ describe("Container", () => {
     @Scoped(Scope.Container)
     class Castle {}
 
-    @AutoRegister
+    @AutoRegister()
     class Wand {}
 
-    @AutoRegister
+    @AutoRegister()
     class Wizard {
       constructor(
         readonly castle = optional(Castle),
@@ -423,7 +423,7 @@ describe("Container", () => {
     expect(() => {
       class Wand {}
 
-      @AutoRegister
+      @AutoRegister()
       class Wizard {
         constructor(
           @Inject(Wand) readonly wand: Wand,
@@ -442,7 +442,7 @@ describe("Container", () => {
     expect(() => {
       class Wand {}
 
-      @AutoRegister
+      @AutoRegister()
       class Wizard {
         constructor(
           @InjectAll(Wand) readonly wands: Wand[],
@@ -461,7 +461,7 @@ describe("Container", () => {
     expect(() => {
       class Wand {}
 
-      @AutoRegister
+      @AutoRegister()
       class Wizard {
         constructor(
           @OptionalAll(Wand) readonly wands: Wand[],
@@ -481,7 +481,7 @@ describe("Container", () => {
       class Wand {}
       class Spell {}
 
-      @AutoRegister
+      @AutoRegister()
       class Wizard {
         set(@Inject(Wand) _wand: Wand, @InjectAll(Spell) _spells: Spell[], _other: string): void {}
       }
@@ -497,7 +497,7 @@ describe("Container", () => {
       class Wand {}
       class Spell {}
 
-      @AutoRegister
+      @AutoRegister()
       class Wizard {
         set(@Optional(Wand) _wand: Wand, @OptionalAll(Spell) _spells: Spell[], _other: string): void {}
       }
@@ -510,7 +510,7 @@ describe("Container", () => {
 
   it("should get the options from the class", () => {
     @Scoped(Scope.Container)
-    @AutoRegister
+    @AutoRegister()
     class Wizard {}
 
     container.resolve(Wizard);
