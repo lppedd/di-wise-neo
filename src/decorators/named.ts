@@ -19,7 +19,7 @@ import { updateParameterMetadata } from "./decorators";
  */
 export function Named(name: string): ClassDecorator & ParameterDecorator {
   if (!name) {
-    assert(false, "The @Named qualifier cannot be empty");
+    assert(false, "the @Named qualifier cannot be empty");
   }
 
   return function (target: object, propertyKey?: string | symbol, parameterIndex?: number): void {

@@ -162,7 +162,7 @@ export class ContainerImpl implements Container {
       const Class = args[0];
       const metadata = getMetadata(Class);
       const registration: Registration = {
-        name: metadata.provider.name,
+        name: metadata.name,
         // The provider is of type ClassProvider, initialized by getMetadata
         provider: metadata.provider,
         options: {
@@ -194,11 +194,11 @@ export class ContainerImpl implements Container {
       if (isClassProvider(provider)) {
         const metadata = getMetadata(provider.useClass);
         const registration: Registration = {
-          name: metadata.provider.name ?? provider.name,
+          // An explicit provider name overrides what is specified via @Named
+          name: metadata.name ?? provider.name,
           provider: metadata.provider,
           options: {
-            // The explicit registration options override what is specified
-            // via class decorators (e.g., @Scoped)
+            // Explicit registration options override what is specified via class decorators (e.g., @Scoped)
             scope: metadata.scope?.value ?? this.myOptions.defaultScope,
             ...options,
           },

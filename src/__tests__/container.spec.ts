@@ -735,7 +735,7 @@ describe("Container", () => {
     expect(() => {
       @Named("") // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {}
-    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] The @Named qualifier cannot be empty]`);
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] the @Named qualifier cannot be empty]`);
   });
 
   it("should resolve named class provider", () => {
@@ -799,7 +799,7 @@ describe("Container", () => {
 
     container.register(Wizard);
     expect(() => container.register(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] a Wizard token named Dumbledore is already registered]`,
+      `[Error: [di-wise-neo] a Wizard token named 'Dumbledore' is already registered]`,
     );
   });
 
