@@ -1,6 +1,16 @@
 export type { Container, ContainerOptions } from "./container";
 export { createContainer } from "./container";
-export { AutoRegister, EagerInstantiate, Inject, Injectable, InjectAll, Optional, OptionalAll, Scoped } from "./decorators";
+export {
+  AutoRegister,
+  EagerInstantiate,
+  Inject,
+  Injectable,
+  InjectAll,
+  Named,
+  Optional,
+  OptionalAll,
+  Scoped,
+} from "./decorators";
 export { inject, injectBy } from "./inject";
 export { injectAll } from "./injectAll";
 export { Injector } from "./injector";
