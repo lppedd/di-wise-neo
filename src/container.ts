@@ -1,7 +1,7 @@
 import { ContainerImpl } from "./containerImpl";
 import type { ClassProvider, ExistingProvider, FactoryProvider, ValueProvider } from "./provider";
 import { Scope } from "./scope";
-import type { Constructor, Token, Tokens } from "./token";
+import type { Constructor, Token } from "./token";
 import type { RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 
 /**
@@ -109,56 +109,6 @@ export interface Container {
   isRegistered(token: Token, name?: string): boolean;
 
   /**
-   * Registers a concrete class, where the class acts as its own token.
-   *
-   * Tokens provided via the {@link Injectable} decorator applied to the class
-   * are also registered as aliases.
-   *
-   * The default registration scope is determined by the {@link Scoped} decorator,
-   * if present.
-   */
-  registerClass<Instance extends object>(Class: Constructor<Instance>): void;
-
-  /**
-   * Registers a concrete class with a token.
-   *
-   * The default registration scope is determined by the {@link Scoped} decorator
-   * applied to the class, if present, but it can be overridden by passing explicit
-   * registration options.
-   */
-  registerClass<Instance extends object, ProvidedInstance extends Instance>(
-    token: Token<Instance>,
-    Class: Constructor<ProvidedInstance>,
-    options?: RegistrationOptions,
-  ): void;
-
-  /**
-   * Registers a token whose value is produced by a factory function.
-   *
-   * The factory function runs inside the injection context and can
-   * thus access dependencies via {@link inject}-like functions.
-   */
-  registerFactory<Value, ProvidedValue extends Value>(
-    token: Token<Value>,
-    factory: (...args: []) => ProvidedValue,
-    options?: RegistrationOptions,
-  ): void;
-
-  /**
-   * Registers a token with a fixed value.
-   *
-   * The provided value is returned as-is when the token is resolved (scopes do not apply).
-   */
-  registerValue<Value, ProvidedValue extends Value>(token: Token<Value>, value: ProvidedValue): void;
-
-  /**
-   * Registers one or more tokens as aliases for a target token.
-   *
-   * When an alias is resolved, the target token is resolved instead.
-   */
-  registerAlias<Value, ProvidedValue extends Value>(targetToken: Token<ProvidedValue>, aliasTokens: Tokens<Value>): void;
-
-  /**
    * Registers a {@link ClassProvider}, using the class itself as its token.
    *
    * Tokens provided via the {@link Injectable} decorator applied to the class
@@ -166,8 +116,6 @@ export interface Container {
    *
    * The scope is determined by the {@link Scoped} decorator - if present -
    * or by the {@link ContainerOptions.defaultScope} value.
-   *
-   * @see registerClass
    */
   register<Instance extends object>(Class: Constructor<Instance>): Container;
 
@@ -177,8 +125,6 @@ export interface Container {
    * The default registration scope is determined by the {@link Scoped} decorator
    * applied to the provided class - if present - or by the {@link ContainerOptions.defaultScope}
    * value, but it can be overridden by passing explicit registration options.
-   *
-   * @see registerClass
    */
   register<Instance extends object, ProviderInstance extends Instance>(
     token: Token<Instance>,
@@ -188,8 +134,6 @@ export interface Container {
 
   /**
    * Registers a {@link FactoryProvider} with a token.
-   *
-   * @see registerFactory
    */
   register<Value, ProviderValue extends Value>(
     token: Token<Value>,
@@ -201,8 +145,6 @@ export interface Container {
    * Registers an {@link ExistingProvider} with a token.
    *
    * The token will alias the one set in `useExisting`.
-   *
-   * @see registerAlias
    */
   register<Value, ProviderValue extends Value>(token: Token<Value>, provider: ExistingProvider<ProviderValue>): Container;
 
@@ -211,8 +153,6 @@ export interface Container {
    *
    * Values provided via `useValue` are never cached (scopes do not apply)
    * and are simply returned as-is.
-   *
-   * @see registerValue
    */
   register<Value, ProviderValue extends Value>(token: Token<Value>, provider: ValueProvider<ProviderValue>): Container;
 

@@ -18,7 +18,7 @@ import {
   Optional,
   OptionalAll,
   Scope,
-  Scoped,
+  Scoped
 } from "..";
 import { Named } from "../decorators/named";
 import { useInjectionContext } from "../injectionContext";
@@ -620,7 +620,7 @@ describe("Container", () => {
       }
     }
 
-    container.registerClass(Wand);
+    container.register(Wand);
     expect(isInstantiated).toBe(true);
 
     isInstantiated = false;
@@ -684,7 +684,7 @@ describe("Container", () => {
       constructor(@Inject(Castle) _castle: string) {}
     }
 
-    expect(() => container.registerClass(Wizard)).toThrowErrorMatchingInlineSnapshot(
+    expect(() => container.register(Wizard)).toThrowErrorMatchingInlineSnapshot(
       `[Error: [di-wise-neo] unregistered token Type<Castle>]`,
     );
   });
@@ -845,18 +845,6 @@ describe("Container", () => {
         [cause] circular dependency detected]
       `,
     );
-
-    container.resetRegistry();
-    container.registerClass(Wand);
-    container.registerClass(Wizard);
-    container.registerAlias(Wizard, [Character]);
-
-    expect(() => container.resolveAll(Character)).toThrowErrorMatchingInlineSnapshot(
-      `
-      [Error: [di-wise-neo] token resolution error encountered while resolving Type<Character>
-        [cause] circular dependency detected]
-      `,
-    );
   });
 
   it("should resolve class providers", () => {
@@ -865,23 +853,14 @@ describe("Container", () => {
 
     container.register(Wizard, { useClass: WizardImpl });
     expect(container.resolve(Wizard)).toBeInstanceOf(WizardImpl);
-
-    container.resetRegistry();
-    container.registerClass(Wizard, WizardImpl);
-    expect(container.resolve(Wizard)).toBeInstanceOf(WizardImpl);
   });
 
   it("should resolve factory providers", () => {
     class WizardImpl {}
-    class WizardImpl2 {}
     const Wizard = createType<WizardImpl>("Wizard");
 
     container.register(Wizard, { useFactory: () => new WizardImpl() });
     expect(container.resolve(Wizard)).toBeInstanceOf(WizardImpl);
-
-    container.resetRegistry();
-    container.registerFactory(Wizard, () => new WizardImpl2());
-    expect(container.resolve(Wizard)).toBeInstanceOf(WizardImpl2);
   });
 
   it("should resolve value providers", () => {
@@ -889,10 +868,6 @@ describe("Container", () => {
 
     container.register(Env, { useValue: "development" });
     expect(container.resolve(Env)).toBe("development");
-
-    container.resetRegistry();
-    container.registerValue(Env, "production");
-    expect(container.resolve(Env)).toBe("production");
   });
 
   it("should switch context", () => {
