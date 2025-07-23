@@ -116,9 +116,9 @@ export class ContainerImpl implements Container {
     return Array.from(values);
   }
 
-  isRegistered(token: Token): boolean {
+  isRegistered(token: Token, name?: string): boolean {
     this.checkDisposed();
-    return this.myTokenRegistry.get(token) !== undefined;
+    return this.myTokenRegistry.get(token, name) !== undefined;
   }
 
   registerClass<T extends object, V extends T>(
@@ -162,6 +162,7 @@ export class ContainerImpl implements Container {
       const Class = args[0];
       const metadata = getMetadata(Class);
       const registration: Registration = {
+        name: metadata.provider.name,
         // The provider is of type ClassProvider, initialized by getMetadata
         provider: metadata.provider,
         options: {
@@ -193,6 +194,7 @@ export class ContainerImpl implements Container {
       if (isClassProvider(provider)) {
         const metadata = getMetadata(provider.useClass);
         const registration: Registration = {
+          name: metadata.provider.name ?? provider.name,
           provider: metadata.provider,
           options: {
             // The explicit registration options override what is specified
@@ -210,7 +212,9 @@ export class ContainerImpl implements Container {
           this.resolveProviderValue(registration, registration.provider);
         }
       } else {
-        if (isExistingProvider(provider)) {
+        const existingProvider = isExistingProvider(provider);
+
+        if (existingProvider) {
           assert(
             token !== provider.useExisting,
             `the useExisting token ${token.name} cannot be the same as the token being registered`,
@@ -218,6 +222,7 @@ export class ContainerImpl implements Container {
         }
 
         this.myTokenRegistry.set(token, {
+          name: existingProvider ? undefined : provider.name,
           provider: provider,
           options: options,
         });
@@ -227,9 +232,9 @@ export class ContainerImpl implements Container {
     return this;
   }
 
-  unregister<T>(token: Token<T>): T[] {
+  unregister<T>(token: Token<T>, name?: string): T[] {
     this.checkDisposed();
-    const registrations = this.myTokenRegistry.delete(token);
+    const registrations = this.myTokenRegistry.delete(token, name);
 
     if (!registrations) {
       return [];
@@ -248,19 +253,30 @@ export class ContainerImpl implements Container {
     return Array.from(values);
   }
 
-  resolve<T>(token: Token<T>, optional?: boolean): T | undefined {
+  resolve<T>(token: Token<T>, optionalOrName?: boolean | string, name?: string): T | undefined {
     this.checkDisposed();
-    const registration = this.myTokenRegistry.get(token);
+
+    let localOptional: boolean | undefined;
+    let localName: string | undefined;
+
+    if (typeof optionalOrName === "string") {
+      localName = optionalOrName;
+    } else {
+      localOptional = optionalOrName;
+      localName = name;
+    }
+
+    const registration = this.myTokenRegistry.get(token, localName);
 
     if (registration) {
-      return this.resolveRegistration(token, registration);
+      return this.resolveRegistration(token, registration, localName);
     }
 
     if (isConstructor(token)) {
-      return this.instantiateClass(token, optional);
+      return this.instantiateClass(token, localOptional);
     }
 
-    return optional ? undefined : throwUnregisteredError(token);
+    return optionalOrName ? undefined : throwUnregisteredError(token);
   }
 
   resolveAll<T>(token: Token<T>, optional?: boolean): NonNullable<T>[] {
@@ -268,7 +284,7 @@ export class ContainerImpl implements Container {
     const registrations = this.myTokenRegistry.getAll(token);
 
     if (registrations) {
-      return registrations
+      return registrations //
         .map((registration) => this.resolveRegistration(token, registration))
         .filter((value) => value != null);
     }
@@ -316,13 +332,13 @@ export class ContainerImpl implements Container {
     disposedRefs.clear();
   }
 
-  private resolveRegistration<T>(token: Token<T>, registration: Registration<T>): T {
+  private resolveRegistration<T>(token: Token<T>, registration: Registration<T>, name?: string): T {
     let currRegistration: Registration<T> | undefined = registration;
     let currProvider = currRegistration.provider;
 
     while (isExistingProvider(currProvider)) {
       const targetToken = currProvider.useExisting;
-      currRegistration = this.myTokenRegistry.get(targetToken);
+      currRegistration = this.myTokenRegistry.get(targetToken, name);
 
       if (!currRegistration) {
         throwExistingUnregisteredError(token, targetToken);
@@ -492,7 +508,7 @@ export class ContainerImpl implements Container {
 
     if (dependencies) {
       assert(isClassProvider(registration.provider), `internal error: not a ClassProvider`);
-      const ctorDeps = dependencies.constructor;
+      const ctorDeps = dependencies.constructor.filter((d) => d.decorator);
 
       if (ctorDeps.length > 0) {
         // Let's check if all necessary constructor parameters are decorated.
@@ -506,14 +522,14 @@ export class ContainerImpl implements Container {
         return ctorDeps
           .sort((a, b) => a.index - b.index)
           .map((dep) => {
-            const token = dep.tokenRef.getRefToken();
+            const token = dep.tokenRef!.getRefToken();
             switch (dep.decorator) {
               case "Inject":
-                return this.resolve(token);
+                return this.resolve(token, dep.name);
               case "InjectAll":
                 return this.resolveAll(token);
               case "Optional":
-                return this.resolve(token, true);
+                return this.resolve(token, true, dep.name);
               case "OptionalAll":
                 return this.resolveAll(token, true);
             }
@@ -532,7 +548,10 @@ export class ContainerImpl implements Container {
       const ctor = registration.provider.useClass;
 
       // Perform method injection
-      for (const [key, methodDeps] of dependencies.methods) {
+      for (const entry of dependencies.methods) {
+        const key = entry[0];
+        const methodDeps = entry[1].filter((d) => d.decorator);
+
         // Let's check if all necessary method parameters are decorated.
         // If not, we cannot safely invoke the method.
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -545,14 +564,14 @@ export class ContainerImpl implements Container {
         const args = methodDeps
           .sort((a, b) => a.index - b.index)
           .map((dep) => {
-            const token = dep.tokenRef.getRefToken();
+            const token = dep.tokenRef!.getRefToken();
             switch (dep.decorator) {
               case "Inject":
-                return injectBy(instance, token);
+                return injectBy(instance, token, dep.name);
               case "InjectAll":
                 return injectAll(token);
               case "Optional":
-                return optionalBy(instance, token);
+                return optionalBy(instance, token, dep.name);
               case "OptionalAll":
                 return optionalAll(token);
             }

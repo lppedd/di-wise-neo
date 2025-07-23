@@ -106,7 +106,7 @@ export interface Container {
   /**
    * Returns whether the token is registered in this container or in parent containers, if any.
    */
-  isRegistered(token: Token): boolean;
+  isRegistered(token: Token, name?: string): boolean;
 
   /**
    * Registers a concrete class, where the class acts as its own token.
@@ -233,7 +233,7 @@ export interface Container {
    *
    * Note that only this container is affected. Parent containers, if any, remain unchanged.
    */
-  unregister<Value>(token: Token<Value>): Value[];
+  unregister<Value>(token: Token<Value>, name?: string): Value[];
 
   /**
    * Resolves the given class to the instance associated with it.
@@ -260,9 +260,10 @@ export interface Container {
    * If the class is registered with _container_ scope, the resolved instance is cached
    * in the container's internal registry.
    */
-  resolve<Instance extends object>(Class: Constructor<Instance>, optional?: false): Instance;
-  resolve<Instance extends object>(Class: Constructor<Instance>, optional: true): Instance | undefined;
-  resolve<Instance extends object>(Class: Constructor<Instance>, optional?: boolean): Instance | undefined;
+  resolve<Instance extends object>(Class: Constructor<Instance>, name?: string): Instance;
+  resolve<Instance extends object>(Class: Constructor<Instance>, optional?: false, name?: string): Instance;
+  resolve<Instance extends object>(Class: Constructor<Instance>, optional: true, name?: string): Instance | undefined;
+  resolve<Instance extends object>(Class: Constructor<Instance>, optional?: boolean, name?: string): Instance | undefined;
 
   /**
    * Resolves the given token to the value associated with it.
@@ -282,9 +283,10 @@ export interface Container {
    * If the token is registered with _container_ scope, the resolved value is cached
    * in the container's internal registry.
    */
-  resolve<Value>(token: Token<Value>, optional?: false): Value;
-  resolve<Value>(token: Token<Value>, optional: true): Value | undefined;
-  resolve<Value>(token: Token<Value>, optional?: boolean): Value | undefined;
+  resolve<Value>(token: Token<Value>, name?: string): Value;
+  resolve<Value>(token: Token<Value>, optional?: false, name?: string): Value;
+  resolve<Value>(token: Token<Value>, optional: true, name?: string): Value | undefined;
+  resolve<Value>(token: Token<Value>, optional?: boolean, name?: string): Value | undefined;
 
   /**
    * Resolves the given class to all instances provided by the registrations associated with it.

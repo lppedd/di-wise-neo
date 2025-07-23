@@ -1,47 +1,29 @@
 import { assert } from "../errors";
 import { getMetadata } from "../metadata";
-import type { Constructor, Token } from "../token";
-import type { Decorator } from "../tokenRegistry";
-import { forwardRef, isTokenRef, type TokenRef } from "../tokensRef";
+import type { Constructor } from "../token";
+import type { MethodDependency } from "../tokenRegistry";
 
-export function processDecoratedParameter(
-  decorator: Decorator,
-  token: Token | TokenRef,
+export function updateParameterMetadata(
+  decorator: string,
   target: object,
   propertyKey: string | symbol | undefined,
   parameterIndex: number,
+  updateFn: (dependency: MethodDependency) => void,
 ): void {
-  // Error out immediately if the decorator has been applied
-  // to a static property or a static method
+  // Error out immediately if the decorator has been applied to a static method
   if (propertyKey !== undefined && typeof target === "function") {
     assert(false, `@${decorator} cannot be used on static member ${target.name}.${String(propertyKey)}`);
   }
 
-  const tokenRef = isTokenRef(token) ? token : forwardRef(() => token);
-
   if (propertyKey === undefined) {
     // Constructor
     const metadata = getMetadata(target as Constructor<any>);
-    metadata.dependencies.constructor.push({
-      decorator: decorator,
-      tokenRef: tokenRef,
-      index: parameterIndex,
-    });
+    const dependency = metadata.getConstructorDependency(parameterIndex);
+    updateFn(dependency);
   } else {
-    // Normal instance method
+    // Instance method
     const metadata = getMetadata(target.constructor as Constructor<any>);
-    const methods = metadata.dependencies.methods;
-    let dep = methods.get(propertyKey);
-
-    if (dep === undefined) {
-      dep = [];
-      methods.set(propertyKey, dep);
-    }
-
-    dep.push({
-      decorator: decorator,
-      tokenRef: tokenRef,
-      index: parameterIndex,
-    });
+    const dependency = metadata.getMethodDependency(propertyKey, parameterIndex);
+    updateFn(dependency);
   }
 }

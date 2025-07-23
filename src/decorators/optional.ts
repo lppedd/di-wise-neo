@@ -1,6 +1,6 @@
 import type { Constructor, Token } from "../token";
-import type { TokenRef } from "../tokensRef";
-import { processDecoratedParameter } from "./decorators";
+import { forwardRef, isTokenRef, type TokenRef } from "../tokensRef";
+import { updateParameterMetadata } from "./decorators";
 
 /**
  * Parameter decorator that injects the instance associated with the given class,
@@ -33,7 +33,10 @@ export function Optional<Value>(token: Token<Value>): ParameterDecorator;
 export function Optional<Value>(tokens: TokenRef<Value>): ParameterDecorator;
 
 export function Optional<T>(token: Token<T> | TokenRef<T>): ParameterDecorator {
-  return function (target, propertyKey, parameterIndex: number): void {
-    processDecoratedParameter("Optional", token, target, propertyKey, parameterIndex);
+  return function (target, propertyKey, parameterIndex): void {
+    updateParameterMetadata("Optional", target, propertyKey, parameterIndex, (dependency) => {
+      dependency.decorator = "Optional";
+      dependency.tokenRef = isTokenRef(token) ? token : forwardRef(() => token);
+    });
   };
 }

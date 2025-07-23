@@ -5,6 +5,7 @@ import type { Constructor, Token } from "./token";
  */
 export interface ClassProvider<Instance extends object> {
   readonly useClass: Constructor<Instance>;
+  readonly name?: string;
 }
 
 /**
@@ -15,6 +16,7 @@ export interface ClassProvider<Instance extends object> {
  */
 export interface FactoryProvider<Value> {
   readonly useFactory: (...args: []) => Value;
+  readonly name?: string;
 }
 
 /**
@@ -22,6 +24,7 @@ export interface FactoryProvider<Value> {
  */
 export interface ValueProvider<T> {
   readonly useValue: T;
+  readonly name?: string;
 }
 
 /**

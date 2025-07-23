@@ -21,8 +21,9 @@ export type Decorator = "Inject" | "InjectAll" | "Optional" | "OptionalAll";
 
 // @internal
 export interface MethodDependency {
-  readonly decorator: Decorator;
-  readonly tokenRef: TokenRef;
+  decorator?: Decorator;
+  tokenRef?: TokenRef;
+  name?: string;
 
   // The index of the annotated parameter (zero-based)
   readonly index: number;
@@ -37,6 +38,7 @@ export interface Dependencies {
 // @internal
 export interface Registration<T = any> {
   value?: ValueRef<T>;
+  readonly name?: string;
   readonly provider: Provider<T>;
   readonly options?: RegistrationOptions;
   readonly dependencies?: Dependencies;
@@ -51,14 +53,14 @@ export class TokenRegistry {
     this.myParent = parent;
   }
 
-  get<T>(token: Token<T>): Registration<T> | undefined {
+  get<T>(token: Token<T>, name?: string): Registration<T> | undefined {
     // To clarify, at(-1) means we take the last added registration for this token
-    return this.getAll(token)?.at(-1);
+    return this.getAll(token, name)?.at(-1);
   }
 
-  getAll<T>(token: Token<T>): Registration<T>[] | undefined {
-    const internal = internals.get(token);
-    return (internal && [internal]) || this.getAllFromParent(token);
+  getAll<T>(token: Token<T>, name?: string): Registration<T>[] | undefined {
+    const internal = name !== undefined ? undefined : internals.get(token);
+    return (internal && [internal]) || this.getAllFromParent(token, name);
   }
 
   //
@@ -72,19 +74,43 @@ export class TokenRegistry {
   set<T>(token: Token<T>, registration: Registration<T>): void;
   set<T>(token: Token<T>, registration: Registration<T>): void {
     assert(!internals.has(token), `cannot register reserved token ${token.name}`);
-
     let registrations = this.myMap.get(token);
 
     if (!registrations) {
       this.myMap.set(token, (registrations = []));
+    } else if (registration.name !== undefined) {
+      const namedRegistrations = registrations.filter((r) => r.name === registration.name);
+      assert(namedRegistrations.length === 0, `a ${token.name} token named ${registration.name} is already registered`);
     }
 
     registrations.push(registration);
   }
 
-  delete<T>(token: Token<T>): Registration<T>[] | undefined {
-    const registrations = this.myMap.get(token);
-    this.myMap.delete(token);
+  delete<T>(token: Token<T>, name?: string): Registration<T>[] | undefined {
+    let registrations = this.myMap.get(token);
+
+    if (registrations) {
+      if (name !== undefined) {
+        const namedRegistrations: Registration[] = [];
+        const newRegistrations: Registration[] = [];
+
+        for (const registration of registrations) {
+          const array = registration.name === name ? namedRegistrations : newRegistrations;
+          array.push(registration);
+        }
+
+        if (namedRegistrations.length > 0) {
+          registrations = namedRegistrations;
+          this.myMap.set(token, newRegistrations);
+        } else {
+          registrations = undefined;
+          this.myMap.delete(token);
+        }
+      } else {
+        this.myMap.delete(token);
+      }
+    }
+
     return registrations;
   }
 
@@ -117,9 +143,20 @@ export class TokenRegistry {
     return Array.from(values);
   }
 
-  private getAllFromParent<T>(token: Token<T>): Registration<T>[] | undefined {
-    const registrations = this.myMap.get(token);
-    return registrations || this.myParent?.getAllFromParent(token);
+  private getAllFromParent<T>(token: Token<T>, name?: string): Registration<T>[] | undefined {
+    const thisRegistrations = this.myMap.get(token);
+    let registrations = thisRegistrations || this.myParent?.getAllFromParent(token, name);
+
+    if (registrations && name !== undefined) {
+      registrations = registrations.filter((r) => r.name === name);
+      assert(registrations.length < 2, `internal error: more than one registration with qualifier '${name}'`);
+
+      if (registrations.length === 0) {
+        registrations = undefined;
+      }
+    }
+
+    return registrations;
   }
 }
 
