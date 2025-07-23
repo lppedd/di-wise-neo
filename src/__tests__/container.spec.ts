@@ -20,6 +20,7 @@ import {
   Scope,
   Scoped
 } from "..";
+import { Named } from "../decorators/named";
 import { useInjectionContext } from "../injectionContext";
 import { optional } from "../optional";
 import { optionalAll } from "../optionalAll";
@@ -542,19 +543,24 @@ describe("Container", () => {
 
     container.register(Env, { useValue: "production" });
     container.register(Product, { useClass: Product });
+    container.register(Product, { useClass: Product, name: "FreeProduct" });
 
     expect(container.isRegistered(Env)).toBe(true);
     expect(container.isRegistered(Product)).toBe(true);
+    expect(container.isRegistered(Product, "FreeProduct")).toBe(true);
+
     expect(container.resolve(Product)).toBeInstanceOf(Product);
 
     // Values provided via ValueProvider are not returned
     expect(container.unregister(Env)).toEqual([]);
-
-    const cachedValues = container.unregister(Product);
-    expect(cachedValues).toHaveLength(1);
-    expect(cachedValues[0]).toBeInstanceOf(Product);
-
     expect(container.isRegistered(Env)).toBe(false);
+
+    const freeProduct = container.unregister(Product, "FreeProduct");
+    expect(freeProduct).toHaveLength(1);
+    expect(freeProduct[0]).toBeInstanceOf(Product);
+    expect(container.isRegistered(Product, "FreeProduct")).toBe(false);
+
+    container.unregister(Product);
     expect(container.isRegistered(Product)).toBe(false);
   });
 
@@ -723,6 +729,78 @@ describe("Container", () => {
 
     container.register(Wizard, { useExisting: WizardImpl });
     expect(container.resolve(WizardImpl)).toBe(container.resolve(Wizard));
+  });
+
+  it("should throw error when named qualifier is empty", () => {
+    expect(() => {
+      @Named("") // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {}
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] the @Named qualifier cannot be empty]`);
+  });
+
+  it("should resolve named class provider", () => {
+    @Scoped(Scope.Container)
+    @Named("Dumbledore")
+    class Wizard {}
+
+    container.register(Wizard);
+    expect(container.resolve(Wizard, "Dumbledore")).toBe(container.resolve(Wizard));
+  });
+
+  it("should inject named token", () => {
+    @Scoped(Scope.Container)
+    class Wand {}
+
+    @Scoped(Scope.Container)
+    class Wizard {
+      superWand?: Wand;
+
+      constructor(@Inject(Wand) @Named("SuperWand") readonly wand: Wand) {}
+
+      setWand(@Inject(Wand) @Named("SuperWand") wand: Wand): void {
+        this.superWand = wand;
+      }
+    }
+
+    container.register(Wand, { useClass: Wand, name: "SuperWand" });
+    container.register(Wizard);
+
+    const wizard = container.resolve(Wizard);
+    expect(wizard).toBeInstanceOf(Wizard);
+    expect(wizard.wand).toBeTruthy();
+    expect(wizard.superWand).toBeTruthy();
+  });
+
+  it("should throw error when multiple names are provided", () => {
+    class Wand {}
+
+    expect(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {
+        constructor(@Inject(Wand) @Named("SuperWand2") @Named("SuperWand1") readonly wand: Wand) {}
+      }
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] a @Named('SuperWand1') qualifier has already been applied to the parameter]`,
+    );
+
+    expect(() => {
+      @Named("Dumbledore")
+      @Named("Voldemort") // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {}
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] a @Named('Voldemort') qualifier has already been applied to Wizard]`,
+    );
+  });
+
+  it("should throw error when the same name is registered", () => {
+    @Scoped(Scope.Container)
+    @Named("Dumbledore")
+    class Wizard {}
+
+    container.register(Wizard);
+    expect(() => container.register(Wizard)).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] a Wizard token named 'Dumbledore' is already registered]`,
+    );
   });
 
   it("should throw error if existing provider points to unregistered token", () => {

@@ -6,18 +6,18 @@ import type { Constructor, Token } from "./token";
  *
  * Throws an error if the class is not registered in the container.
  */
-export function inject<Instance extends object>(Class: Constructor<Instance>): Instance;
+export function inject<Instance extends object>(Class: Constructor<Instance>, name?: string): Instance;
 
 /**
  * Injects the value associated with the given token.
  *
  * Throws an error if the token is not registered in the container.
  */
-export function inject<Value>(token: Token<Value>): Value;
+export function inject<Value>(token: Token<Value>, name?: string): Value;
 
-export function inject<T>(token: Token<T>): T {
+export function inject<T>(token: Token<T>, name?: string): T {
   const context = ensureInjectionContext(inject);
-  return context.container.resolve(token);
+  return context.container.resolve(token, name);
 }
 
 /**
@@ -41,8 +41,9 @@ export function inject<T>(token: Token<T>): T {
  *
  * @param thisArg - The containing instance, used to help resolve circular dependencies.
  * @param Class - The class to resolve.
+ * @param name - The name qualifier of the class to resolve.
  */
-export function injectBy<Instance extends object>(thisArg: any, Class: Constructor<Instance>): Instance;
+export function injectBy<Instance extends object>(thisArg: any, Class: Constructor<Instance>, name?: string): Instance;
 
 /**
  * Injects the value associated with the given token.
@@ -65,23 +66,24 @@ export function injectBy<Instance extends object>(thisArg: any, Class: Construct
  *
  * @param thisArg - The containing instance, used to help resolve circular dependencies.
  * @param token - The token to resolve.
+ * @param name - The name qualifier of the token to resolve.
  */
-export function injectBy<Value>(thisArg: any, token: Token<Value>): Value;
+export function injectBy<Value>(thisArg: any, token: Token<Value>, name?: string): Value;
 
-export function injectBy<T>(thisArg: any, token: Token<T>): T {
+export function injectBy<T>(thisArg: any, token: Token<T>, name?: string): T {
   const context = ensureInjectionContext(injectBy);
   const resolution = context.resolution;
   const currentFrame = resolution.stack.peek();
 
   if (!currentFrame) {
-    return inject(token);
+    return inject(token, name);
   }
 
   const currentRef = { current: thisArg };
   const cleanup = resolution.dependents.set(currentFrame.provider, currentRef);
 
   try {
-    return inject(token);
+    return inject(token, name);
   } finally {
     cleanup();
   }

@@ -1,6 +1,6 @@
 import type { Constructor, Token } from "../token";
-import type { TokenRef } from "../tokensRef";
-import { processDecoratedParameter } from "./decorators";
+import { forwardRef, isTokenRef, type TokenRef } from "../tokensRef";
+import { updateParameterMetadata } from "./decorators";
 
 /**
  * Parameter decorator that injects all instances provided by the registrations
@@ -36,7 +36,10 @@ export function OptionalAll<Value>(token: Token<Value>): ParameterDecorator;
 export function OptionalAll<Value>(tokens: TokenRef<Value>): ParameterDecorator;
 
 export function OptionalAll<T>(token: Token<T> | TokenRef<T>): ParameterDecorator {
-  return function (target, propertyKey, parameterIndex: number): void {
-    processDecoratedParameter("OptionalAll", token, target, propertyKey, parameterIndex);
+  return function (target, propertyKey, parameterIndex): void {
+    updateParameterMetadata("OptionalAll", target, propertyKey, parameterIndex, (dependency) => {
+      dependency.decorator = "OptionalAll";
+      dependency.tokenRef = isTokenRef(token) ? token : forwardRef(() => token);
+    });
   };
 }
