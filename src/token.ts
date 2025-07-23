@@ -79,5 +79,5 @@ export function createType<T>(typeName: string): Type<T> {
 
 // @internal
 export function isConstructor<T>(token: Type<T> | Constructor<T & object>): token is Constructor<T & object> {
-  return typeof token == "function";
+  return typeof token === "function";
 }

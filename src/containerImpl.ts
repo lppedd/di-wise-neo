@@ -115,7 +115,7 @@ export class ContainerImpl implements Container {
   register<T>(...args: [Constructor<T & object>] | [Token<T>, Provider<T>, RegistrationOptions?]): Container {
     this.checkDisposed();
 
-    if (args.length == 1) {
+    if (args.length === 1) {
       const Class = args[0];
       const metadata = getMetadata(Class);
       const registration: Registration = {
@@ -445,7 +445,7 @@ export class ContainerImpl implements Container {
     scope = this.myOptions.defaultScope,
     context = useInjectionContext(),
   ): Exclude<Scope, typeof Scope.Inherited> {
-    if (scope == Scope.Inherited) {
+    if (scope === Scope.Inherited) {
       const dependentFrame = context?.resolution.stack.peek();
       return dependentFrame?.scope || Scope.Transient;
     }
