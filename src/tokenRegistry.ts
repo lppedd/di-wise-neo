@@ -64,13 +64,6 @@ export class TokenRegistry {
     return (internal && [internal]) || this.getAllFromParent(token, name);
   }
 
-  //
-  // set(...) overloads added because of TS distributive conditional types.
-  //
-  // TODO(Edoardo): is there a better way? Maybe refactor the Token<T> type
-  //  into two types, TokenObject<T extends object> | Token<T>
-  //
-
   set<T extends object>(token: Type<T> | Constructor<T>, registration: Registration<T>): void;
   set<T>(token: Token<T>, registration: Registration<T>): void;
   set<T>(token: Token<T>, registration: Registration<T>): void {
