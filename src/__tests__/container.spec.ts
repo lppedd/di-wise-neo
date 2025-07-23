@@ -20,7 +20,7 @@ import {
   Scope,
   Scoped
 } from "..";
-import { Named } from "../decorators/named";
+import { Named } from "../decorators";
 import { useInjectionContext } from "../injectionContext";
 import { optional } from "../optional";
 import { optionalAll } from "../optionalAll";
@@ -550,7 +550,9 @@ describe("Container", () => {
     const freeProduct = container.unregister(Product, "FreeProduct");
     expect(freeProduct).toHaveLength(1);
     expect(freeProduct[0]).toBeInstanceOf(Product);
+
     expect(container.isRegistered(Product, "FreeProduct")).toBe(false);
+    expect(container.isRegistered(Product)).toBe(true);
 
     container.unregister(Product);
     expect(container.isRegistered(Product)).toBe(false);
