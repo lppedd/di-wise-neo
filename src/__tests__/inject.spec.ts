@@ -28,9 +28,7 @@ describe("inject", () => {
         },
       );
       vi.runAllTimers();
-    }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] inject() can only be invoked within an injection context]`,
-    );
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] inject() can only be invoked within an injection context]`);
 
     expect(() => {
       container.resolve(
@@ -41,9 +39,7 @@ describe("inject", () => {
         },
       );
       vi.runAllTimers();
-    }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] injectBy() can only be invoked within an injection context]`,
-    );
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] injectBy() can only be invoked within an injection context]`);
 
     expect(() => {
       container.resolve(
@@ -54,9 +50,7 @@ describe("inject", () => {
         },
       );
       vi.runAllTimers();
-    }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] injectAll() can only be invoked within an injection context]`,
-    );
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] injectAll() can only be invoked within an injection context]`);
 
     vi.restoreAllMocks();
   });

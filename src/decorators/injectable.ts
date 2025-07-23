@@ -33,9 +33,7 @@ export function Injectable<This extends object, Value extends This>(...tokens: T
  * class Weapon {}
  * ```
  */
-export function Injectable<This extends object, Value extends This>(
-  tokens: TokenRef<Value> | TokensRef<Value>,
-): ClassDecorator;
+export function Injectable<This extends object, Value extends This>(tokens: TokenRef<Value> | TokensRef<Value>): ClassDecorator;
 
 /**
  * @__NO_SIDE_EFFECTS__

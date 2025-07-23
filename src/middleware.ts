@@ -9,9 +9,7 @@ export interface MiddlewareComposer {
    */
   use<MethodKey extends keyof Container>(
     key: MethodKey,
-    wrap: Container[MethodKey] extends Function
-      ? (next: Container[MethodKey]) => Container[MethodKey]
-      : never,
+    wrap: Container[MethodKey] extends Function ? (next: Container[MethodKey]) => Container[MethodKey] : never,
   ): MiddlewareComposer;
 }
 

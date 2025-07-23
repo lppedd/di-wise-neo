@@ -6,13 +6,7 @@ import { createResolution, provideInjectionContext, useInjectionContext } from "
 import { getMetadata } from "./metadata";
 import { optionalBy } from "./optional";
 import { optionalAll } from "./optionalAll";
-import {
-  isClassProvider,
-  isExistingProvider,
-  isFactoryProvider,
-  isValueProvider,
-  type Provider,
-} from "./provider";
+import { isClassProvider, isExistingProvider, isFactoryProvider, isValueProvider, type Provider } from "./provider";
 import { Scope } from "./scope";
 import { type Constructor, isConstructor, type Token, type Tokens } from "./token";
 import { isBuilder, type Registration, type RegistrationOptions, TokenRegistry } from "./tokenRegistry";
@@ -121,11 +115,7 @@ export class ContainerImpl implements Container {
     return this.myTokenRegistry.get(token, name) !== undefined;
   }
 
-  registerClass<T extends object, V extends T>(
-    token: Token<T>,
-    Class?: Constructor<V>,
-    options?: RegistrationOptions,
-  ): void {
+  registerClass<T extends object, V extends T>(token: Token<T>, Class?: Constructor<V>, options?: RegistrationOptions): void {
     // This mess will go away once/if we remove the register method
     // in favor of the multiple specialized ones
     if (Class) {
@@ -136,11 +126,7 @@ export class ContainerImpl implements Container {
     }
   }
 
-  registerFactory<T, V extends T>(
-    token: Token<T>,
-    factory: (...args: []) => V,
-    options?: RegistrationOptions,
-  ): void {
+  registerFactory<T, V extends T>(token: Token<T>, factory: (...args: []) => V, options?: RegistrationOptions): void {
     this.register(token, { useFactory: factory }, options);
   }
 
@@ -386,10 +372,7 @@ export class ContainerImpl implements Container {
       return undefined;
     }
 
-    assert(
-      scope !== Scope.Container,
-      `unregistered class ${Class.name} cannot be resolved in container scope`,
-    );
+    assert(scope !== Scope.Container, `unregistered class ${Class.name} cannot be resolved in container scope`);
 
     const registration: Registration<T> = {
       provider: metadata.provider,

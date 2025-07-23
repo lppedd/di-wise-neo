@@ -156,10 +156,7 @@ export interface Container {
    *
    * When an alias is resolved, the target token is resolved instead.
    */
-  registerAlias<Value, ProvidedValue extends Value>(
-    targetToken: Token<ProvidedValue>,
-    aliasTokens: Tokens<Value>,
-  ): void;
+  registerAlias<Value, ProvidedValue extends Value>(targetToken: Token<ProvidedValue>, aliasTokens: Tokens<Value>): void;
 
   /**
    * Registers a {@link ClassProvider}, using the class itself as its token.
@@ -207,10 +204,7 @@ export interface Container {
    *
    * @see registerAlias
    */
-  register<Value, ProviderValue extends Value>(
-    token: Token<Value>,
-    provider: ExistingProvider<ProviderValue>,
-  ): Container;
+  register<Value, ProviderValue extends Value>(token: Token<Value>, provider: ExistingProvider<ProviderValue>): Container;
 
   /**
    * Registers a {@link ValueProvider} with a token.
@@ -220,10 +214,7 @@ export interface Container {
    *
    * @see registerValue
    */
-  register<Value, ProviderValue extends Value>(
-    token: Token<Value>,
-    provider: ValueProvider<ProviderValue>,
-  ): Container;
+  register<Value, ProviderValue extends Value>(token: Token<Value>, provider: ValueProvider<ProviderValue>): Container;
 
   /**
    * Removes all registrations for the given token from the container's internal registry.

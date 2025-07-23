@@ -1,14 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  applyMiddleware,
-  type Container,
-  createContainer,
-  inject,
-  injectAll,
-  type Middleware,
-  type Token,
-} from "..";
+import { applyMiddleware, type Container, createContainer, inject, injectAll, type Middleware, type Token } from "..";
 
 describe("Middleware", () => {
   let container: Container;

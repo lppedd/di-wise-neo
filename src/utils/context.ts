@@ -1,8 +1,5 @@
 // @internal
-export function createInjectionContext<T extends {}>(): readonly [
-  (next: T) => () => T | null,
-  () => T | null,
-] {
+export function createInjectionContext<T extends {}>(): readonly [(next: T) => () => T | null, () => T | null] {
   let current: T | null = null;
 
   function provide(next: T): () => T | null {

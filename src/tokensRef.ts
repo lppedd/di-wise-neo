@@ -21,9 +21,7 @@ export function forwardRef<Value>(token: () => Tokens<Value>): TokensRef<Value>;
  */
 export function forwardRef<Value>(token: () => Token<Value>): TokenRef<Value>;
 
-export function forwardRef<Value>(
-  token: () => Token<Value> | Tokens<Value>,
-): TokensRef<Value> & TokenRef<Value> {
+export function forwardRef<Value>(token: () => Token<Value> | Tokens<Value>): TokensRef<Value> & TokenRef<Value> {
   return {
     getRefTokens: (): Set<Token<Value>> => {
       // Normalize the single token here, so that we don't have
