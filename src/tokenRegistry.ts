@@ -56,10 +56,11 @@ export class TokenRegistry {
 
   get<T>(token: Token<T>, name?: string): Registration<T> | undefined {
     // To clarify, at(-1) means we take the last added registration for this token
-    return this.getAll(token, name)?.at(-1);
+    return this.getAll(token, name).at(-1);
   }
 
-  getAll<T>(token: Token<T>, name?: string): Registration<T>[] | undefined {
+  getAll<T>(token: Token<T>, name?: string): Registration<T>[] {
+    // Internal registrations cannot have a name
     const internal = name !== undefined ? undefined : internals.get(token);
     return (internal && [internal]) || this.getAllFromParent(token, name);
   }
@@ -73,39 +74,36 @@ export class TokenRegistry {
     if (!registrations) {
       this.myMap.set(token, (registrations = []));
     } else if (registration.name !== undefined) {
-      const named = registrations.filter((r) => r.name === registration.name);
-      assert(named.length === 0, `a ${token.name} token named '${registration.name}' is already registered`);
+      const existing = registrations.filter((r) => r.name === registration.name);
+      assert(existing.length === 0, `a ${token.name} token named '${registration.name}' is already registered`);
     }
 
     registrations.push(registration);
   }
 
-  delete<T>(token: Token<T>, name?: string): Registration<T>[] | undefined {
-    let registrations = this.myMap.get(token);
+  delete<T>(token: Token<T>, name?: string): Registration<T>[] {
+    const registrations = this.myMap.get(token);
 
     if (registrations) {
       if (name !== undefined) {
-        const namedRegistrations: Registration[] = [];
+        const removedRegistrations: Registration[] = [];
         const newRegistrations: Registration[] = [];
 
         for (const registration of registrations) {
-          const array = registration.name === name ? namedRegistrations : newRegistrations;
+          const array = registration.name === name ? removedRegistrations : newRegistrations;
           array.push(registration);
         }
 
-        if (namedRegistrations.length > 0) {
-          registrations = namedRegistrations;
+        if (removedRegistrations.length > 0) {
           this.myMap.set(token, newRegistrations);
-        } else {
-          registrations = undefined;
-          this.myMap.delete(token);
+          return removedRegistrations;
         }
-      } else {
-        this.myMap.delete(token);
       }
+
+      this.myMap.delete(token);
     }
 
-    return registrations;
+    return registrations ?? [];
   }
 
   deleteAll(): [Token[], Registration[]] {
@@ -137,20 +135,16 @@ export class TokenRegistry {
     return Array.from(values);
   }
 
-  private getAllFromParent<T>(token: Token<T>, name?: string): Registration<T>[] | undefined {
+  private getAllFromParent<T>(token: Token<T>, name?: string): Registration<T>[] {
     const thisRegistrations = this.myMap.get(token);
     let registrations = thisRegistrations || this.myParent?.getAllFromParent(token, name);
 
     if (registrations && name !== undefined) {
       registrations = registrations.filter((r) => r.name === name);
-      assert(registrations.length < 2, `internal error: more than one registration with qualifier '${name}'`);
-
-      if (registrations.length === 0) {
-        registrations = undefined;
-      }
+      assert(registrations.length < 2, `internal error: more than one registration named '${name}'`);
     }
 
-    return registrations;
+    return registrations ?? [];
   }
 }
 

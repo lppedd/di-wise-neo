@@ -75,12 +75,8 @@ export class ContainerImpl implements Container {
 
   getAllCached<T>(token: Token<T>): T[] {
     this.checkDisposed();
+
     const registrations = this.myTokenRegistry.getAll(token);
-
-    if (!registrations) {
-      return [];
-    }
-
     const values = new Set<T>();
 
     for (const registration of registrations) {
@@ -96,6 +92,7 @@ export class ContainerImpl implements Container {
 
   resetRegistry(): unknown[] {
     this.checkDisposed();
+
     const [, registrations] = this.myTokenRegistry.deleteAll();
     const values = new Set<unknown>();
 
@@ -220,12 +217,8 @@ export class ContainerImpl implements Container {
 
   unregister<T>(token: Token<T>, name?: string): T[] {
     this.checkDisposed();
+
     const registrations = this.myTokenRegistry.delete(token, name);
-
-    if (!registrations) {
-      return [];
-    }
-
     const values = new Set<T>();
 
     for (const registration of registrations) {
@@ -269,7 +262,7 @@ export class ContainerImpl implements Container {
     this.checkDisposed();
     const registrations = this.myTokenRegistry.getAll(token);
 
-    if (registrations) {
+    if (registrations.length > 0) {
       return registrations //
         .map((registration) => this.resolveRegistration(token, registration))
         .filter((value) => value != null);
