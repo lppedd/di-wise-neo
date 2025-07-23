@@ -17,16 +17,16 @@ export interface RegistrationOptions {
 }
 
 // @internal
-export type Decorator = "Inject" | "InjectAll" | "Optional" | "OptionalAll";
+export type InjectDecorator = "Inject" | "InjectAll" | "Optional" | "OptionalAll";
 
 // @internal
 export interface MethodDependency {
-  appliedBy?: Decorator;
-  tokenRef?: TokenRef;
-  name?: string;
-
   // The index of the annotated parameter (zero-based)
   readonly index: number;
+
+  appliedBy?: InjectDecorator;
+  tokenRef?: TokenRef;
+  name?: string;
 }
 
 // @internal
@@ -37,11 +37,12 @@ export interface Dependencies {
 
 // @internal
 export interface Registration<T = any> {
-  value?: ValueRef<T>;
   readonly name?: string;
   readonly provider: Provider<T>;
   readonly options?: RegistrationOptions;
   readonly dependencies?: Dependencies;
+
+  value?: ValueRef<T>;
 }
 
 // @internal
