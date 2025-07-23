@@ -725,11 +725,11 @@ describe("Container", () => {
     expect(container.resolve(WizardImpl)).toBe(container.resolve(Wizard));
   });
 
-  it("should throw error when named qualifier is empty", () => {
+  it("should throw error when named qualifier is empty or blank", () => {
     expect(() => {
-      @Named("") // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      @Named("  ") // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {}
-    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] the @Named qualifier cannot be empty]`);
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] the @Named qualifier cannot be empty or blank]`);
   });
 
   it("should resolve named class provider", () => {

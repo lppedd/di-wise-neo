@@ -8,18 +8,18 @@ import { updateParameterMetadata } from "./decorators";
  *
  * @example
  * ```ts
- * @Named('Dumbledore')
+ * @Named("Dumbledore")
  * class Dumbledore extends Wizard {}
  *
  * container.register(Wizard, { useClass: Dumbledore });
- * container.resolve(Wizard, "Dumbledore");
+ * const dumbledore = container.resolve(Wizard, "Dumbledore");
  * ```
  *
  * @__NO_SIDE_EFFECTS__
  */
 export function Named(name: string): ClassDecorator & ParameterDecorator {
-  if (!name) {
-    assert(false, "the @Named qualifier cannot be empty");
+  if (!name.trim()) {
+    assert(false, "the @Named qualifier cannot be empty or blank");
   }
 
   return function (target: object, propertyKey?: string | symbol, parameterIndex?: number): void {
