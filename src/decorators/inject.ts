@@ -38,7 +38,7 @@ export function Inject<Value>(tokens: TokenRef<Value>): ParameterDecorator;
 export function Inject<T>(token: Token<T> | TokenRef<T>): ParameterDecorator {
   return function (target, propertyKey, parameterIndex): void {
     updateParameterMetadata("Inject", target, propertyKey, parameterIndex, (dependency) => {
-      dependency.decorator = "Inject";
+      dependency.appliedBy = "Inject";
       dependency.tokenRef = isTokenRef(token) ? token : forwardRef(() => token);
     });
   };

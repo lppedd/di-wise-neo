@@ -21,7 +21,7 @@ export type Decorator = "Inject" | "InjectAll" | "Optional" | "OptionalAll";
 
 // @internal
 export interface MethodDependency {
-  decorator?: Decorator;
+  appliedBy?: Decorator;
   tokenRef?: TokenRef;
   name?: string;
 

@@ -41,7 +41,7 @@ export function InjectAll<Value>(tokens: TokenRef<Value>): ParameterDecorator;
 export function InjectAll<T>(token: Token<T> | TokenRef<T>): ParameterDecorator {
   return function (target, propertyKey, parameterIndex): void {
     updateParameterMetadata("InjectAll", target, propertyKey, parameterIndex, (dependency) => {
-      dependency.decorator = "InjectAll";
+      dependency.appliedBy = "InjectAll";
       dependency.tokenRef = isTokenRef(token) ? token : forwardRef(() => token);
     });
   };

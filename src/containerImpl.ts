@@ -491,7 +491,7 @@ export class ContainerImpl implements Container {
 
     if (dependencies) {
       assert(isClassProvider(registration.provider), `internal error: not a ClassProvider`);
-      const ctorDeps = dependencies.constructor.filter((d) => d.decorator);
+      const ctorDeps = dependencies.constructor.filter((d) => d.appliedBy);
 
       if (ctorDeps.length > 0) {
         // Let's check if all necessary constructor parameters are decorated.
@@ -506,7 +506,7 @@ export class ContainerImpl implements Container {
           .sort((a, b) => a.index - b.index)
           .map((dep) => {
             const token = dep.tokenRef!.getRefToken();
-            switch (dep.decorator) {
+            switch (dep.appliedBy) {
               case "Inject":
                 return this.resolve(token, dep.name);
               case "InjectAll":
@@ -533,7 +533,7 @@ export class ContainerImpl implements Container {
       // Perform method injection
       for (const entry of dependencies.methods) {
         const key = entry[0];
-        const methodDeps = entry[1].filter((d) => d.decorator);
+        const methodDeps = entry[1].filter((d) => d.appliedBy);
 
         // Let's check if all necessary method parameters are decorated.
         // If not, we cannot safely invoke the method.
@@ -548,7 +548,7 @@ export class ContainerImpl implements Container {
           .sort((a, b) => a.index - b.index)
           .map((dep) => {
             const token = dep.tokenRef!.getRefToken();
-            switch (dep.decorator) {
+            switch (dep.appliedBy) {
               case "Inject":
                 return injectBy(instance, token, dep.name);
               case "InjectAll":

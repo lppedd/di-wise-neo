@@ -35,7 +35,7 @@ export function Optional<Value>(tokens: TokenRef<Value>): ParameterDecorator;
 export function Optional<T>(token: Token<T> | TokenRef<T>): ParameterDecorator {
   return function (target, propertyKey, parameterIndex): void {
     updateParameterMetadata("Optional", target, propertyKey, parameterIndex, (dependency) => {
-      dependency.decorator = "Optional";
+      dependency.appliedBy = "Optional";
       dependency.tokenRef = isTokenRef(token) ? token : forwardRef(() => token);
     });
   };
