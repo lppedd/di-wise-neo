@@ -17,14 +17,11 @@ export interface RegistrationOptions {
 }
 
 // @internal
-export type InjectDecorator = "Inject" | "InjectAll" | "Optional" | "OptionalAll";
-
-// @internal
 export interface MethodDependency {
   // The index of the annotated parameter (zero-based)
   readonly index: number;
 
-  appliedBy?: InjectDecorator;
+  appliedBy?: "Inject" | "InjectAll" | "Optional" | "OptionalAll";
   tokenRef?: TokenRef;
   name?: string;
 }
