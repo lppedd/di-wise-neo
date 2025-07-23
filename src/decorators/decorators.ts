@@ -12,7 +12,7 @@ export function updateParameterMetadata(
 ): void {
   // Error out immediately if the decorator has been applied to a static method
   if (propertyKey !== undefined && typeof target === "function") {
-    assert(false, `@${decorator} cannot be used on static member ${target.name}.${String(propertyKey)}`);
+    assert(false, `@${decorator} cannot be used on static method ${target.name}.${String(propertyKey)}`);
   }
 
   if (propertyKey === undefined) {

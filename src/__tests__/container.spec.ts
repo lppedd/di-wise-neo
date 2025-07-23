@@ -376,7 +376,7 @@ describe("Container", () => {
       class Wizard {
         static setWand(@Inject(Wand) _wand: string): void {}
       }
-    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] @Inject cannot be used on static member Wizard.setWand]`);
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] @Inject cannot be used on static method Wizard.setWand]`);
   });
 
   it("should throw when @Optional is applied to static methods", () => {
@@ -387,7 +387,7 @@ describe("Container", () => {
       class Wizard {
         static setWand(@Optional(Wand) _wand: string | undefined): void {}
       }
-    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] @Optional cannot be used on static member Wizard.setWand]`);
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] @Optional cannot be used on static method Wizard.setWand]`);
   });
 
   it("should throw when @InjectAll is applied to static methods", () => {
@@ -398,7 +398,7 @@ describe("Container", () => {
       class Wizard {
         static setWands(@InjectAll(Wand) _wands: string[]): void {}
       }
-    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] @InjectAll cannot be used on static member Wizard.setWands]`);
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] @InjectAll cannot be used on static method Wizard.setWands]`);
   });
 
   it("should throw when @OptionalAll is applied to static methods", () => {
@@ -409,7 +409,7 @@ describe("Container", () => {
       class Wizard {
         static setWands(@OptionalAll(Wand) _wands: string[]): void {}
       }
-    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] @OptionalAll cannot be used on static member Wizard.setWands]`);
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] @OptionalAll cannot be used on static method Wizard.setWands]`);
   });
 
   it("should throw when not all constructor params are decorated with @Inject", () => {
