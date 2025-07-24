@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.2
+
+- Enforced that provider `name` qualifiers cannot be empty or blank.  
+  This now aligns with the expectations of the `@Named` decorator.
+
 ## 0.7.1
 
 - Fixed missing exports for the `optional`, `optionalBy`, and `optionalAll` injection functions.
