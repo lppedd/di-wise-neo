@@ -147,6 +147,9 @@ export class ContainerImpl implements Container {
       }
     } else {
       const [token, provider, options] = args;
+      const existingProvider = isExistingProvider(provider);
+      const name = existingProvider ? undefined : provider.name;
+      assert(name === undefined || name.trim(), "the provider name qualifier cannot be empty or blank");
 
       if (isClassProvider(provider)) {
         const metadata = getMetadata(provider.useClass);
@@ -169,8 +172,6 @@ export class ContainerImpl implements Container {
           this.resolveProviderValue(registration, registration.provider);
         }
       } else {
-        const existingProvider = isExistingProvider(provider);
-
         if (existingProvider) {
           assert(
             token !== provider.useExisting,
@@ -179,7 +180,7 @@ export class ContainerImpl implements Container {
         }
 
         this.myTokenRegistry.set(token, {
-          name: existingProvider ? undefined : provider.name,
+          name: name,
           provider: provider,
           options: options,
         });

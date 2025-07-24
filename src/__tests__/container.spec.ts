@@ -730,6 +730,14 @@ describe("Container", () => {
       @Named("  ") // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {}
     }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] the @Named qualifier cannot be empty or blank]`);
+
+    expect(() => {
+      class Wizard {}
+      container.register(Wizard, {
+        useValue: new Wizard(),
+        name: "  ",
+      });
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] the provider name qualifier cannot be empty or blank]`);
   });
 
   it("should resolve named class provider", () => {
