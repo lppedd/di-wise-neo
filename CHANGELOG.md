@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.7.0
+
+- Introduced support for _named_ tokens.  
+  Multiple implementations of the same base type can now be registered and resolved using unique names.
+- Added the [@Named](https://github.com/lppedd/di-wise-neo#named) decorator for qualifying classes and dependencies.
+- Removed specialized registration methods:
+  - `registerClass`
+  - `registerFactory`
+  - `registerValue`
+  - `registerAlias`
+
+  These methods were ultimately redundant and added little value in practice.
+- Improved in-code documentation.
+- Performed various internal cleanups to improve readability and maintainability.
+
 ## 0.6.0
 
 - Converted `@EagerInstantiate` to a decorator factory for consistency and future extensibility.  
