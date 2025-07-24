@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.1
+
+- Fixed missing exports for the `optional`, `optionalBy`, and `optionalAll` injection functions.
+- Added missing support for name-qualified tokens in `Injector`.
+
 ## 0.7.0
 
 - Introduced support for _named_ tokens.  
