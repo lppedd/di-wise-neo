@@ -1,7 +1,7 @@
 import { assert } from "../errors";
 import { getMetadata } from "../metadata";
 import type { Constructor } from "../token";
-import { updateParameterMetadata } from "./decorators";
+import { updateParameterMetadata } from "./utils";
 
 /**
  * Qualifies a class or an injected parameter with a unique name.

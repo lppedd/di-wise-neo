@@ -1,6 +1,6 @@
 import type { Constructor, Token } from "../token";
 import { forwardRef, isTokenRef, type TokenRef } from "../tokensRef";
-import { updateParameterMetadata } from "./decorators";
+import { updateParameterMetadata } from "./utils";
 
 /**
  * Parameter decorator that injects all instances provided by the registrations
