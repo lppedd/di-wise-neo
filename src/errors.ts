@@ -3,8 +3,7 @@ import type { Token } from "./token";
 // @internal
 export function assert(condition: unknown, message: string | (() => string)): asserts condition {
   if (!condition) {
-    const resolvedMessage = typeof message === "string" ? message : message();
-    throw new Error(tag(resolvedMessage));
+    throw new Error(tag(typeof message === "string" ? message : message()));
   }
 }
 
@@ -21,13 +20,9 @@ export function throwUnregisteredError(token: Token): never {
 // @internal
 export function throwExistingUnregisteredError(sourceToken: Token, targetTokenOrError: Token | Error): never {
   let message = tag(`token resolution error encountered while resolving ${sourceToken.name}`);
-
-  if (isError(targetTokenOrError)) {
-    message += `\n  [cause] ${untag(targetTokenOrError.message)}`;
-  } else {
-    message += `\n  [cause] the aliased token ${targetTokenOrError.name} is not registered`;
-  }
-
+  message += isError(targetTokenOrError)
+    ? `\n  [cause] ${untag(targetTokenOrError.message)}`
+    : `\n  [cause] the aliased token ${targetTokenOrError.name} is not registered`;
   throw new Error(message);
 }
 
@@ -41,7 +36,5 @@ function tag(message: string): string {
 }
 
 function untag(message: string): string {
-  return message.startsWith("[di-wise-neo]") //
-    ? message.substring(13).trimStart()
-    : message;
+  return message.startsWith("[di-wise-neo]") ? message.substring(13).trimStart() : message;
 }
