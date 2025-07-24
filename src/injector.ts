@@ -15,14 +15,14 @@ export interface Injector {
    *
    * Throws an error if the class is not registered in the container.
    */
-  inject<Instance extends object>(Class: Constructor<Instance>): Instance;
+  inject<Instance extends object>(Class: Constructor<Instance>, name?: string): Instance;
 
   /**
    * Injects the value associated with the given token.
    *
    * Throws an error if the token is not registered in the container.
    */
-  inject<Value>(token: Token<Value>): Value;
+  inject<Value>(token: Token<Value>, name?: string): Value;
 
   /**
    * Injects all instances provided by the registrations associated with the given class.
@@ -42,13 +42,13 @@ export interface Injector {
    * Injects the instance associated with the given class,
    * or `undefined` if the class is not registered in the container.
    */
-  optional<Instance extends object>(Class: Constructor<Instance>): Instance | undefined;
+  optional<Instance extends object>(Class: Constructor<Instance>, name?: string): Instance | undefined;
 
   /**
    * Injects the value associated with the given token,
    * or `undefined` if the token is not registered in the container.
    */
-  optional<Value>(token: Token<Value>): Value | undefined;
+  optional<Value>(token: Token<Value>, name?: string): Value | undefined;
 
   /**
    * Injects all instances provided by the registrations associated with the given class,
@@ -109,9 +109,9 @@ export const Injector: Type<Injector> = /*@__PURE__*/ build(function Injector() 
   }
 
   return {
-    inject: <T>(token: Token<T>) => withCurrentContext(() => inject(token)),
+    inject: <T>(token: Token<T>, name?: string) => withCurrentContext(() => inject(token, name)),
     injectAll: <T>(token: Token<T>) => withCurrentContext(() => injectAll(token)),
-    optional: <T>(token: Token<T>) => withCurrentContext(() => optional(token)),
+    optional: <T>(token: Token<T>, name?: string) => withCurrentContext(() => optional(token, name)),
     optionalAll: <T>(token: Token<T>) => withCurrentContext(() => optionalAll(token)),
   };
 });
