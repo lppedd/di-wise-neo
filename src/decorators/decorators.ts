@@ -3,6 +3,7 @@ import { getMetadata } from "../metadata";
 import type { Constructor } from "../token";
 import type { MethodDependency } from "../tokenRegistry";
 
+// @internal
 export function updateParameterMetadata(
   decorator: string,
   target: object,
