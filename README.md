@@ -18,7 +18,7 @@
 > in part thanks to TypeScript's experimental decorators. Shout out to [@exuanbo](https://github.com/exuanbo)
 > for the strong foundations!
 
-## Table of Contents
+### Table of Contents
 
 - [Installation](#installation)
 - [API reference](#api-reference)
@@ -31,7 +31,7 @@
 - [Behavioral decorators](#behavioral-decorators)
 - [Testing support](#testing-support)
 
-## Why yet another library
+### Why yet another library
 
 I've been developing VS Code extensions for a while as part of my daily work.
 It's enjoyable work! However, extensions always reach that tipping point where
@@ -444,7 +444,7 @@ export class ExtensionContext {
 
 ## Behavioral decorators
 
-The library includes three behavioral decorators that influence how classes are registered in the container.
+The library includes four behavioral decorators that influence how classes are registered in the container.
 These decorators attach metadata to the class type, which is then interpreted by the container during registration.
 
 ### `@Scoped`
@@ -472,6 +472,32 @@ container.register(
 ```
 
 In this example, `ExtensionContext` will be registered with **Resolution** scope instead.
+
+### `@Named`
+
+Marks a class or injected dependency with a unique name (qualifier), allowing the container
+to distinguish between multiple implementations of the same type.
+
+```ts
+@Named("persistent")
+@Scoped(Scope.Container)
+export class PersistentSecretStorage implements SecretStorage {
+  /* ... */
+}
+
+// Register the class with Type<SecretStorage>.
+// The container will automatically qualify the registration with 'persistent'.
+container.register(ISecretStorage, { useClass: PersistentSecretStorage });
+
+// Inject the SecretStorage dependency by name
+export class ExtensionContext {
+  constructor(@Inject(ISecretStorage) @Named("persistent") readonly secretStorage: SecretStorage) {}
+
+  /* ... */
+}
+```
+
+The container will throw an error at registration time if the name is already taken by another registration.
 
 ### `@AutoRegister`
 

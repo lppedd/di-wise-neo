@@ -4,15 +4,19 @@ import type { Constructor } from "../token";
 import { updateParameterMetadata } from "./decorators";
 
 /**
- * Qualifies a class or an injected parameter by a unique name.
+ * Qualifies a class or an injected parameter with a unique name.
+ *
+ * This allows the container to distinguish between multiple implementations
+ * of the same interface or type during registration and injection.
  *
  * @example
  * ```ts
- * @Named("Dumbledore")
- * class Dumbledore extends Wizard {}
+ * @Named("dumbledore")
+ * class Dumbledore implements Wizard {}
  *
- * container.register(Wizard, { useClass: Dumbledore });
- * const dumbledore = container.resolve(Wizard, "Dumbledore");
+ * // Register Dumbledore with Type<Wizard>
+ * container.register(IWizard, { useClass: Dumbledore });
+ * const dumbledore = container.resolve(IWizard, "dumbledore");
  * ```
  *
  * @__NO_SIDE_EFFECTS__
