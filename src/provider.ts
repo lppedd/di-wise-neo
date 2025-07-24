@@ -4,18 +4,58 @@ import type { Constructor, Token } from "./token";
  * Provides a class instance for a token via a class constructor.
  */
 export interface ClassProvider<Instance extends object> {
+  /**
+   * The class to instantiate for the token.
+   */
   readonly useClass: Constructor<Instance>;
+
+  /**
+   * An optional name to qualify this provider.
+   * If specified, the token must be resolved using the same name.
+   *
+   * Equivalent to decorating the class with `@Named(...)`.
+   *
+   * @example
+   * ```ts
+   * export class ExtensionContext {
+   *   // Decorator-based injection
+   *   constructor(@Inject(ISecretStorage) @Named("persistent") secretStorage: SecretStorage) {}
+   *
+   *   // Function-based injection
+   *   constructor(secretStorage = inject(ISecretStorage, "persistent")) {}
+   * }
+   * ```
+   */
   readonly name?: string;
 }
 
 /**
  * Provides a value for a token via a factory function.
- *
- * The factory function runs inside the injection context and can
- * thus access dependencies via {@link inject}-like functions.
  */
 export interface FactoryProvider<Value> {
+  /**
+   * A function that produces the value at resolution time.
+   *
+   * The function runs inside the injection context and can
+   * access dependencies via {@link inject}-like helpers.
+   */
   readonly useFactory: (...args: []) => Value;
+
+  /**
+   * An optional name to qualify this provider.
+   * If specified, the token must be resolved using the same name.
+   *
+   * @example
+   * ```ts
+   * export class ExtensionContext {
+   *   // Decorator-based injection
+   *   constructor(@Inject(ISecretStorage) @Named("persistent") secretStorage: SecretStorage) {}
+   *
+   *   // Function-based injection
+   *   constructor(secretStorage = inject(ISecretStorage, "persistent")) {}
+   * }
+   * ```
+   */
   readonly name?: string;
 }
 
@@ -23,7 +63,26 @@ export interface FactoryProvider<Value> {
  * Provides a static - already constructed - value for a token.
  */
 export interface ValueProvider<T> {
+  /**
+   * The static value to associate with the token.
+   */
   readonly useValue: T;
+
+  /**
+   * An optional name to qualify this provider.
+   * If specified, the token must be resolved using the same name.
+   *
+   * @example
+   * ```ts
+   * export class ExtensionContext {
+   *   // Decorator-based injection
+   *   constructor(@Inject(ISecretStorage) @Named("persistent") secretStorage: SecretStorage) {}
+   *
+   *   // Function-based injection
+   *   constructor(secretStorage = inject(ISecretStorage, "persistent")) {}
+   * }
+   * ```
+   */
   readonly name?: string;
 }
 
@@ -33,6 +92,9 @@ export interface ValueProvider<T> {
  * Resolving this token will return the value of the aliased one.
  */
 export interface ExistingProvider<Value> {
+  /**
+   * The existing token to alias.
+   */
   readonly useExisting: Token<Value>;
 }
 
