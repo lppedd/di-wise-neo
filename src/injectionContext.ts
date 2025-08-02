@@ -2,7 +2,6 @@ import type { Container } from "./container";
 import { assert } from "./errors";
 import type { Provider } from "./provider";
 import type { Scope } from "./scope";
-import { createInjectionContext } from "./utils/context";
 import { KeyedStack } from "./utils/keyedStack";
 import { WeakRefMap } from "./utils/weakRefMap";
 import type { ValueRef } from "./valueRef";
@@ -43,4 +42,20 @@ export function ensureInjectionContext(fn: Function): InjectionContext {
   const context = useInjectionContext();
   assert(context, `${fn.name}() can only be invoked within an injection context`);
   return context;
+}
+
+function createInjectionContext<T extends {}>(): readonly [(next: T) => () => T | null, () => T | null] {
+  let current: T | null = null;
+
+  function provide(next: T): () => T | null {
+    const prev = current;
+    current = next;
+    return () => (current = prev);
+  }
+
+  function use(): T | null {
+    return current;
+  }
+
+  return [provide, use] as const;
 }
