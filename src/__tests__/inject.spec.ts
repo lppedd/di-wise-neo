@@ -3,20 +3,7 @@
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import {
-  AutoRegister,
-  build,
-  createContainer,
-  Inject,
-  inject,
-  injectAll,
-  injectBy,
-  Injector,
-  Optional,
-  runInInjectionContext,
-  Scope,
-  Scoped
-} from "..";
+import { AutoRegister, build, createContainer, Inject, inject, injectAll, injectBy, Injector, Optional, Scope, Scoped } from "..";
 import { useInjectionContext } from "../injectionContext";
 import { optional, optionalBy } from "../optional";
 
@@ -187,13 +174,13 @@ describe("inject", () => {
       expect(container.getCached(Wand)).toBe(wand);
     });
 
-    it("should support runInInjectionContext", () => {
+    it("should support runInContext", () => {
       @AutoRegister()
       @Scoped(Scope.Container)
       class Wizard {}
 
       const injector = container.resolve(Injector);
-      const wizard = runInInjectionContext(injector, () => optional(Wizard));
+      const wizard = injector.runInContext(() => optional(Wizard));
 
       expect(wizard).not.toBeUndefined();
       expect(wizard).toBe(container.resolve(Wizard));

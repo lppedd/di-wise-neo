@@ -2,7 +2,7 @@
 
 ## 0.8.0
 
-- Introduced a `runInInjectionContext` function, to run code with access to injection functions (`inject`, `optional`, etc.).
+- Introduced `Injector.runInContext`, to run code with access to injection functions (`inject`, `optional`, etc.).
 - Performed various internal cleanups.
 
 ## 0.7.2

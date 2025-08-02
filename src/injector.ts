@@ -1,4 +1,3 @@
-import { assert } from "./errors";
 import { inject } from "./inject";
 import { injectAll } from "./injectAll";
 import { ensureInjectionContext, provideInjectionContext, useInjectionContext } from "./injectionContext";
@@ -62,15 +61,18 @@ export interface Injector {
    * or an empty array if the token is not registered in the container.
    */
   optionalAll<Value>(token: Token<Value>): NonNullable<Value>[];
-}
 
-class InjectorImpl implements Injector {
-  constructor(readonly withContext: <T>(fn: () => T) => T) {}
-
-  inject = <T>(token: Token<T>, name?: string): T => this.withContext(() => inject(token, name));
-  injectAll = <T>(token: Token<T>): T[] => this.withContext(() => injectAll(token));
-  optional = <T>(token: Token<T>, name?: string): T | undefined => this.withContext(() => optional(token, name));
-  optionalAll = <T>(token: Token<T>): T[] => this.withContext(() => optionalAll(token));
+  /**
+   * Runs a function inside the injection context of this injector.
+   *
+   * Note that injection functions (`inject`, `injectAll`, `optional`, `optionalAll`)
+   * are only usable synchronously: they cannot be called from asynchronous callbacks
+   * or after any `await` points.
+   *
+   * @param fn The function to be run in the context of this injector.
+   * @returns The return value of the function, if any.
+   */
+  runInContext<ReturnType>(fn: () => ReturnType): ReturnType;
 }
 
 /**
@@ -116,22 +118,11 @@ export const Injector: Type<Injector> = /*@__PURE__*/ build<Injector>(() => {
     }
   }
 
-  return new InjectorImpl(withContext);
+  return {
+    inject: <T>(token: Token<T>, name?: string) => withContext(() => inject(token, name)),
+    injectAll: <T>(token: Token<T>) => withContext(() => injectAll(token)),
+    optional: <T>(token: Token<T>, name?: string) => withContext(() => optional(token, name)),
+    optionalAll: <T>(token: Token<T>) => withContext(() => optionalAll(token)),
+    runInContext: withContext,
+  };
 }, "Injector");
-
-/**
- * Runs a function inside the injection context of the given `Injector`.
- *
- * Note that injection functions (`inject`, `injectAll`, `optional`, `optionalAll`)
- * are only usable synchronously: they cannot be called from asynchronous callbacks
- * or after any `await` points.
- *
- * @param injector The `Injector` holding the injection context.
- * @param fn The function to be run in the context of `injector`.
- *
- * @__NO_SIDE_EFFECTS__
- */
-export function runInInjectionContext<T>(injector: Injector, fn: () => T): T {
-  assert(injector instanceof InjectorImpl, "the injector does not support runInInjectionContext");
-  return injector.withContext(fn);
-}
