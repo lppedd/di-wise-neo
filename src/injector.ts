@@ -82,7 +82,7 @@ export interface Injector {
  * ```
  */
 export const Injector: Type<Injector> = /*@__PURE__*/ build(function Injector() {
-  const context = ensureInjectionContext(Injector);
+  const context = ensureInjectionContext("Injector factory");
   const resolution = context.resolution;
 
   const dependentFrame = resolution.stack.peek();

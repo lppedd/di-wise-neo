@@ -14,6 +14,6 @@ export function optionalAll<Instance extends object>(Class: Constructor<Instance
 export function optionalAll<Value>(token: Token<Value>): NonNullable<Value>[];
 
 export function optionalAll<T>(token: Token<T>): NonNullable<T>[] {
-  const context = ensureInjectionContext(optionalAll);
+  const context = ensureInjectionContext("optionalAll()");
   return context.container.resolveAll(token, true);
 }

@@ -16,7 +16,7 @@ export function inject<Instance extends object>(Class: Constructor<Instance>, na
 export function inject<Value>(token: Token<Value>, name?: string): Value;
 
 export function inject<T>(token: Token<T>, name?: string): T {
-  const context = ensureInjectionContext(inject);
+  const context = ensureInjectionContext("inject()");
   return context.container.resolve(token, name);
 }
 
@@ -71,7 +71,7 @@ export function injectBy<Instance extends object>(thisArg: any, Class: Construct
 export function injectBy<Value>(thisArg: any, token: Token<Value>, name?: string): Value;
 
 export function injectBy<T>(thisArg: any, token: Token<T>, name?: string): T {
-  const context = ensureInjectionContext(injectBy);
+  const context = ensureInjectionContext("injectBy()");
   const resolution = context.resolution;
   const currentFrame = resolution.stack.peek();
 

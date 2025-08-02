@@ -14,7 +14,7 @@ export function optional<Instance extends object>(Class: Constructor<Instance>, 
 export function optional<Value>(token: Token<Value>, name?: string): Value | undefined;
 
 export function optional<T>(token: Token<T>, name?: string): T | undefined {
-  const context = ensureInjectionContext(optional);
+  const context = ensureInjectionContext("optional()");
   return context.container.resolve(token, true, name);
 }
 
@@ -49,7 +49,7 @@ export function optionalBy<Instance extends object>(
 export function optionalBy<Value>(thisArg: any, token: Token<Value>, name?: string): Value | undefined;
 
 export function optionalBy<T>(thisArg: any, token: Token<T>, name?: string): T | undefined {
-  const context = ensureInjectionContext(optionalBy);
+  const context = ensureInjectionContext("optionalBy()");
   const resolution = context.resolution;
   const currentFrame = resolution.stack.peek();
 

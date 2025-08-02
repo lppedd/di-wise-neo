@@ -38,9 +38,9 @@ export function createResolution(): Resolution {
 export const [provideInjectionContext, useInjectionContext] = createInjectionContext<InjectionContext>();
 
 // @internal
-export function ensureInjectionContext(fn: Function): InjectionContext {
+export function ensureInjectionContext(name: string): InjectionContext {
   const context = useInjectionContext();
-  assert(context, `${fn.name}() can only be invoked within an injection context`);
+  assert(context, `${name} can only be invoked within an injection context`);
   return context;
 }
 

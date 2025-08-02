@@ -16,6 +16,6 @@ export function injectAll<Instance extends object>(Class: Constructor<Instance>)
 export function injectAll<Value>(token: Token<Value>): NonNullable<Value>[];
 
 export function injectAll<T>(token: Token<T>): NonNullable<T>[] {
-  const context = ensureInjectionContext(injectAll);
+  const context = ensureInjectionContext("injectAll()");
   return context.container.resolveAll(token);
 }
