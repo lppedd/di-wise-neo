@@ -100,7 +100,7 @@ export const Injector: Type<Injector> = /*@__PURE__*/ build<Injector>(() => {
   const dependentFrame = resolution.stack.peek();
   const dependentRef = dependentFrame && resolution.dependents.get(dependentFrame.provider);
 
-  function withContext<R>(fn: () => R): R {
+  const runInContext = <R>(fn: () => R): R => {
     if (useInjectionContext()) {
       return fn();
     }
@@ -116,13 +116,13 @@ export const Injector: Type<Injector> = /*@__PURE__*/ build<Injector>(() => {
     } finally {
       cleanups.forEach((cleanup) => cleanup?.());
     }
-  }
+  };
 
   return {
-    inject: <T>(token: Token<T>, name?: string) => withContext(() => inject(token, name)),
-    injectAll: <T>(token: Token<T>) => withContext(() => injectAll(token)),
-    optional: <T>(token: Token<T>, name?: string) => withContext(() => optional(token, name)),
-    optionalAll: <T>(token: Token<T>) => withContext(() => optionalAll(token)),
-    runInContext: withContext,
+    inject: <T>(token: Token<T>, name?: string) => runInContext(() => inject(token, name)),
+    injectAll: <T>(token: Token<T>) => runInContext(() => injectAll(token)),
+    optional: <T>(token: Token<T>, name?: string) => runInContext(() => optional(token, name)),
+    optionalAll: <T>(token: Token<T>) => runInContext(() => optionalAll(token)),
+    runInContext,
   };
 }, "Injector");
