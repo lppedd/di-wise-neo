@@ -3,7 +3,20 @@
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { build, createContainer, Inject, inject, injectAll, injectBy, Injector, Optional, Scope, Scoped } from "..";
+import {
+  AutoRegister,
+  build,
+  createContainer,
+  Inject,
+  inject,
+  injectAll,
+  injectBy,
+  Injector,
+  Optional,
+  runInInjectionContext,
+  Scope,
+  Scoped
+} from "..";
 import { useInjectionContext } from "../injectionContext";
 import { optional, optionalBy } from "../optional";
 
@@ -172,6 +185,18 @@ describe("inject", () => {
       const wand = wizard.injector.inject(Wand);
       expect(wand.owner).toBe(wizard);
       expect(container.getCached(Wand)).toBe(wand);
+    });
+
+    it("should support runInInjectionContext", () => {
+      @AutoRegister()
+      @Scoped(Scope.Container)
+      class Wizard {}
+
+      const injector = container.resolve(Injector);
+      const wizard = runInInjectionContext(injector, () => optional(Wizard));
+
+      expect(wizard).not.toBeUndefined();
+      expect(wizard).toBe(container.resolve(Wizard));
     });
   });
 });

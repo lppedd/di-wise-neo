@@ -1,3 +1,4 @@
+import { assert } from "./errors";
 import { inject } from "./inject";
 import { injectAll } from "./injectAll";
 import { ensureInjectionContext, provideInjectionContext, useInjectionContext } from "./injectionContext";
@@ -63,6 +64,15 @@ export interface Injector {
   optionalAll<Value>(token: Token<Value>): NonNullable<Value>[];
 }
 
+class InjectorImpl implements Injector {
+  constructor(readonly withContext: <T>(fn: () => T) => T) {}
+
+  inject = <T>(token: Token<T>, name?: string): T => this.withContext(() => inject(token, name));
+  injectAll = <T>(token: Token<T>): T[] => this.withContext(() => injectAll(token));
+  optional = <T>(token: Token<T>, name?: string): T | undefined => this.withContext(() => optional(token, name));
+  optionalAll = <T>(token: Token<T>): T[] => this.withContext(() => optionalAll(token));
+}
+
 /**
  * Injector token for dynamic injections.
  *
@@ -81,14 +91,14 @@ export interface Injector {
  * wizard.getWand(); // => Wand
  * ```
  */
-export const Injector: Type<Injector> = /*@__PURE__*/ build(function Injector() {
+export const Injector: Type<Injector> = /*@__PURE__*/ build<Injector>(function Injector() {
   const context = ensureInjectionContext("Injector factory");
   const resolution = context.resolution;
 
   const dependentFrame = resolution.stack.peek();
   const dependentRef = dependentFrame && resolution.dependents.get(dependentFrame.provider);
 
-  function withCurrentContext<R>(fn: () => R): R {
+  function withContext<R>(fn: () => R): R {
     if (useInjectionContext()) {
       return fn();
     }
@@ -106,10 +116,22 @@ export const Injector: Type<Injector> = /*@__PURE__*/ build(function Injector() 
     }
   }
 
-  return {
-    inject: <T>(token: Token<T>, name?: string) => withCurrentContext(() => inject(token, name)),
-    injectAll: <T>(token: Token<T>) => withCurrentContext(() => injectAll(token)),
-    optional: <T>(token: Token<T>, name?: string) => withCurrentContext(() => optional(token, name)),
-    optionalAll: <T>(token: Token<T>) => withCurrentContext(() => optionalAll(token)),
-  };
+  return new InjectorImpl(withContext);
 }, "Injector");
+
+/**
+ * Runs a function inside the injection context of the given `Injector`.
+ *
+ * Note that injection functions (`inject`, `injectAll`, `optional`, `optionalAll`)
+ * are only usable synchronously: they cannot be called from asynchronous callbacks
+ * or after any `await` points.
+ *
+ * @param injector The `Injector` holding the injection context.
+ * @param fn The function to be run in the context of `injector`.
+ *
+ * @__NO_SIDE_EFFECTS__
+ */
+export function runInInjectionContext<T>(injector: Injector, fn: () => T): T {
+  assert(injector instanceof InjectorImpl, "the injector does not support runInInjectionContext");
+  return injector.withContext(fn);
+}
