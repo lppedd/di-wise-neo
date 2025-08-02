@@ -91,7 +91,7 @@ class InjectorImpl implements Injector {
  * wizard.getWand(); // => Wand
  * ```
  */
-export const Injector: Type<Injector> = /*@__PURE__*/ build<Injector>(function Injector() {
+export const Injector: Type<Injector> = /*@__PURE__*/ build<Injector>(() => {
   const context = ensureInjectionContext("Injector factory");
   const resolution = context.resolution;
 
