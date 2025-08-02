@@ -112,4 +112,4 @@ export const Injector: Type<Injector> = /*@__PURE__*/ build(function Injector() 
     optional: <T>(token: Token<T>, name?: string) => withCurrentContext(() => optional(token, name)),
     optionalAll: <T>(token: Token<T>) => withCurrentContext(() => optionalAll(token)),
   };
-});
+}, "Injector");
