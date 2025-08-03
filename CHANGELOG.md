@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.1
+
+- Added an error when a constructor or method parameter declares multiple injection decorators.  
+  While technically possible, this is functionally incorrect and introduces ambiguity.
+- Performed minor internal refactors to improve code readability.
+
 ## 0.8.0
 
 - Introduced `Injector.runInContext`, to run code with access to injection functions (`inject`, `optional`, etc.)
