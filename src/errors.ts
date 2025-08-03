@@ -1,4 +1,4 @@
-import type { Token } from "./token";
+import { isConstructor, type Token } from "./token";
 
 // @internal
 export function assert(condition: unknown, message: string | (() => string)): asserts condition {
@@ -14,7 +14,8 @@ export function expectNever(value: never): never {
 
 // @internal
 export function throwUnregisteredError(token: Token): never {
-  throw new Error(tag(`unregistered token ${token.name}`));
+  const type = isConstructor(token) ? "class" : "token";
+  throw new Error(tag(`unregistered ${type} ${token.name}`));
 }
 
 // @internal
