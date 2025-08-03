@@ -505,21 +505,19 @@ describe("Container", () => {
     class Wand {}
 
     expect(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {
         set(@Inject(Wand) @Optional(Wand) _wand: Wand): void {}
       }
-
-      container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
       `[Error: [di-wise-neo] Wizard.set parameter 0 declares multiple injection decorators, but only one is allowed]`,
     );
 
     expect(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {
         constructor(@OptionalAll(Wand) @InjectAll(Wand) _wand: Wand[]) {}
       }
-
-      container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
       `[Error: [di-wise-neo] Wizard constructor parameter 0 declares multiple injection decorators, but only one is allowed]`,
     );
@@ -592,7 +590,7 @@ describe("Container", () => {
     expect(container.isRegistered(Product)).toBe(false);
   });
 
-  it("should throw an error if unregistered class has container scope", () => {
+  it("should throw if unregistered class has container scope", () => {
     @Scoped(Scope.Container)
     class Wizard {}
 
@@ -604,7 +602,7 @@ describe("Container", () => {
     );
   });
 
-  it("should throw error when the token is not registered", () => {
+  it("should throw when the token is not registered", () => {
     const Env = createType<string>("Env");
 
     expect(() => container.resolve(Env)).toThrowErrorMatchingInlineSnapshot(
@@ -665,7 +663,7 @@ describe("Container", () => {
     expect(isInstantiated).toBe(true);
   });
 
-  it("should throw error when conflicting class scopes are set by decorators", () => {
+  it("should throw when conflicting class scopes are set by decorators", () => {
     expect(() => {
       @Scoped(Scope.Transient)
       @Scoped(Scope.Container) // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -711,7 +709,7 @@ describe("Container", () => {
     class Wizard {}
   });
 
-  it("should throw error if @EagerInstantiate class cannot resolve dependencies", () => {
+  it("should throw if @EagerInstantiate class cannot resolve dependencies", () => {
     const Castle = createType<string>("Castle");
 
     @EagerInstantiate()
@@ -759,7 +757,7 @@ describe("Container", () => {
     expect(container.resolve(WizardImpl)).toBe(container.resolve(Wizard));
   });
 
-  it("should throw error when named qualifier is empty or blank", () => {
+  it("should throw when named qualifier is empty or blank", () => {
     expect(() => {
       @Named("  ") // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {}
@@ -807,7 +805,7 @@ describe("Container", () => {
     expect(wizard.superWand).toBeTruthy();
   });
 
-  it("should throw error when multiple names are provided", () => {
+  it("should throw when multiple names are provided", () => {
     class Wand {}
 
     expect(() => {
@@ -828,7 +826,7 @@ describe("Container", () => {
     );
   });
 
-  it("should throw error when the same name is registered", () => {
+  it("should throw when the same name is registered", () => {
     @Scoped(Scope.Container)
     @Named("Dumbledore")
     class Wizard {}
@@ -839,7 +837,7 @@ describe("Container", () => {
     );
   });
 
-  it("should throw error if existing provider points to unregistered token", () => {
+  it("should throw if existing provider points to unregistered token", () => {
     class Registered {}
     class NotRegistered {}
 
@@ -866,7 +864,7 @@ describe("Container", () => {
     );
   });
 
-  it("should throw error if resolving existing provider with circular dependency", () => {
+  it("should throw if resolving existing provider with circular dependency", () => {
     @Scoped(Scope.Container)
     class Wand {
       dep = inject(Wizard);
@@ -933,7 +931,7 @@ describe("Container", () => {
     );
   });
 
-  it("should throw error if detected circular dependency", () => {
+  it("should throw if detected circular dependency", () => {
     class Wand {
       owner = inject(Wizard);
     }
