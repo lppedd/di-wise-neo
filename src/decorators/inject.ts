@@ -2,7 +2,7 @@
 
 import type { Constructor, Token } from "../token";
 import { forwardRef, isTokenRef, type TokenRef } from "../tokensRef";
-import { updateParameterMetadata } from "./utils";
+import { checkSingleDecorator, updateParameterMetadata } from "./utils";
 
 /**
  * Parameter decorator that injects the instance associated with the given class.
@@ -40,6 +40,7 @@ export function Inject<Value>(tokens: TokenRef<Value>): ParameterDecorator;
 export function Inject<T>(token: Token<T> | TokenRef<T>): ParameterDecorator {
   return function (target, propertyKey, parameterIndex): void {
     updateParameterMetadata("Inject", target, propertyKey, parameterIndex, (dependency) => {
+      checkSingleDecorator(dependency, target, propertyKey, parameterIndex);
       dependency.appliedBy = "Inject";
       dependency.tokenRef = isTokenRef(token) ? token : forwardRef(() => token);
     });

@@ -501,6 +501,40 @@ describe("Container", () => {
     );
   });
 
+  it("should throw when parameter uses multiple injection decorators", () => {
+    class Wand {}
+
+    expect(() => {
+      class Wizard {
+        set(@Inject(Wand) @Optional(Wand) _wand: Wand): void {}
+      }
+
+      container.resolve(Wizard);
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] Wizard.set parameter 0 has multiple injection decorators, but only one is allowed]`,
+    );
+
+    expect(() => {
+      class Wizard {
+        constructor(@OptionalAll(Wand) @InjectAll(Wand) _wand: Wand[]) {}
+      }
+
+      container.resolve(Wizard);
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] Wizard constructor parameter 0 has multiple injection decorators, but only one is allowed]`,
+    );
+
+    expect(() => {
+      class Wizard {
+        constructor(@OptionalAll(Wand) readonly wand: Wand[]) {}
+      }
+
+      const wizard = container.resolve(Wizard);
+      expect(wizard.wand).toHaveLength(1);
+      expect(wizard.wand[0]).toBeInstanceOf(Wand);
+    }).not.toThrow();
+  });
+
   it("should get the options from the class", () => {
     @Scoped(Scope.Container)
     @AutoRegister()

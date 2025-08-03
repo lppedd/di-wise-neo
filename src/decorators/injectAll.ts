@@ -2,7 +2,7 @@
 
 import type { Constructor, Token } from "../token";
 import { forwardRef, isTokenRef, type TokenRef } from "../tokensRef";
-import { updateParameterMetadata } from "./utils";
+import { checkSingleDecorator, updateParameterMetadata } from "./utils";
 
 /**
  * Parameter decorator that injects all instances provided by the registrations
@@ -43,6 +43,7 @@ export function InjectAll<Value>(tokens: TokenRef<Value>): ParameterDecorator;
 export function InjectAll<T>(token: Token<T> | TokenRef<T>): ParameterDecorator {
   return function (target, propertyKey, parameterIndex): void {
     updateParameterMetadata("InjectAll", target, propertyKey, parameterIndex, (dependency) => {
+      checkSingleDecorator(dependency, target, propertyKey, parameterIndex);
       dependency.appliedBy = "InjectAll";
       dependency.tokenRef = isTokenRef(token) ? token : forwardRef(() => token);
     });
