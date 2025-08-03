@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // @internal
 export function getTypeName(value: unknown): string {
   switch (typeof value) {

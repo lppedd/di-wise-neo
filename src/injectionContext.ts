@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 import type { Container } from "./container";
 import { assert } from "./errors";
 import type { Provider } from "./provider";

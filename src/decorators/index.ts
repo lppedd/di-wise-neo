@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 export { AutoRegister } from "./autoRegister";
 export { EagerInstantiate } from "./eagerInstantiate";
 export { Inject } from "./inject";

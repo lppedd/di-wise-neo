@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // @internal
 export interface Disposable {
   dispose(): void;

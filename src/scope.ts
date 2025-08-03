@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 export const Scope = {
   Inherited: "Inherited",
   Transient: "Transient",

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 import { assert } from "./errors";
 import type { FactoryProvider, Provider } from "./provider";
 import { Scope } from "./scope";

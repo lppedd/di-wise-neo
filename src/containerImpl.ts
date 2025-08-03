@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 import type { Container, ContainerOptions } from "./container";
 import { assert, expectNever, throwExistingUnregisteredError, throwUnregisteredError } from "./errors";
 import { injectBy } from "./inject";

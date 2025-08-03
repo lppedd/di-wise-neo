@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 import type { Constructor, Token } from "../token";
 import { forwardRef, isTokenRef, type TokenRef } from "../tokensRef";
 import { updateParameterMetadata } from "./utils";

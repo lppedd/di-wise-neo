@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 import { assert } from "./errors";
 import type { Token, Tokens } from "./token";
 
