@@ -232,7 +232,7 @@ export class ContainerImpl implements Container {
       return this.instantiateClass(token, localOptional);
     }
 
-    return optionalOrName ? undefined : throwUnregisteredError(token);
+    return localOptional ? undefined : throwUnregisteredError(token);
   }
 
   resolveAll<T>(token: Token<T>, optional?: boolean): NonNullable<T>[] {
