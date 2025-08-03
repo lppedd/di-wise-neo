@@ -32,10 +32,12 @@ describe("Container", () => {
     container.resetRegistry();
   });
 
-  it("should create child container with different options", () => {
+  it("should create container with default options", () => {
     expect(container.options.autoRegister).toBe(false);
     expect(container.options.defaultScope).toBe(Scope.Inherited);
+  });
 
+  it("should create child container with different options", () => {
     const child = container.createChild({
       autoRegister: true,
       defaultScope: Scope.Container,
