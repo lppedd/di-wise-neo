@@ -593,17 +593,6 @@ describe("Container", () => {
     expect(container.isRegistered(Product)).toBe(false);
   });
 
-  it("should throw if unregistered class has container scope", () => {
-    class Wizard {}
-
-    expect(() => container.resolve(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] unregistered class Wizard]`,
-    );
-    expect(() => container.resolveAll(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] unregistered class Wizard]`,
-    );
-  });
-
   it("should throw when the token is not registered", () => {
     const Env = createType<string>("Env");
 
@@ -615,11 +604,26 @@ describe("Container", () => {
       `[Error: [di-wise-neo] unregistered token Type<Env>]`,
     );
 
-    @Named("SuperWand")
-    class Wand {}
+    @Named("Dumbledore")
+    class Wizard {}
 
-    expect(() => container.register(Wand).resolve(Wand, "LowTierWand")).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] unregistered class Wand[name=LowTierWand]]`,
+    expect(() => container.resolve(Wizard)).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] unregistered class Wizard]`,
+    );
+
+    expect(() => container.resolve(Wizard, "Voldemort")).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] unregistered class Wizard[name=Voldemort]]`,
+    );
+
+    expect(() => container.resolveAll(Wizard)).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] unregistered class Wizard]`,
+    );
+
+    container.register(Wizard);
+
+    expect(() => container.resolve(Wizard)).not.toThrow();
+    expect(() => container.resolve(Wizard, "Voldemort")).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] unregistered class Wizard[name=Voldemort]]`,
     );
   });
 
