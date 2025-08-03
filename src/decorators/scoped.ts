@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT
-
 import { assert } from "../errors";
 import { getMetadata } from "../metadata";
 import type { Scope } from "../scope";

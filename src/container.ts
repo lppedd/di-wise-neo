@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT
-
 import { ContainerImpl } from "./containerImpl";
 import type { ClassProvider, ExistingProvider, FactoryProvider, ValueProvider } from "./provider";
 import { Scope } from "./scope";

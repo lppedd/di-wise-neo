@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT
-
 import { invariant } from "./invariant";
 
 // @internal

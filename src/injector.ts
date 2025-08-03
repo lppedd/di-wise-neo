@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT
-
 import { inject } from "./inject";
 import { injectAll } from "./injectAll";
 import { ensureInjectionContext, provideInjectionContext, useInjectionContext } from "./injectionContext";

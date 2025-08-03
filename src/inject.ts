@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT
-
 import { ensureInjectionContext } from "./injectionContext";
 import type { Constructor, Token } from "./token";
 

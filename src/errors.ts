@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT
-
 import type { Token } from "./token";
 
 // @internal

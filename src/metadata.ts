@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT
-
 import type { ClassProvider } from "./provider";
 import type { Scope } from "./scope";
 import type { Constructor } from "./token";

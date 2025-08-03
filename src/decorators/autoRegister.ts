@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT
-
 import { getMetadata } from "../metadata";
 import type { Constructor } from "../token";
 

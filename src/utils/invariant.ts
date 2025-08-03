@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT
-
 // @internal
 export function invariant(condition: unknown): asserts condition {
   if (!condition) {

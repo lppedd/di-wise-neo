@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT
-
 import type { Container } from "./container";
 
 /**

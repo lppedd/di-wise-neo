@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT
-
 export type { Container, ContainerOptions } from "./container";
 export { createContainer } from "./container";
 export {
