@@ -54,6 +54,10 @@ describe("Middleware", () => {
       }
     }
 
+    container.register(Decoration);
+    container.register(Wand);
+    container.register(Wizard);
+
     const wizard = container.resolve(Wizard);
 
     expect(wizard).toBeInstanceOf(Wizard);

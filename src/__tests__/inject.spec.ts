@@ -20,35 +20,35 @@ describe("inject", () => {
     class Wand {}
 
     expect(() => {
-      container.resolve(
-        class Wizard {
-          constructor() {
-            setTimeout(() => inject(Wand));
-          }
-        },
-      );
+      class Wizard {
+        constructor() {
+          setTimeout(() => inject(Wand));
+        }
+      }
+
+      container.register(Wizard).resolve(Wizard);
       vi.runAllTimers();
     }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] inject() can only be invoked within an injection context]`);
 
     expect(() => {
-      container.resolve(
-        class Wizard {
-          constructor() {
-            setTimeout(() => injectBy(Wand, Wand));
-          }
-        },
-      );
+      class Wizard {
+        constructor() {
+          setTimeout(() => injectBy(Wand, Wand));
+        }
+      }
+
+      container.register(Wizard).resolve(Wizard);
       vi.runAllTimers();
     }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] injectBy() can only be invoked within an injection context]`);
 
     expect(() => {
-      container.resolve(
-        class Wizard {
-          constructor() {
-            setTimeout(() => injectAll(Wand));
-          }
-        },
-      );
+      class Wizard {
+        constructor() {
+          setTimeout(() => injectAll(Wand));
+        }
+      }
+
+      container.register(Wizard).resolve(Wizard);
       vi.runAllTimers();
     }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] injectAll() can only be invoked within an injection context]`);
 
@@ -69,6 +69,9 @@ describe("inject", () => {
       }
     }
 
+    container.register(Wand);
+    container.register(Wizard);
+
     const wizard = container.resolve(Wizard);
     expect(wizard.wand1.owner).toBe(wizard);
     expect(wizard.wand2.owner).toBe(wizard);
@@ -88,16 +91,21 @@ describe("inject", () => {
       }
     }
 
+    container.register(Wand);
+    container.register(Wizard);
+
     const wizard = container.resolve(Wizard);
     expect(wizard.wand1?.owner).toBe(wizard);
     expect(wizard.wand2?.owner).toBe(wizard);
   });
 
   it("should fallback to inject if no dependent", () => {
+    @AutoRegister()
     class Wand {
       owner = inject(Wizard);
     }
 
+    @AutoRegister()
     class Wizard {
       wand = injectBy(this, Wand);
     }
@@ -116,6 +124,9 @@ describe("inject", () => {
       wand = optionalBy(this, Wand);
     }
 
+    container.register(Wand);
+    container.register(Wizard);
+
     expect(() => container.resolve(build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(
       `[Error: [di-wise-neo] circular dependency detected]`,
     );
@@ -131,6 +142,9 @@ describe("inject", () => {
         name = "Elder Wand";
       }
 
+      container.register(Wizard);
+      container.register(Wand);
+
       const wizard = container.resolve(Wizard);
       expect(wizard.injector.inject(Wand)).toBeInstanceOf(Wand);
       expect(wizard.injector.injectAll(Wand)).toEqual([new Wand()]);
@@ -139,7 +153,6 @@ describe("inject", () => {
     it("should use current context", () => {
       class Wizard {
         injector = inject(Injector);
-
         context = inject(build(useInjectionContext));
 
         constructor() {
@@ -151,7 +164,7 @@ describe("inject", () => {
         }
       }
 
-      container.resolve(Wizard);
+      container.register(Wizard).resolve(Wizard);
     });
 
     it("should have context of the dependent", () => {

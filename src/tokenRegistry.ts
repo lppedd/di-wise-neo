@@ -54,6 +54,8 @@ export class TokenRegistry {
     this.myParent = parent;
   }
 
+  get<T extends object>(token: Constructor<T>, name?: string): Registration<T> | undefined;
+  get<T>(token: Token<T>, name?: string): Registration<T> | undefined;
   get<T>(token: Token<T>, name?: string): Registration<T> | undefined {
     // To clarify, at(-1) means we take the last added registration for this token
     return this.getAll(token, name).at(-1);

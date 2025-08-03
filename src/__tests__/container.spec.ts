@@ -504,6 +504,8 @@ describe("Container", () => {
   });
 
   it("should throw when parameter uses multiple injection decorators", () => {
+    @AutoRegister()
+    @Named("super")
     class Wand {}
 
     expect(() => {
@@ -526,12 +528,11 @@ describe("Container", () => {
 
     expect(() => {
       class Wizard {
-        constructor(@OptionalAll(Wand) readonly wand: Wand[]) {}
+        constructor(@Inject(Wand) @Named("super") readonly wand: Wand) {}
       }
 
-      const wizard = container.resolve(Wizard);
-      expect(wizard.wand).toHaveLength(1);
-      expect(wizard.wand[0]).toBeInstanceOf(Wand);
+      const wizard = container.register(Wizard).resolve(Wizard);
+      expect(wizard.wand).toBeInstanceOf(Wand);
     }).not.toThrow();
   });
 
@@ -593,14 +594,13 @@ describe("Container", () => {
   });
 
   it("should throw if unregistered class has container scope", () => {
-    @Scoped(Scope.Container)
     class Wizard {}
 
     expect(() => container.resolve(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] unregistered class Wizard cannot be resolved in container scope]`,
+      `[Error: [di-wise-neo] unregistered class Wizard]`,
     );
     expect(() => container.resolveAll(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] unregistered class Wizard cannot be resolved in container scope]`,
+      `[Error: [di-wise-neo] unregistered class Wizard]`,
     );
   });
 
@@ -613,6 +613,13 @@ describe("Container", () => {
 
     expect(() => container.resolveAll(Env)).toThrowErrorMatchingInlineSnapshot(
       `[Error: [di-wise-neo] unregistered token Type<Env>]`,
+    );
+
+    @Named("SuperWand")
+    class Wand {}
+
+    expect(() => container.register(Wand).resolve(Wand, "LowTierWand")).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] unregistered class Wand[name=LowTierWand]]`,
     );
   });
 
@@ -947,6 +954,9 @@ describe("Container", () => {
       }
     }
 
+    container.register(Wand);
+    container.register(Wizard);
+
     expect(() => container.resolve(Wizard)).toThrowErrorMatchingInlineSnapshot(
       `[Error: [di-wise-neo] circular dependency detected]`,
     );
@@ -964,6 +974,10 @@ describe("Container", () => {
       wand = inject(Wand);
       decoration = inject(Decoration);
     }
+
+    container.register(Decoration);
+    container.register(Wand);
+    container.register(Wizard);
 
     const wizard = container.resolve(Wizard);
     expect(wizard.wand.decoration).toBe(wizard.decoration);

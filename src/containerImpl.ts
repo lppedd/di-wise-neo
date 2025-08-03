@@ -220,34 +220,35 @@ export class ContainerImpl implements Container {
       localName = name;
     }
 
-    const registration = this.myTokenRegistry.get(token, localName);
+    let registration = this.myTokenRegistry.get(token, localName);
+
+    if (!registration && isConstructor(token)) {
+      registration = this.autoRegisterClass(token, localName);
+    }
 
     if (registration) {
       return this.resolveRegistration(token, registration, localName);
     }
 
-    if (isConstructor(token)) {
-      return this.instantiateClass(token, localOptional);
-    }
-
-    return localOptional ? undefined : throwUnregisteredError(token);
+    return localOptional ? undefined : throwUnregisteredError(token, localName);
   }
 
   resolveAll<T>(token: Token<T>, optional?: boolean): NonNullable<T>[] {
     this.checkDisposed();
     const registrations = this.myTokenRegistry.getAll(token);
 
+    if (registrations.length === 0 && isConstructor(token)) {
+      const registration = this.autoRegisterClass(token);
+
+      if (registration) {
+        registrations.push(registration);
+      }
+    }
+
     if (registrations.length > 0) {
       return registrations //
         .map((registration) => this.resolveRegistration(token, registration))
         .filter((value) => value != null);
-    }
-
-    if (isConstructor(token)) {
-      const instance = this.instantiateClass(token, optional);
-      return instance === undefined // = could not resolve, but since it is optional
-        ? []
-        : [instance];
     }
 
     return optional ? [] : throwUnregisteredError(token);
@@ -314,44 +315,24 @@ export class ContainerImpl implements Container {
     }
   }
 
-  private instantiateClass<T extends object>(Class: Constructor<T>, optional?: boolean): T | undefined {
+  private autoRegisterClass<T extends object>(Class: Constructor<T>, name?: string): Registration<T> | undefined {
     const metadata = getMetadata(Class);
 
     if (metadata.autoRegister ?? this.myOptions.autoRegister) {
-      // Temporarily set eagerInstantiate to false to avoid resolving the class two times:
-      // one inside register(), and the other just below
+      // Temporarily set eagerInstantiate to false to avoid potentially resolving
+      // the class inside register()
       const eagerInstantiate = metadata.eagerInstantiate;
       metadata.eagerInstantiate = false;
 
       try {
         this.register(Class);
-        return (this as Container).resolve(Class);
+        return this.myTokenRegistry.get(Class, name ?? metadata.name);
       } finally {
         metadata.eagerInstantiate = eagerInstantiate;
       }
     }
 
-    const scope = this.resolveScope(metadata.scope?.value);
-
-    if (optional && scope === Scope.Container) {
-      // It would not be possible to resolve the class in container scope,
-      // as that would require prior registration.
-      // However, since resolution is marked optional, we simply return undefined.
-      return undefined;
-    }
-
-    assert(scope !== Scope.Container, `unregistered class ${Class.name} cannot be resolved in container scope`);
-
-    const registration: Registration<T> = {
-      provider: metadata.provider,
-      options: {
-        scope: scope,
-      },
-      dependencies: metadata.dependencies,
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return this.resolveScopedValue(registration, (args) => new Class(...args));
+    return undefined;
   }
 
   private resolveProviderValue<T>(registration: Registration<T>, provider: Provider<T>): T {
