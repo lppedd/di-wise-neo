@@ -511,7 +511,7 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] Wizard.set parameter 0 has multiple injection decorators, but only one is allowed]`,
+      `[Error: [di-wise-neo] Wizard.set parameter 0 declares multiple injection decorators, but only one is allowed]`,
     );
 
     expect(() => {
@@ -521,7 +521,7 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] Wizard constructor parameter 0 has multiple injection decorators, but only one is allowed]`,
+      `[Error: [di-wise-neo] Wizard constructor parameter 0 declares multiple injection decorators, but only one is allowed]`,
     );
 
     expect(() => {

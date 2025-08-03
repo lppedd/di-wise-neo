@@ -47,6 +47,6 @@ export function checkSingleDecorator(
       propertyKey === undefined
         ? `${(target as Constructor<any>).name} constructor`
         : `${(target.constructor as Constructor<any>).name}.${String(propertyKey)}`;
-    return `${where} parameter ${parameterIndex} has multiple injection decorators, but only one is allowed`;
+    return `${where} parameter ${parameterIndex} declares multiple injection decorators, but only one is allowed`;
   });
 }
