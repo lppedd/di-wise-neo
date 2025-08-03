@@ -16,6 +16,8 @@ export class WeakRefMap<K extends WeakKey, V extends object> {
 
       this.myMap.delete(key);
     }
+
+    return undefined;
   }
 
   set(key: K, value: V): () => void {
