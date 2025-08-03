@@ -600,6 +600,10 @@ describe("Container", () => {
       `[Error: [di-wise-neo] unregistered token Type<Env>]`,
     );
 
+    expect(() => container.resolve(Env, "Node")).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] unregistered token Type<Env>[name=Node]]`,
+    );
+
     expect(() => container.resolveAll(Env)).toThrowErrorMatchingInlineSnapshot(
       `[Error: [di-wise-neo] unregistered token Type<Env>]`,
     );
