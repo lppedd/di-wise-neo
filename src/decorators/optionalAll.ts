@@ -1,6 +1,6 @@
 import type { Constructor, Token } from "../token";
 import { forwardRef, isTokenRef, type TokenRef } from "../tokensRef";
-import { checkSingleDecorator, updateParameterMetadata } from "./utils";
+import { checkNamedDecorator, checkSingleDecorator, updateParameterMetadata } from "./utils";
 
 /**
  * Parameter decorator that injects all instances provided by the registrations
@@ -41,6 +41,7 @@ export function OptionalAll<T>(token: Token<T> | TokenRef<T>): ParameterDecorato
       checkSingleDecorator(dependency, target, propertyKey, parameterIndex);
       dependency.appliedBy = "OptionalAll";
       dependency.tokenRef = isTokenRef(token) ? token : forwardRef(() => token);
+      checkNamedDecorator(dependency, target, propertyKey, parameterIndex);
     });
   };
 }

@@ -46,6 +46,23 @@ export function checkSingleDecorator(
   });
 }
 
+// Checks that the `@Named` decorator is not used in combination with
+// `@InjectAll` or `@OptionalAll`, which ignore the name qualification.
+//
+// @internal
+export function checkNamedDecorator(
+  dependency: MethodDependency,
+  target: object,
+  propertyKey: string | symbol | undefined,
+  parameterIndex: number,
+): void {
+  const { appliedBy, name } = dependency;
+  assert(name === undefined || (appliedBy !== "InjectAll" && appliedBy !== "OptionalAll"), () => {
+    const location = getLocation(target, propertyKey, parameterIndex);
+    return `@Named has no effect on ${location} when used with @${appliedBy}`;
+  });
+}
+
 // Returns a human-readable description of the parameter location.
 // For example: "Wizard constructor parameter 2" or "Wizard.set parameter 0"
 //

@@ -1,7 +1,7 @@
 import { assert } from "../errors";
 import { getMetadata } from "../metadata";
 import type { Constructor } from "../token";
-import { getLocation, updateParameterMetadata } from "./utils";
+import { checkNamedDecorator, getLocation, updateParameterMetadata } from "./utils";
 
 /**
  * Qualifies a class or an injected parameter with a unique name.
@@ -42,6 +42,7 @@ export function Named(name: string): ClassDecorator & ParameterDecorator {
         });
 
         dependency.name = name;
+        checkNamedDecorator(dependency, target, propertyKey, parameterIndex);
       });
     }
   };

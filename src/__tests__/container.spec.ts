@@ -856,6 +856,50 @@ describe("Container", () => {
     );
   });
 
+  it("should throw when @Named is used with @InjectAll", () => {
+    class Wand {}
+
+    expect(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {
+        constructor(@Named("Wand") @InjectAll(Wand) _wand: Wand) {}
+      }
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] @Named has no effect on Wizard constructor parameter 0 when used with @InjectAll]`,
+    );
+
+    expect(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {
+        constructor(@InjectAll(Wand) @Named("Wand") _wand: Wand) {}
+      }
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] @Named has no effect on Wizard constructor parameter 0 when used with @InjectAll]`,
+    );
+  });
+
+  it("should throw when @Named is used with @OptionalAll", () => {
+    class Wand {}
+
+    expect(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {
+        constructor(@Named("Wand") @OptionalAll(Wand) _wand: Wand) {}
+      }
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] @Named has no effect on Wizard constructor parameter 0 when used with @OptionalAll]`,
+    );
+
+    expect(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {
+        constructor(@OptionalAll(Wand) @Named("Wand") _wand: Wand) {}
+      }
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] @Named has no effect on Wizard constructor parameter 0 when used with @OptionalAll]`,
+    );
+  });
+
   it("should throw when the same name is registered", () => {
     @Scoped(Scope.Container)
     @Named("Dumbledore")
