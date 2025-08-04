@@ -2,7 +2,7 @@
 
 ## 0.9.0
 
-- ❗ Prohibit implicit class registration during resolution.  
+- ❗ Prohibited implicit class registration during resolution.  
   Previously, the library allowed resolving classes that had never been registered,
   as long as they were not in _Container_ scope. For example:
 
