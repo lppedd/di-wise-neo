@@ -22,10 +22,7 @@ import { checkNamedDecorator, getLocation, updateParameterMetadata } from "./uti
  * @__NO_SIDE_EFFECTS__
  */
 export function Named(name: string): ClassDecorator & ParameterDecorator {
-  if (!name.trim()) {
-    check(false, "the @Named qualifier cannot be empty or blank");
-  }
-
+  check(name.trim(), "the @Named qualifier cannot be empty or blank");
   return function (target: object, propertyKey?: string | symbol, parameterIndex?: number): void {
     if (parameterIndex === undefined) {
       // The decorator has been applied to the class

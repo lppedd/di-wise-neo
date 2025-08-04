@@ -355,10 +355,7 @@ export class ContainerImpl implements Container {
       return provider.useValue;
     }
 
-    if (isExistingProvider(provider)) {
-      check(false, "internal error: unexpected ExistingProvider");
-    }
-
+    check(!isExistingProvider(provider), "internal error: unexpected ExistingProvider");
     expectNever(provider);
   }
 
