@@ -15,7 +15,7 @@ export function expectNever(value: never): never {
 // @internal
 export function throwUnregisteredError(token: Token, name?: string): never {
   const type = isConstructor(token) ? "class" : "token";
-  const spec = name ? `[name=${name}]` : "";
+  const spec = name !== undefined ? `[name=${name}]` : "";
   throw new Error(tag(`unregistered ${type} ${token.name}${spec}`));
 }
 
