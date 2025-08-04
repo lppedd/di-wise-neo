@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.2
+
+- ✨ Improved the circular dependency error message to include the full resolution path.
+
+  ```text
+  [di-wise-neo] circular dependency detected while resolving Wizard → Wand → Wizard
+  ```
+- Performed various internal cleanups.
+
 ## 0.9.1
 
 - Added an error when the `@Named` decorator is used with `@InjectAll` or `@OptionalAll`,
