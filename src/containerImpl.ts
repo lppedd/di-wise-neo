@@ -317,8 +317,9 @@ export class ContainerImpl implements Container {
 
   private autoRegisterClass<T extends object>(Class: Constructor<T>, name?: string): Registration<T> | undefined {
     const metadata = getMetadata(Class);
+    const autoRegister = metadata.autoRegister ?? this.myOptions.autoRegister;
 
-    if (metadata.autoRegister ?? this.myOptions.autoRegister) {
+    if (autoRegister && (name === undefined || metadata.name === name)) {
       // Temporarily set eagerInstantiate to false to avoid potentially resolving
       // the class inside register()
       const eagerInstantiate = metadata.eagerInstantiate;

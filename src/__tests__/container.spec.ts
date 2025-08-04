@@ -623,12 +623,16 @@ describe("Container", () => {
       `[Error: [di-wise-neo] unregistered class Wizard]`,
     );
 
-    container.register(Wizard);
+    @Named("Potter")
+    @AutoRegister()
+    @Scoped(Scope.Container)
+    class Wand {}
 
-    expect(() => container.resolve(Wizard)).not.toThrow();
-    expect(() => container.resolve(Wizard, "Voldemort")).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] unregistered class Wizard[name=Voldemort]]`,
+    expect(() => container.resolve(Wand, "Weasley")).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] unregistered class Wand[name=Weasley]]`,
     );
+
+    expect(container.resolve(Wand)).toBe(container.resolve(Wand, "Potter"));
   });
 
   it("should resolve all tokens", () => {
