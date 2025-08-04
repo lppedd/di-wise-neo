@@ -1,4 +1,4 @@
-import { invariant } from "./invariant";
+import { check } from "../errors";
 
 // @internal
 export class WeakRefMap<K extends WeakKey, V extends object> {
@@ -21,7 +21,7 @@ export class WeakRefMap<K extends WeakKey, V extends object> {
   }
 
   set(key: K, value: V): () => void {
-    invariant(!this.get(key));
+    check(!this.get(key), "invariant violation");
     this.myMap.set(key, new WeakRef(value));
     return () => {
       this.myMap.delete(key);

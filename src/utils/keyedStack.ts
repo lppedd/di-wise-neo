@@ -1,4 +1,4 @@
-import { invariant } from "./invariant";
+import { check } from "../errors";
 
 // @internal
 export class KeyedStack<K extends object, V> {
@@ -15,7 +15,7 @@ export class KeyedStack<K extends object, V> {
   }
 
   push(key: K, value: V): () => void {
-    invariant(!this.has(key));
+    check(!this.has(key), "invariant violation");
     this.myKeys.add(key);
     this.myEntries.push({ key, value });
     return () => {
