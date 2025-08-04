@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.9.0
+
+- ❗ Prohibit implicit class registration during resolution.  
+  Previously, the library allowed resolving classes that had never been registered,
+  as long as they were not in _Container_ scope. For example:
+
+  ```ts
+  @Scoped(Scope.Transient)
+  class UnregisteredClass {
+    /* ... */ 
+  }
+
+  container.resolve(UnregisteredClass);
+  ```
+
+  would successfully return an instance of `UnregisteredClass` as it is in _Transient_ scope,
+  even without prior explicit registration.
+
+  This behavior had two major issues:
+  - It was counterintuitive, as most users expect only registered classes to be resolvable.
+  - It was dangerous, as classes assumed to be registered could be resolved implicitly by accident,
+    leading to unintended successful injections.
+
+  With this change, implicit registration is no longer allowed, and the only ways for a class
+  to be auto-registered are by decorating it with `@AutoRegister()` or by creating the container
+  with `autoRegister: true`.
+- Improved the unregistered token error message to include the name qualifier, if present.
+
+  ```text
+  [di-wise-neo] unregistered class Wizard[name=Voldemort]
+  ```
+
 ## 0.8.1
 
 - Added an error when a constructor or method parameter declares multiple injection decorators.  
