@@ -143,7 +143,7 @@ export class ContainerImpl implements Container {
 
       // Eager-instantiate only if the class is container-scoped
       if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
-        this.resolveProviderValue(Class, registration, registration.provider);
+        this.resolveProviderValue(Class, registration);
       }
     } else {
       const [token, provider, options] = args;
@@ -169,7 +169,7 @@ export class ContainerImpl implements Container {
 
         // Eager-instantiate only if the provided class is container-scoped
         if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
-          this.resolveProviderValue(token, registration, registration.provider);
+          this.resolveProviderValue(token, registration);
         }
       } else {
         if (existingProvider) {
@@ -289,21 +289,18 @@ export class ContainerImpl implements Container {
 
   private resolveRegistration<T>(token: Token<T>, registration: Registration<T>, name?: string): T {
     let currRegistration: Registration<T> | undefined = registration;
-    let currProvider = currRegistration.provider;
 
-    while (isExistingProvider(currProvider)) {
-      const targetToken = currProvider.useExisting;
+    while (isExistingProvider(currRegistration.provider)) {
+      const targetToken: Token<T> = currRegistration.provider.useExisting;
       currRegistration = this.myTokenRegistry.get(targetToken, name);
 
       if (!currRegistration) {
         throwExistingUnregisteredError(token, targetToken);
       }
-
-      currProvider = currRegistration.provider;
     }
 
     try {
-      return this.resolveProviderValue(token, currRegistration, currProvider);
+      return this.resolveProviderValue(token, currRegistration);
     } catch (e) {
       // If we were trying to resolve a token registered via ExistingProvider,
       // we must add the cause of the error to the message
@@ -336,8 +333,8 @@ export class ContainerImpl implements Container {
     return undefined;
   }
 
-  private resolveProviderValue<T>(token: Token<T>, registration: Registration<T>, provider: Provider<T>): T {
-    check(registration.provider === provider, "internal error: mismatching provider");
+  private resolveProviderValue<T>(token: Token<T>, registration: Registration<T>): T {
+    const provider = registration.provider;
 
     if (isClassProvider(provider)) {
       const Class = provider.useClass;
