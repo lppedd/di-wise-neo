@@ -826,8 +826,16 @@ describe("Container", () => {
     expect(wizard.superWand).toBeTruthy();
   });
 
-  it("should throw when multiple names are provided", () => {
+  it("should throw when multiple @Named decorators are used", () => {
     class Wand {}
+
+    expect(() => {
+      @Named("Dumbledore")
+      @Named("Voldemort") // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {}
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] multiple @Named decorators on class Wizard, but only one is allowed]`,
+    );
 
     expect(() => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -835,15 +843,16 @@ describe("Container", () => {
         constructor(@Inject(Wand) @Named("SuperWand2") @Named("SuperWand1") readonly wand: Wand) {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] a @Named('SuperWand1') qualifier has already been applied to the parameter]`,
+      `[Error: [di-wise-neo] multiple @Named decorators on Wizard constructor parameter 0, but only one is allowed]`,
     );
 
     expect(() => {
-      @Named("Dumbledore")
-      @Named("Voldemort") // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      class Wizard {}
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {
+        set(@Inject(Wand) @Named("SuperWand2") @Named("SuperWand1") _wand: Wand): void {}
+      }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] a @Named('Voldemort') qualifier has already been applied to Wizard]`,
+      `[Error: [di-wise-neo] multiple @Named decorators on Wizard.set parameter 0, but only one is allowed]`,
     );
   });
 

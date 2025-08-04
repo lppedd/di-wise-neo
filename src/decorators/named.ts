@@ -1,7 +1,7 @@
 import { assert } from "../errors";
 import { getMetadata } from "../metadata";
 import type { Constructor } from "../token";
-import { updateParameterMetadata } from "./utils";
+import { getLocation, updateParameterMetadata } from "./utils";
 
 /**
  * Qualifies a class or an injected parameter with a unique name.
@@ -31,12 +31,16 @@ export function Named(name: string): ClassDecorator & ParameterDecorator {
       // The decorator has been applied to the class
       const ctor = target as any as Constructor<any>;
       const metadata = getMetadata(ctor);
-      assert(!metadata.name, `a @Named('${metadata.name}') qualifier has already been applied to ${ctor.name}`);
+      assert(!metadata.name, `multiple @Named decorators on class ${ctor.name}, but only one is allowed`);
       metadata.name = name;
     } else {
       // The decorator has been applied to a method parameter
       updateParameterMetadata("Named", target, propertyKey, parameterIndex, (dependency) => {
-        assert(!dependency.name, `a @Named('${dependency.name}') qualifier has already been applied to the parameter`);
+        assert(dependency.name === undefined, () => {
+          const location = getLocation(target, propertyKey, parameterIndex);
+          return `multiple @Named decorators on ${location}, but only one is allowed`;
+        });
+
         dependency.name = name;
       });
     }

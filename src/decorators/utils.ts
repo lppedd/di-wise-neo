@@ -40,11 +40,20 @@ export function checkSingleDecorator(
   propertyKey: string | symbol | undefined,
   parameterIndex: number,
 ): void {
-  assert(!dependency.appliedBy, () => {
-    const where =
-      propertyKey === undefined
-        ? `${(target as Constructor<any>).name} constructor`
-        : `${(target.constructor as Constructor<any>).name}.${String(propertyKey)}`;
-    return `${where} parameter ${parameterIndex} declares multiple injection decorators, but only one is allowed`;
+  assert(dependency.appliedBy === undefined, () => {
+    const location = getLocation(target, propertyKey, parameterIndex);
+    return `${location} declares multiple injection decorators, but only one is allowed`;
   });
+}
+
+// Returns a human-readable description of the parameter location.
+// For example: "Wizard constructor parameter 2" or "Wizard.set parameter 0"
+//
+// @internal
+export function getLocation(target: object, propertyKey: string | symbol | undefined, parameterIndex: number): string {
+  const location =
+    propertyKey === undefined
+      ? `${(target as Constructor<any>).name} constructor`
+      : `${(target.constructor as Constructor<any>).name}.${String(propertyKey)}`;
+  return `${location} parameter ${parameterIndex}`;
 }
