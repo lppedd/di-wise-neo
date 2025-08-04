@@ -111,7 +111,7 @@ describe("inject", () => {
     }
 
     expect(() => container.resolve(build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] circular dependency detected]`,
+      `[Error: [di-wise-neo] circular dependency detected while resolving Type<Build<Function>> → Wand → Wizard → Wand]`,
     );
   });
 
@@ -128,7 +128,7 @@ describe("inject", () => {
     container.register(Wizard);
 
     expect(() => container.resolve(build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] circular dependency detected]`,
+      `[Error: [di-wise-neo] circular dependency detected while resolving Type<Build<Function>> → Wand → Wizard → Wand]`,
     );
   });
 

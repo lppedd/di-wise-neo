@@ -2,6 +2,7 @@ import type { Container } from "./container";
 import { check } from "./errors";
 import type { Provider } from "./provider";
 import type { Scope } from "./scope";
+import type { Token } from "./token";
 import { KeyedStack } from "./utils/keyedStack";
 import { WeakRefMap } from "./utils/weakRefMap";
 import type { ValueRef } from "./valueRef";
@@ -14,6 +15,7 @@ export interface ResolutionFrame {
 
 // @internal
 export interface Resolution {
+  readonly tokenStack: Token[];
   readonly stack: KeyedStack<Provider, ResolutionFrame>;
   readonly values: WeakRefMap<Provider, ValueRef>;
   readonly dependents: WeakRefMap<Provider, ValueRef>;
@@ -28,6 +30,7 @@ export interface InjectionContext {
 // @internal
 export function createResolution(): Resolution {
   return {
+    tokenStack: [],
     stack: new KeyedStack(),
     values: new WeakRefMap(),
     dependents: new WeakRefMap(),

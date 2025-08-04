@@ -958,7 +958,7 @@ describe("Container", () => {
     expect(() => container.resolveAll(Character)).toThrowErrorMatchingInlineSnapshot(
       `
       [Error: [di-wise-neo] token resolution error encountered while resolving Type<Character>
-        [cause] circular dependency detected]
+        [cause] circular dependency detected while resolving Type<Character> → Wand → Wizard]
       `,
     );
   });
@@ -1023,7 +1023,7 @@ describe("Container", () => {
     container.register(Wizard);
 
     expect(() => container.resolve(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] circular dependency detected]`,
+      `[Error: [di-wise-neo] circular dependency detected while resolving Wizard → Wand → Wizard]`,
     );
   });
 

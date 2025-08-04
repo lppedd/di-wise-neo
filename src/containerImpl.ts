@@ -143,7 +143,7 @@ export class ContainerImpl implements Container {
 
       // Eager-instantiate only if the class is container-scoped
       if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
-        this.resolveProviderValue(registration, registration.provider);
+        this.resolveProviderValue(Class, registration, registration.provider);
       }
     } else {
       const [token, provider, options] = args;
@@ -169,7 +169,7 @@ export class ContainerImpl implements Container {
 
         // Eager-instantiate only if the provided class is container-scoped
         if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
-          this.resolveProviderValue(registration, registration.provider);
+          this.resolveProviderValue(token, registration, registration.provider);
         }
       } else {
         if (existingProvider) {
@@ -303,7 +303,7 @@ export class ContainerImpl implements Container {
     }
 
     try {
-      return this.resolveProviderValue(currRegistration, currProvider);
+      return this.resolveProviderValue(token, currRegistration, currProvider);
     } catch (e) {
       // If we were trying to resolve a token registered via ExistingProvider,
       // we must add the cause of the error to the message
@@ -336,19 +336,19 @@ export class ContainerImpl implements Container {
     return undefined;
   }
 
-  private resolveProviderValue<T>(registration: Registration<T>, provider: Provider<T>): T {
+  private resolveProviderValue<T>(token: Token<T>, registration: Registration<T>, provider: Provider<T>): T {
     check(registration.provider === provider, "internal error: mismatching provider");
 
     if (isClassProvider(provider)) {
       const Class = provider.useClass;
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      return this.resolveScopedValue(registration, (args) => new Class(...args));
+      return this.resolveScopedValue(token, registration, (args) => new Class(...args));
     }
 
     if (isFactoryProvider(provider)) {
       const factory = provider.useFactory;
-      return this.resolveScopedValue(registration, factory);
+      return this.resolveScopedValue(token, registration, factory);
     }
 
     if (isValueProvider(provider)) {
@@ -359,7 +359,7 @@ export class ContainerImpl implements Container {
     expectNever(provider);
   }
 
-  private resolveScopedValue<T>(registration: Registration<T>, factory: (...args: any[]) => T): T {
+  private resolveScopedValue<T>(token: Token<T>, registration: Registration<T>, factory: (...args: any[]) => T): T {
     let context = useInjectionContext();
 
     if (!context || context.container !== this) {
@@ -375,13 +375,21 @@ export class ContainerImpl implements Container {
 
     if (resolution.stack.has(provider)) {
       const dependentRef = resolution.dependents.get(provider);
-      check(dependentRef, "circular dependency detected");
+      check(dependentRef, () => {
+        const tokenStack = resolution.tokenStack
+          .map((t) => t.name)
+          .concat(token.name)
+          .join(" → ");
+        return `circular dependency detected while resolving ${tokenStack}`;
+      });
+
       return dependentRef.current;
     }
 
     const scope = this.resolveScope(options?.scope, context);
     const cleanups = [
       provideInjectionContext(context),
+      resolution.tokenStack.push(token) && (() => resolution.tokenStack.pop()),
       !isBuilder(provider) && resolution.stack.push(provider, { provider, scope }),
     ];
 
