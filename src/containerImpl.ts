@@ -235,13 +235,13 @@ export class ContainerImpl implements Container {
 
   resolveAll<T>(token: Token<T>, optional?: boolean): NonNullable<T>[] {
     this.checkDisposed();
-    const registrations = this.myTokenRegistry.getAll(token);
+    let registrations = this.myTokenRegistry.getAll(token);
 
     if (registrations.length === 0 && isConstructor(token)) {
       const registration = this.autoRegisterClass(token);
 
       if (registration) {
-        registrations.push(registration);
+        registrations = [registration];
       }
     }
 
