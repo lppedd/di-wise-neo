@@ -1,5 +1,4 @@
 export const Scope = {
-  Inherited: "Inherited",
   Transient: "Transient",
   Resolution: "Resolution",
   Container: "Container",
