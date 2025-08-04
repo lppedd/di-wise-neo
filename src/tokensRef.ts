@@ -1,4 +1,4 @@
-import { assert } from "./errors";
+import { check } from "./errors";
 import type { Token, Tokens } from "./token";
 
 export interface TokensRef<Value = any> {
@@ -32,7 +32,7 @@ export function forwardRef<Value>(token: () => Token<Value> | Tokens<Value>): To
     },
     getRefToken: () => {
       const tokenOrTokens = token();
-      assert(!Array.isArray(tokenOrTokens), "internal error: ref tokens should be a single token");
+      check(!Array.isArray(tokenOrTokens), "internal error: ref tokens should be a single token");
       return tokenOrTokens;
     },
   };

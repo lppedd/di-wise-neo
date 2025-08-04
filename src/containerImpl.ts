@@ -1,5 +1,5 @@
 import type { Container, ContainerOptions } from "./container";
-import { assert, expectNever, throwExistingUnregisteredError, throwUnregisteredError } from "./errors";
+import { check, expectNever, throwExistingUnregisteredError, throwUnregisteredError } from "./errors";
 import { injectBy } from "./inject";
 import { injectAll } from "./injectAll";
 import { createResolution, provideInjectionContext, useInjectionContext } from "./injectionContext";
@@ -149,7 +149,7 @@ export class ContainerImpl implements Container {
       const [token, provider, options] = args;
       const existingProvider = isExistingProvider(provider);
       const name = existingProvider ? undefined : provider.name;
-      assert(name === undefined || name.trim(), "the provider name qualifier cannot be empty or blank");
+      check(name === undefined || name.trim(), "the provider name qualifier cannot be empty or blank");
 
       if (isClassProvider(provider)) {
         const metadata = getMetadata(provider.useClass);
@@ -173,7 +173,7 @@ export class ContainerImpl implements Container {
         }
       } else {
         if (existingProvider) {
-          assert(
+          check(
             token !== provider.useExisting,
             `the useExisting token ${token.name} cannot be the same as the token being registered`,
           );
@@ -337,7 +337,7 @@ export class ContainerImpl implements Container {
   }
 
   private resolveProviderValue<T>(registration: Registration<T>, provider: Provider<T>): T {
-    assert(registration.provider === provider, "internal error: mismatching provider");
+    check(registration.provider === provider, "internal error: mismatching provider");
 
     if (isClassProvider(provider)) {
       const Class = provider.useClass;
@@ -356,7 +356,7 @@ export class ContainerImpl implements Container {
     }
 
     if (isExistingProvider(provider)) {
-      assert(false, "internal error: unexpected ExistingProvider");
+      check(false, "internal error: unexpected ExistingProvider");
     }
 
     expectNever(provider);
@@ -378,7 +378,7 @@ export class ContainerImpl implements Container {
 
     if (resolution.stack.has(provider)) {
       const dependentRef = resolution.dependents.get(provider);
-      assert(dependentRef, "circular dependency detected");
+      check(dependentRef, "circular dependency detected");
       return dependentRef.current;
     }
 
@@ -440,14 +440,14 @@ export class ContainerImpl implements Container {
     const dependencies = registration.dependencies;
 
     if (dependencies) {
-      assert(isClassProvider(registration.provider), `internal error: not a ClassProvider`);
+      check(isClassProvider(registration.provider), `internal error: not a ClassProvider`);
       const ctorDeps = dependencies.constructor.filter((d) => d.appliedBy);
 
       if (ctorDeps.length > 0) {
         // Let's check if all necessary constructor parameters are decorated.
         // If not, we cannot safely create an instance.
         const ctor = registration.provider.useClass;
-        assert(ctor.length === ctorDeps.length, () => {
+        check(ctor.length === ctorDeps.length, () => {
           const msg = `expected ${ctor.length} decorated constructor parameters in ${ctor.name}`;
           return msg + `, but found ${ctorDeps.length}`;
         });
@@ -477,7 +477,7 @@ export class ContainerImpl implements Container {
     const dependencies = registration.dependencies;
 
     if (dependencies) {
-      assert(isClassProvider(registration.provider), `internal error: not a ClassProvider`);
+      check(isClassProvider(registration.provider), `internal error: not a ClassProvider`);
       const ctor = registration.provider.useClass;
 
       // Perform method injection
@@ -489,7 +489,7 @@ export class ContainerImpl implements Container {
         // If not, we cannot safely invoke the method.
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         const method = (instance as any)[key] as Function;
-        assert(methodDeps.length === method.length, () => {
+        check(methodDeps.length === method.length, () => {
           const msg = `expected ${method.length} decorated method parameters`;
           return msg + ` in ${ctor.name}.${String(key)}, but found ${methodDeps.length}`;
         });
@@ -519,6 +519,6 @@ export class ContainerImpl implements Container {
   }
 
   private checkDisposed(): void {
-    assert(!this.myDisposed, "the container is disposed");
+    check(!this.myDisposed, "the container is disposed");
   }
 }

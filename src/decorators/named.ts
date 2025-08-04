@@ -1,4 +1,4 @@
-import { assert } from "../errors";
+import { check } from "../errors";
 import { getMetadata } from "../metadata";
 import type { Constructor } from "../token";
 import { checkNamedDecorator, getLocation, updateParameterMetadata } from "./utils";
@@ -23,7 +23,7 @@ import { checkNamedDecorator, getLocation, updateParameterMetadata } from "./uti
  */
 export function Named(name: string): ClassDecorator & ParameterDecorator {
   if (!name.trim()) {
-    assert(false, "the @Named qualifier cannot be empty or blank");
+    check(false, "the @Named qualifier cannot be empty or blank");
   }
 
   return function (target: object, propertyKey?: string | symbol, parameterIndex?: number): void {
@@ -31,12 +31,12 @@ export function Named(name: string): ClassDecorator & ParameterDecorator {
       // The decorator has been applied to the class
       const ctor = target as any as Constructor<any>;
       const metadata = getMetadata(ctor);
-      assert(metadata.name === undefined, `multiple @Named decorators on class ${ctor.name}, but only one is allowed`);
+      check(metadata.name === undefined, `multiple @Named decorators on class ${ctor.name}, but only one is allowed`);
       metadata.name = name;
     } else {
       // The decorator has been applied to a method parameter
       updateParameterMetadata("Named", target, propertyKey, parameterIndex, (dependency) => {
-        assert(dependency.name === undefined, () => {
+        check(dependency.name === undefined, () => {
           const location = getLocation(target, propertyKey, parameterIndex);
           return `multiple @Named decorators on ${location}, but only one is allowed`;
         });

@@ -1,4 +1,4 @@
-import { assert } from "./errors";
+import { check } from "./errors";
 import type { FactoryProvider, Provider } from "./provider";
 import { Scope } from "./scope";
 import { type Constructor, createType, type Token, type Type } from "./token";
@@ -70,14 +70,14 @@ export class TokenRegistry {
   set<T extends object>(token: Type<T> | Constructor<T>, registration: Registration<T>): void;
   set<T>(token: Token<T>, registration: Registration<T>): void;
   set<T>(token: Token<T>, registration: Registration<T>): void {
-    assert(!internals.has(token), `cannot register reserved token ${token.name}`);
+    check(!internals.has(token), `cannot register reserved token ${token.name}`);
     let registrations = this.myMap.get(token);
 
     if (!registrations) {
       this.myMap.set(token, (registrations = []));
     } else if (registration.name !== undefined) {
       const existing = registrations.filter((r) => r.name === registration.name);
-      assert(existing.length === 0, `a ${token.name} token named '${registration.name}' is already registered`);
+      check(existing.length === 0, `a ${token.name} token named '${registration.name}' is already registered`);
     }
 
     registrations.push(registration);
@@ -143,7 +143,7 @@ export class TokenRegistry {
 
     if (registrations && name !== undefined) {
       registrations = registrations.filter((r) => r.name === name);
-      assert(registrations.length < 2, `internal error: more than one registration named '${name}'`);
+      check(registrations.length < 2, `internal error: more than one registration named '${name}'`);
     }
 
     return registrations ?? [];

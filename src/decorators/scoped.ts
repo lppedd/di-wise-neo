@@ -1,4 +1,4 @@
-import { assert } from "../errors";
+import { check } from "../errors";
 import { getMetadata } from "../metadata";
 import type { Scope } from "../scope";
 import type { Constructor } from "../token";
@@ -30,7 +30,7 @@ export function Scoped(scope: Scope): ClassDecorator {
     const metadata = getMetadata(Class as any as Constructor<any>);
     const currentScope = metadata.scope;
 
-    assert(!currentScope || currentScope.value === scope, () => {
+    check(!currentScope || currentScope.value === scope, () => {
       const { value, appliedBy } = currentScope!;
       const by = appliedBy === "Scoped" ? `another @${appliedBy} decorator` : `@${appliedBy}`;
       return (

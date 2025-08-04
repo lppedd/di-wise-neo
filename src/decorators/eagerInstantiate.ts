@@ -1,4 +1,4 @@
-import { assert } from "../errors";
+import { check } from "../errors";
 import { getMetadata } from "../metadata";
 import { Scope } from "../scope";
 import type { Constructor } from "../token";
@@ -27,7 +27,7 @@ export function EagerInstantiate(): ClassDecorator {
     const metadata = getMetadata(Class as any as Constructor<any>);
     const currentScope = metadata.scope;
 
-    assert(!currentScope || currentScope.value === Scope.Container, () => {
+    check(!currentScope || currentScope.value === Scope.Container, () => {
       const { value, appliedBy } = currentScope!;
       return (
         `class ${Class.name}: Scope.${value} was already set by @${appliedBy},\n  ` +

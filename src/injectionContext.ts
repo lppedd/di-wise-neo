@@ -1,5 +1,5 @@
 import type { Container } from "./container";
-import { assert } from "./errors";
+import { check } from "./errors";
 import type { Provider } from "./provider";
 import type { Scope } from "./scope";
 import { KeyedStack } from "./utils/keyedStack";
@@ -40,7 +40,7 @@ export const [provideInjectionContext, useInjectionContext] = createInjectionCon
 // @internal
 export function ensureInjectionContext(name: string): InjectionContext {
   const context = useInjectionContext();
-  assert(context, `${name} can only be invoked within an injection context`);
+  check(context, `${name} can only be invoked within an injection context`);
   return context;
 }
 

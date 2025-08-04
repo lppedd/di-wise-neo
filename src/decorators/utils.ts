@@ -1,4 +1,4 @@
-import { assert } from "../errors";
+import { check } from "../errors";
 import { getMetadata } from "../metadata";
 import type { Constructor } from "../token";
 import type { InjectDecorator, MethodDependency } from "../tokenRegistry";
@@ -13,7 +13,7 @@ export function updateParameterMetadata(
 ): void {
   // Error out immediately if the decorator has been applied to a static method
   if (propertyKey !== undefined && typeof target === "function") {
-    assert(false, `@${decorator} cannot be used on static method ${target.name}.${String(propertyKey)}`);
+    check(false, `@${decorator} cannot be used on static method ${target.name}.${String(propertyKey)}`);
   }
 
   if (propertyKey === undefined) {
@@ -40,7 +40,7 @@ export function checkSingleDecorator(
   propertyKey: string | symbol | undefined,
   parameterIndex: number,
 ): void {
-  assert(dependency.appliedBy === undefined, () => {
+  check(dependency.appliedBy === undefined, () => {
     const location = getLocation(target, propertyKey, parameterIndex);
     return `multiple injection decorators on ${location}, but only one is allowed`;
   });
@@ -57,7 +57,7 @@ export function checkNamedDecorator(
   parameterIndex: number,
 ): void {
   const { appliedBy, name } = dependency;
-  assert(name === undefined || (appliedBy !== "InjectAll" && appliedBy !== "OptionalAll"), () => {
+  check(name === undefined || (appliedBy !== "InjectAll" && appliedBy !== "OptionalAll"), () => {
     const location = getLocation(target, propertyKey, parameterIndex);
     return `@Named has no effect on ${location} when used with @${appliedBy}`;
   });
