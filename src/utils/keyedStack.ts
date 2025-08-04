@@ -2,7 +2,7 @@ import { check } from "../errors";
 
 // @internal
 export class KeyedStack<K extends object, V> {
-  private readonly myEntries = new Array<{ key: K; value: V }>();
+  private readonly myEntries: { key: K; value: V }[] = [];
   private readonly myKeys = new WeakSet<K>();
 
   has(key: K): boolean {
