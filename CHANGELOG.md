@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.9.1
+
+- Added an error when the `@Named` decorator is used with `@InjectAll` or `@OptionalAll`,
+  since these decorators ignore the name qualifier.
+- Improved the error message for multiple `@Named` decorators declared on a class or parameter.
+
+  ```text
+  [di-wise-neo] multiple @Named decorators on Wizard.set parameter 0, but only one is allowed
+  ```
+- Improved the error message for multiple injection decorators declared on a parameter.
+
+  ```text
+  [di-wise-neo] multiple injection decorators on Wizard.set parameter 0, but only one is allowed
+  ```
+
 ## 0.9.0
 
 - ❗ Prohibited implicit class registration during resolution.  
