@@ -503,7 +503,7 @@ describe("Container", () => {
     );
   });
 
-  it("should throw when parameter uses multiple injection decorators", () => {
+  it("should throw when multiple injection decorators are used on a parameter", () => {
     @AutoRegister()
     @Named("super")
     class Wand {}
@@ -514,7 +514,7 @@ describe("Container", () => {
         set(@Inject(Wand) @Optional(Wand) _wand: Wand): void {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] Wizard.set parameter 0 declares multiple injection decorators, but only one is allowed]`,
+      `[Error: [di-wise-neo] multiple injection decorators on Wizard.set parameter 0, but only one is allowed]`,
     );
 
     expect(() => {
@@ -523,7 +523,7 @@ describe("Container", () => {
         constructor(@OptionalAll(Wand) @InjectAll(Wand) _wand: Wand[]) {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] Wizard constructor parameter 0 declares multiple injection decorators, but only one is allowed]`,
+      `[Error: [di-wise-neo] multiple injection decorators on Wizard constructor parameter 0, but only one is allowed]`,
     );
 
     expect(() => {

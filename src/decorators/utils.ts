@@ -42,7 +42,7 @@ export function checkSingleDecorator(
 ): void {
   assert(dependency.appliedBy === undefined, () => {
     const location = getLocation(target, propertyKey, parameterIndex);
-    return `${location} declares multiple injection decorators, but only one is allowed`;
+    return `multiple injection decorators on ${location}, but only one is allowed`;
   });
 }
 
