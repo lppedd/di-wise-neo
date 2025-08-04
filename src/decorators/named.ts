@@ -31,7 +31,7 @@ export function Named(name: string): ClassDecorator & ParameterDecorator {
       // The decorator has been applied to the class
       const ctor = target as any as Constructor<any>;
       const metadata = getMetadata(ctor);
-      assert(!metadata.name, `multiple @Named decorators on class ${ctor.name}, but only one is allowed`);
+      assert(metadata.name === undefined, `multiple @Named decorators on class ${ctor.name}, but only one is allowed`);
       metadata.name = name;
     } else {
       // The decorator has been applied to a method parameter
