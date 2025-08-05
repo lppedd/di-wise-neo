@@ -514,7 +514,7 @@ describe("Container", () => {
         set(@Inject(Wand) @Optional(Wand) _wand: Wand): void {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] multiple injection decorators on Wizard.set parameter 0, but only one is allowed]`,
+      `[Error: [di-wise-neo] multiple injection decorators on Wizard.set(parameter #0), but only one is allowed]`,
     );
 
     expect(() => {
@@ -523,7 +523,7 @@ describe("Container", () => {
         constructor(@OptionalAll(Wand) @InjectAll(Wand) _wand: Wand[]) {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] multiple injection decorators on Wizard constructor parameter 0, but only one is allowed]`,
+      `[Error: [di-wise-neo] multiple injection decorators on Wizard(parameter #0), but only one is allowed]`,
     );
 
     expect(() => {
@@ -846,7 +846,7 @@ describe("Container", () => {
         constructor(@Inject(Wand) @Named("SuperWand2") @Named("SuperWand1") readonly wand: Wand) {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] multiple @Named decorators on Wizard constructor parameter 0, but only one is allowed]`,
+      `[Error: [di-wise-neo] multiple @Named decorators on Wizard(parameter #0), but only one is allowed]`,
     );
 
     expect(() => {
@@ -855,7 +855,7 @@ describe("Container", () => {
         set(@Inject(Wand) @Named("SuperWand2") @Named("SuperWand1") _wand: Wand): void {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] multiple @Named decorators on Wizard.set parameter 0, but only one is allowed]`,
+      `[Error: [di-wise-neo] multiple @Named decorators on Wizard.set(parameter #0), but only one is allowed]`,
     );
   });
 
@@ -868,7 +868,7 @@ describe("Container", () => {
         constructor(@Named("Wand") @InjectAll(Wand) _wand: Wand) {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] @Named has no effect on Wizard constructor parameter 0 when used with @InjectAll]`,
+      `[Error: [di-wise-neo] @Named has no effect on Wizard(parameter #0) when used with @InjectAll]`,
     );
 
     expect(() => {
@@ -877,7 +877,7 @@ describe("Container", () => {
         constructor(@InjectAll(Wand) @Named("Wand") _wand: Wand) {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] @Named has no effect on Wizard constructor parameter 0 when used with @InjectAll]`,
+      `[Error: [di-wise-neo] @Named has no effect on Wizard(parameter #0) when used with @InjectAll]`,
     );
   });
 
@@ -890,7 +890,7 @@ describe("Container", () => {
         constructor(@Named("Wand") @OptionalAll(Wand) _wand: Wand) {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] @Named has no effect on Wizard constructor parameter 0 when used with @OptionalAll]`,
+      `[Error: [di-wise-neo] @Named has no effect on Wizard(parameter #0) when used with @OptionalAll]`,
     );
 
     expect(() => {
@@ -899,7 +899,7 @@ describe("Container", () => {
         constructor(@OptionalAll(Wand) @Named("Wand") _wand: Wand) {}
       }
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] @Named has no effect on Wizard constructor parameter 0 when used with @OptionalAll]`,
+      `[Error: [di-wise-neo] @Named has no effect on Wizard(parameter #0) when used with @OptionalAll]`,
     );
   });
 

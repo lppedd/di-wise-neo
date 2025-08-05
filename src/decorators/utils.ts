@@ -70,7 +70,7 @@ export function checkNamedDecorator(
 export function describeParam(target: object, methodKey: string | symbol | undefined, parameterIndex: number): string {
   const location =
     methodKey === undefined
-      ? `${(target as Constructor<any>).name} constructor`
+      ? (target as Constructor<any>).name
       : `${(target.constructor as Constructor<any>).name}.${String(methodKey)}`;
-  return `${location} parameter ${parameterIndex}`;
+  return `${location}(parameter #${parameterIndex})`;
 }
