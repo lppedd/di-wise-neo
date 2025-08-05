@@ -296,11 +296,11 @@ export class ContainerImpl implements Container {
     let currRegistration: Registration<T> | undefined = registration;
 
     while (isExistingProvider(currRegistration.provider)) {
-      const targetToken: Token<T> = currRegistration.provider.useExisting;
-      currRegistration = this.myTokenRegistry.get(targetToken, name);
+      const existingToken: Token<T> = currRegistration.provider.useExisting;
+      currRegistration = this.myTokenRegistry.get(existingToken, name);
 
       if (!currRegistration) {
-        throwExistingUnregisteredError(token, targetToken);
+        throwExistingUnregisteredError(token, existingToken);
       }
     }
 
