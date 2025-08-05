@@ -15,8 +15,7 @@ export function expectNever(value: never): never {
 
 // @internal
 export function throwUnregisteredError(token: Token, name?: string): never {
-  const spec = name !== undefined ? `[name=${name}]` : "";
-  throw new Error(tag(`unregistered token ${getTokenName(token)}${spec}`));
+  throw new Error(tag(`unregistered token ${getTokenName(token, name)}`));
 }
 
 // @internal
@@ -33,7 +32,7 @@ export function throwParameterResolutionError(
   cause: Error,
 ): never {
   const location = getLocation(ctor, methodKey);
-  const tokenName = getTokenName(dependency.tokenRef!.getRefToken());
+  const tokenName = getTokenName(dependency.tokenRef!.getRefToken(), dependency.name);
   const msg = tag(`failed to resolve dependency for ${location}(parameter #${dependency.index}: ${tokenName})`);
   throw new Error(`${msg}\n  [cause] ${untag(cause.message)}`, { cause });
 }
@@ -45,8 +44,9 @@ export function getLocation(ctor: Constructor<any>, methodKey?: string | symbol)
 }
 
 // @internal
-export function getTokenName(token: Token): string {
-  return token.name || "<unnamed>";
+export function getTokenName(token: Token, name?: string): string {
+  const tokenName = token.name || "<unnamed>";
+  return name ? `${tokenName}[name=${name}]` : tokenName;
 }
 
 function tag(message: string): string {

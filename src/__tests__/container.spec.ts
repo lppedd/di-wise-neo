@@ -739,13 +739,13 @@ describe("Container", () => {
     @EagerInstantiate()
     @Scoped(Scope.Container)
     class Wizard {
-      constructor(@Inject(Castle) _castle: string) {}
+      constructor(@Inject(Castle) @Named("Hogwarts") _castle: string) {}
     }
 
     expect(() => container.register(Wizard)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] failed to resolve dependency for Wizard(parameter #0: Type<Castle>)
-        [cause] unregistered token Type<Castle>]
+      [Error: [di-wise-neo] failed to resolve dependency for Wizard(parameter #0: Type<Castle>[name=Hogwarts])
+        [cause] unregistered token Type<Castle>[name=Hogwarts]]
       `,
     );
   });
