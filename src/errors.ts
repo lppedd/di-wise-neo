@@ -58,7 +58,7 @@ export function getTokenName(token: Token, name?: string): string {
 
 // @internal
 export function getTokenPath(tokens: Token[]): string {
-  return tokens.map((t) => getTokenName(t)).join(" → ");
+  return tokens.map((t) => getTokenName(t)).join(" \u2192 ");
 }
 
 function getCause(error: any): string {
