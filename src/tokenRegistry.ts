@@ -142,8 +142,7 @@ export class TokenRegistry {
   }
 
   private getAllFromParent<T>(token: Token<T>, name?: string): Registration<T>[] {
-    const thisRegistrations = this.myMap.get(token);
-    let registrations = thisRegistrations || this.myParent?.getAllFromParent(token, name);
+    let registrations = this.myMap.get(token) || this.myParent?.getAllFromParent(token, name);
 
     if (registrations && name !== undefined) {
       registrations = registrations.filter((r) => r.name === name);
