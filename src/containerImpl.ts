@@ -379,8 +379,8 @@ export class ContainerImpl implements Container {
     if (resolution.stack.has(provider)) {
       const dependentRef = resolution.dependents.get(provider);
       check(dependentRef, () => {
-        const path = resolution.tokenStack.map((t) => t.name).join(" → ");
-        return `circular dependency detected while resolving ${path} → ${token.name}`;
+        const path = resolution.tokenStack.map(getTokenName).join(" → ");
+        return `circular dependency detected while resolving ${path} → ${getTokenName(token)}`;
       });
 
       return dependentRef.current;

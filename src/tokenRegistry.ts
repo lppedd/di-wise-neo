@@ -1,4 +1,4 @@
-import { check } from "./errors";
+import { check, getTokenName } from "./errors";
 import type { FactoryProvider, Provider } from "./provider";
 import { Scope } from "./scope";
 import { type Constructor, createType, type Token, type Type } from "./token";
@@ -73,11 +73,15 @@ export class TokenRegistry {
     check(!internals.has(token), `cannot register reserved token ${token.name}`);
     let registrations = this.myMap.get(token);
 
-    if (!registrations) {
+    if (registrations) {
+      const name = registration.name;
+
+      if (name !== undefined) {
+        const existing = registrations.filter((r) => r.name === name);
+        check(existing.length === 0, `a ${getTokenName(token)} token named '${name}' is already registered`);
+      }
+    } else {
       this.myMap.set(token, (registrations = []));
-    } else if (registration.name !== undefined) {
-      const existing = registrations.filter((r) => r.name === registration.name);
-      check(existing.length === 0, `a ${token.name} token named '${registration.name}' is already registered`);
     }
 
     registrations.push(registration);

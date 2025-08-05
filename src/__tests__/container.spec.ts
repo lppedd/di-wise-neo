@@ -633,6 +633,11 @@ describe("Container", () => {
     );
 
     expect(container.resolve(Wand)).toBe(container.resolve(Wand, "Potter"));
+
+    // An anonymous/unnamed class
+    expect(() => container.resolve(class {})).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] unregistered token <unnamed>]`,
+    );
   });
 
   it("should resolve all tokens", () => {
