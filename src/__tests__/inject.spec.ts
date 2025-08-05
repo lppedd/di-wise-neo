@@ -111,7 +111,13 @@ describe("inject", () => {
     }
 
     expect(() => container.resolve(build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] circular dependency detected while resolving Type<Build<Function>> → Wand → Wizard → Wand]`,
+      `
+      [Error: [di-wise-neo] failed to resolve token Type<Build<Function>>
+        [cause] failed to resolve token Wand
+        [cause] failed to resolve token Wizard
+        [cause] failed to resolve token Wand
+        [cause] circular dependency detected while resolving Type<Build<Function>> → Wand → Wizard → Wand]
+      `,
     );
   });
 
@@ -128,7 +134,13 @@ describe("inject", () => {
     container.register(Wizard);
 
     expect(() => container.resolve(build(() => new Wizard()))).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] circular dependency detected while resolving Type<Build<Function>> → Wand → Wizard → Wand]`,
+      `
+      [Error: [di-wise-neo] failed to resolve token Type<Build<Function>>
+        [cause] failed to resolve token Wand
+        [cause] failed to resolve token Wizard
+        [cause] failed to resolve token Wand
+        [cause] circular dependency detected while resolving Type<Build<Function>> → Wand → Wizard → Wand]
+      `,
     );
   });
 

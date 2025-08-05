@@ -4,8 +4,10 @@ import {
   expectNever,
   getLocation,
   getTokenName,
+  getTokenPath,
   throwExistingUnregisteredError,
   throwParameterResolutionError,
+  throwResolutionError,
   throwUnregisteredError,
 } from "./errors";
 import { injectBy } from "./inject";
@@ -293,18 +295,24 @@ export class ContainerImpl implements Container {
   }
 
   private resolveRegistration<T>(token: Token<T>, registration: Registration<T>, name?: string): T {
-    let currRegistration: Registration<T> | undefined = registration;
+    const aliases: Token<T>[] = [];
+    let current: Registration<T> | undefined = registration;
 
-    while (isExistingProvider(currRegistration.provider)) {
-      const existingToken: Token<T> = currRegistration.provider.useExisting;
-      currRegistration = this.myTokenRegistry.get(existingToken, name);
+    while (isExistingProvider(current.provider)) {
+      const existingToken: Token<T> = current.provider.useExisting;
+      current = this.myTokenRegistry.get(existingToken, name);
+      aliases.push(existingToken);
 
-      if (!currRegistration) {
+      if (!current) {
         throwExistingUnregisteredError(token, existingToken);
       }
     }
 
-    return this.resolveProviderValue(token, currRegistration);
+    try {
+      return this.resolveProviderValue(token, current);
+    } catch (e) {
+      throwResolutionError(token, aliases, e, name);
+    }
   }
 
   private autoRegisterClass<T extends object>(Class: Constructor<T>, name?: string): Registration<T> | undefined {
@@ -365,10 +373,7 @@ export class ContainerImpl implements Container {
     if (resolution.stack.has(provider)) {
       const dependentRef = resolution.dependents.get(provider);
       check(dependentRef, () => {
-        const path = resolution.tokenStack
-          .map((t) => getTokenName(t))
-          .concat(getTokenName(token))
-          .join(" → ");
+        const path = getTokenPath(resolution.tokenStack.concat(token));
         return `circular dependency detected while resolving ${path}`;
       });
 
@@ -479,7 +484,7 @@ export class ContainerImpl implements Container {
       try {
         args.push(this.resolveDependency(dep, instance));
       } catch (e) {
-        throwParameterResolutionError(ctor, methodKey, dep, e as Error);
+        throwParameterResolutionError(ctor, methodKey, dep, e);
       }
     }
 

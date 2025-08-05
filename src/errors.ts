@@ -19,6 +19,13 @@ export function throwUnregisteredError(token: Token, name?: string): never {
 }
 
 // @internal
+export function throwResolutionError(token: Token, aliases: Token[], cause: any, name?: string): never {
+  const suffix = aliases.length > 0 ? ` (alias for ${getTokenPath(aliases)})` : "";
+  const description = `token ${getTokenName(token, name)}${suffix}`;
+  throw new Error(tag(`failed to resolve ${description}`) + getCause(cause), { cause });
+}
+
+// @internal
 export function throwExistingUnregisteredError(token: Token, existingToken: Token): never {
   const msg = tag(`failed to resolve alias token ${getTokenName(token)}`);
   throw new Error(`${msg}\n  [cause] useExisting points to unregistered token ${getTokenName(existingToken)}`);
@@ -29,12 +36,12 @@ export function throwParameterResolutionError(
   ctor: Constructor<any>,
   methodKey: string | symbol | undefined,
   dependency: MethodDependency,
-  cause: Error,
+  cause: any,
 ): never {
   const location = getLocation(ctor, methodKey);
   const tokenName = getTokenName(dependency.tokenRef!.getRefToken(), dependency.name);
   const msg = tag(`failed to resolve dependency for ${location}(parameter #${dependency.index}: ${tokenName})`);
-  throw new Error(`${msg}\n  [cause] ${untag(cause.message)}`, { cause });
+  throw new Error(msg + getCause(cause), { cause });
 }
 
 // @internal
@@ -47,6 +54,29 @@ export function getLocation(ctor: Constructor<any>, methodKey?: string | symbol)
 export function getTokenName(token: Token, name?: string): string {
   const tokenName = token.name || "<unnamed>";
   return name ? `${tokenName}[name=${name}]` : tokenName;
+}
+
+// @internal
+export function getTokenPath(tokens: Token[]): string {
+  return tokens.map((t) => getTokenName(t)).join(" → ");
+}
+
+function getCause(error: any): string {
+  if (!error) {
+    return "";
+  }
+
+  const message = isError(error) //
+    ? error.message
+    : typeof error === "string"
+      ? error
+      : JSON.stringify(error);
+
+  return `\n  [cause] ${untag(message)}`;
+}
+
+function isError(value: any): value is Error {
+  return value?.stack && typeof value?.message === "string";
 }
 
 function tag(message: string): string {

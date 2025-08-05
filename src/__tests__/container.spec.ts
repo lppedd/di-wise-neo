@@ -427,7 +427,10 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] Wizard expected 2 decorated constructor parameters, but found 1]`,
+      `
+      [Error: [di-wise-neo] failed to resolve token Wizard
+        [cause] Wizard expected 2 decorated constructor parameters, but found 1]
+      `,
     );
   });
 
@@ -446,7 +449,10 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] Wizard expected 3 decorated constructor parameters, but found 2]`,
+      `
+      [Error: [di-wise-neo] failed to resolve token Wizard
+        [cause] Wizard expected 3 decorated constructor parameters, but found 2]
+      `,
     );
   });
 
@@ -465,7 +471,10 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] Wizard expected 3 decorated constructor parameters, but found 2]`,
+      `
+      [Error: [di-wise-neo] failed to resolve token Wizard
+        [cause] Wizard expected 3 decorated constructor parameters, but found 2]
+      `,
     );
   });
 
@@ -481,7 +490,10 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] Wizard.set expected 3 decorated method parameters, but found 2]`,
+      `
+      [Error: [di-wise-neo] failed to resolve token Wizard
+        [cause] Wizard.set expected 3 decorated method parameters, but found 2]
+      `,
     );
   });
 
@@ -497,7 +509,10 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] Wizard.set expected 3 decorated method parameters, but found 2]`,
+      `
+      [Error: [di-wise-neo] failed to resolve token Wizard
+        [cause] Wizard.set expected 3 decorated method parameters, but found 2]
+      `,
     );
   });
 
@@ -639,7 +654,7 @@ describe("Container", () => {
   });
 
   it("should resolve all tokens", () => {
-    const Character = createType<{ name: string }>("Person");
+    const Character = createType<{ name: string }>("Character");
 
     @Injectable(Character)
     class Wizard {
@@ -653,7 +668,7 @@ describe("Container", () => {
       name = "Witch";
     }
 
-    const Person = createType<{ name: string }>("Character");
+    const Person = createType<{ name: string }>("Person");
 
     container.register(Wizard);
     container.register(Witch);
@@ -967,7 +982,12 @@ describe("Container", () => {
     container.register(Character, { useExisting: Wizard });
 
     expect(() => container.resolveAll(Character)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] circular dependency detected while resolving Type<Character> → Type<Wand> → Type<Wizard>]`,
+      `
+      [Error: [di-wise-neo] failed to resolve token Type<Character> (alias for Wizard)
+        [cause] failed to resolve token Type<Wand> (alias for Wand)
+        [cause] failed to resolve token Type<Wizard> (alias for Wizard)
+        [cause] circular dependency detected while resolving Type<Character> → Type<Wand> → Type<Wizard>]
+      `,
     );
   });
 
@@ -1032,7 +1052,10 @@ describe("Container", () => {
 
     expect(() => container.resolve(Wizard)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] failed to resolve dependency for Wizard.setWand(parameter #0: Wand)
+      [Error: [di-wise-neo] failed to resolve token Wizard
+        [cause] failed to resolve dependency for Wizard.setWand(parameter #0: Wand)
+        [cause] failed to resolve token Wand
+        [cause] failed to resolve token Wizard
         [cause] circular dependency detected while resolving Wizard → Wand → Wizard]
       `,
     );
