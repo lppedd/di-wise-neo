@@ -942,7 +942,7 @@ describe("Container", () => {
     // the error should include the original cause
     expect(() => container.resolve(Registered)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] failed to resolve alias token Registered
+      [Error: [di-wise-neo] failed to resolve token Registered (alias for NotRegistered)
         [cause] useExisting points to unregistered token NotRegistered]
       `,
     );
@@ -953,7 +953,7 @@ describe("Container", () => {
     // non-registered token will throw an error.
     expect(() => container.resolveAll(Registered)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] failed to resolve alias token Registered
+      [Error: [di-wise-neo] failed to resolve token Registered (alias for NotRegistered)
         [cause] useExisting points to unregistered token NotRegistered]
       `,
     );

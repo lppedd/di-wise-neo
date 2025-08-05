@@ -20,15 +20,17 @@ export function throwUnregisteredError(token: Token, name?: string): never {
 
 // @internal
 export function throwResolutionError(token: Token, aliases: Token[], cause: any, name?: string): never {
-  const suffix = aliases.length > 0 ? ` (alias for ${getTokenPath(aliases)})` : "";
-  const description = `token ${getTokenName(token, name)}${suffix}`;
-  throw new Error(tag(`failed to resolve ${description}`) + getCause(cause), { cause });
+  const path = aliases.length > 0 ? ` (alias for ${getTokenPath(aliases)})` : "";
+  const description = getTokenName(token, name) + path;
+  throw new Error(tag(`failed to resolve token ${description}`) + getCause(cause), { cause });
 }
 
 // @internal
-export function throwExistingUnregisteredError(token: Token, existingToken: Token): never {
-  const msg = tag(`failed to resolve alias token ${getTokenName(token)}`);
-  throw new Error(`${msg}\n  [cause] useExisting points to unregistered token ${getTokenName(existingToken)}`);
+export function throwExistingUnregisteredError(token: Token, aliases: Token[], name?: string): never {
+  const path = aliases.length > 0 ? ` (alias for ${getTokenPath(aliases)})` : "";
+  const description = getTokenName(token, name) + path;
+  const cause = `\n  [cause] useExisting points to unregistered token ${getTokenName(aliases.at(-1)!)}`;
+  throw new Error(tag(`failed to resolve token ${description}`) + cause);
 }
 
 // @internal

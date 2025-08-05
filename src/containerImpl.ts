@@ -304,7 +304,7 @@ export class ContainerImpl implements Container {
       aliases.push(existingToken);
 
       if (!current) {
-        throwExistingUnregisteredError(token, existingToken);
+        throwExistingUnregisteredError(token, aliases, name);
       }
     }
 
