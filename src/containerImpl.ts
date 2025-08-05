@@ -3,6 +3,7 @@ import {
   check,
   expectNever,
   getLocation,
+  getTokenName,
   throwExistingUnregisteredError,
   throwParameterResolutionError,
   throwUnregisteredError,
@@ -156,7 +157,7 @@ export class ContainerImpl implements Container {
       const [token, provider, options] = args;
       const existingProvider = isExistingProvider(provider);
       const name = existingProvider ? undefined : provider.name;
-      check(name === undefined || name.trim(), "the provider name qualifier cannot be empty or blank");
+      check(name === undefined || name.trim(), `the name qualifier for token ${getTokenName(token)} must not be empty`);
 
       if (isClassProvider(provider)) {
         const metadata = getMetadata(provider.useClass);

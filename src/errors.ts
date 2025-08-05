@@ -1,4 +1,4 @@
-import { type Constructor, isConstructor, type Token } from "./token";
+import type { Constructor, Token } from "./token";
 import type { MethodDependency } from "./tokenRegistry";
 
 // @internal
@@ -16,15 +16,15 @@ export function expectNever(value: never): never {
 // @internal
 export function throwUnregisteredError(token: Token, name?: string): never {
   const spec = name !== undefined ? `[name=${name}]` : "";
-  throw new Error(tag(`unregistered ${describeToken(token)}${spec}`));
+  throw new Error(tag(`unregistered token ${getTokenName(token)}${spec}`));
 }
 
 // @internal
 export function throwExistingUnregisteredError(token: Token, cause: Token | Error): never {
-  const message = tag(`error while resolving ${describeToken(token)}`);
+  const message = tag(`failed to resolve token ${getTokenName(token)}`);
   throw isError(cause)
     ? new Error(`${message}\n  [cause] ${untag(cause.message)}`, { cause })
-    : new Error(`${message}\n  [cause] the aliased ${describeToken(cause)} is not registered`);
+    : new Error(`${message}\n  [cause] the aliased token ${getTokenName(cause)} is not registered`);
 }
 
 // @internal
@@ -36,7 +36,7 @@ export function throwParameterResolutionError(
 ): never {
   const location = getLocation(ctor, methodKey);
   const token = dependency.tokenRef!.getRefToken();
-  const message = tag(`failed to resolve dependency at ${location}(parameter #${dependency.index}: ${token.name})`);
+  const message = tag(`failed to resolve dependency for ${location}(parameter #${dependency.index}: ${token.name})`);
   throw new Error(`${message}\n  [cause] ${untag(cause.message)}`, { cause });
 }
 
@@ -46,8 +46,9 @@ export function getLocation(ctor: Constructor<any>, methodKey?: string | symbol)
   return methodKey ? `${ctorName}.${String(methodKey)}` : ctorName;
 }
 
-function describeToken(token: Token): string {
-  return `${isConstructor(token) ? "class" : "token"} ${token.name}`;
+// @internal
+export function getTokenName(token: Token): string {
+  return token.name || "<unnamed>";
 }
 
 function isError(value: any): value is Error {

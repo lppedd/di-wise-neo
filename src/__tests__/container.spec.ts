@@ -612,15 +612,15 @@ describe("Container", () => {
     class Wizard {}
 
     expect(() => container.resolve(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] unregistered class Wizard]`,
+      `[Error: [di-wise-neo] unregistered token Wizard]`,
     );
 
     expect(() => container.resolve(Wizard, "Voldemort")).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] unregistered class Wizard[name=Voldemort]]`,
+      `[Error: [di-wise-neo] unregistered token Wizard[name=Voldemort]]`,
     );
 
     expect(() => container.resolveAll(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] unregistered class Wizard]`,
+      `[Error: [di-wise-neo] unregistered token Wizard]`,
     );
 
     @Named("Potter")
@@ -629,7 +629,7 @@ describe("Container", () => {
     class Wand {}
 
     expect(() => container.resolve(Wand, "Weasley")).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] unregistered class Wand[name=Weasley]]`,
+      `[Error: [di-wise-neo] unregistered token Wand[name=Weasley]]`,
     );
 
     expect(container.resolve(Wand)).toBe(container.resolve(Wand, "Potter"));
@@ -741,7 +741,7 @@ describe("Container", () => {
 
     expect(() => container.register(Wizard)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] failed to resolve dependency at Wizard(parameter #0: Type<Castle>)
+      [Error: [di-wise-neo] failed to resolve dependency for Wizard(parameter #0: Type<Castle>)
         [cause] unregistered token Type<Castle>]
       `,
     );
@@ -785,7 +785,7 @@ describe("Container", () => {
     expect(() => {
       @Named("  ") // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {}
-    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] the @Named qualifier cannot be empty or blank]`);
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] the @Named qualifier must not be empty]`);
 
     expect(() => {
       class Wizard {}
@@ -793,7 +793,7 @@ describe("Container", () => {
         useValue: new Wizard(),
         name: "  ",
       });
-    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] the provider name qualifier cannot be empty or blank]`);
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] the name qualifier for token Wizard must not be empty]`);
   });
 
   it("should resolve named class provider", () => {
@@ -924,8 +924,8 @@ describe("Container", () => {
     // the error should include the original cause
     expect(() => container.resolve(Registered)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] error while resolving class Registered
-        [cause] the aliased class NotRegistered is not registered]
+      [Error: [di-wise-neo] failed to resolve token Registered
+        [cause] the aliased token NotRegistered is not registered]
       `,
     );
 
@@ -935,8 +935,8 @@ describe("Container", () => {
     // non-registered token will throw an error.
     expect(() => container.resolveAll(Registered)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] error while resolving class Registered
-        [cause] the aliased class NotRegistered is not registered]
+      [Error: [di-wise-neo] failed to resolve token Registered
+        [cause] the aliased token NotRegistered is not registered]
       `,
     );
   });
@@ -960,7 +960,7 @@ describe("Container", () => {
 
     expect(() => container.resolveAll(Character)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] error while resolving token Type<Character>
+      [Error: [di-wise-neo] failed to resolve token Type<Character>
         [cause] circular dependency detected while resolving Type<Character> → Wand → Wizard]
       `,
     );
@@ -1027,7 +1027,7 @@ describe("Container", () => {
 
     expect(() => container.resolve(Wizard)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] failed to resolve dependency at Wizard.setWand(parameter #0: Wand)
+      [Error: [di-wise-neo] failed to resolve dependency for Wizard.setWand(parameter #0: Wand)
         [cause] circular dependency detected while resolving Wizard → Wand → Wizard]
       `,
     );

@@ -1,4 +1,4 @@
-import { check } from "../errors";
+import { check, getTokenName } from "../errors";
 import { getMetadata } from "../metadata";
 import { Scope } from "../scope";
 import type { Constructor } from "../token";
@@ -24,13 +24,15 @@ import type { Constructor } from "../token";
  */
 export function EagerInstantiate(): ClassDecorator {
   return function (Class): void {
-    const metadata = getMetadata(Class as any as Constructor<any>);
+    const ctor = Class as any as Constructor<any>;
+    const metadata = getMetadata(ctor);
     const currentScope = metadata.scope;
 
     check(!currentScope || currentScope.value === Scope.Container, () => {
       const { value, appliedBy } = currentScope!;
+      const className = getTokenName(ctor);
       return (
-        `class ${Class.name}: Scope.${value} was already set by @${appliedBy},\n  ` +
+        `class ${className}: Scope.${value} was already set by @${appliedBy},\n  ` +
         `but @EagerInstantiate is trying to set a conflicting Scope.Container.\n  ` +
         `Only one decorator should set the class scope, or all must agree on the same value.`
       );
