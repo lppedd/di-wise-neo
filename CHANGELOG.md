@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.4
+
+- Expanded support for unnamed/anonymous classes in error reporting across the entire codebase.
+- Improved the error message used when a token attempts to alias itself via `useExisting`.
+- Improved the error message used when registering a token with a name that is already taken.
+
 ## 0.9.3
 
 - Improved error messages for failed decorator-based parameter injection.
