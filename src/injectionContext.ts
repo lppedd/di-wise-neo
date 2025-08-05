@@ -9,7 +9,7 @@ import type { ValueRef } from "./valueRef";
 
 // @internal
 export interface ResolutionFrame {
-  readonly scope: Exclude<Scope, typeof Scope.Inherited>;
+  readonly scope: Scope;
   readonly provider: Provider;
 }
 

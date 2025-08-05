@@ -167,23 +167,32 @@ describe("inject", () => {
       container.register(Wizard).resolve(Wizard);
     });
 
-    it("should have context of the dependent", () => {
+    it("should resolve resolution scoped dependencies", () => {
       const container = createContainer({
         autoRegister: true,
       });
 
+      @Scoped(Scope.Resolution)
+      class Realm {}
+
+      @Scoped(Scope.Container)
       class Wand {
+        realm = inject(Realm);
         owner = inject(Wizard);
       }
 
       @Scoped(Scope.Container)
       class Wizard {
+        realm = inject(Realm);
         injector = injectBy(this, Injector);
       }
 
       const wizard = container.resolve(Wizard);
       const wand = wizard.injector.inject(Wand);
       expect(wand.owner).toBe(wizard);
+      expect(wand.realm).toBe(wizard.realm);
+      expect(wand.realm).not.toBe(container.resolve(Realm));
+      expect(container.resolve(Realm)).not.toBe(container.resolve(Realm));
       expect(container.getCached(Wand)).toBe(wand);
     });
 
@@ -194,9 +203,30 @@ describe("inject", () => {
 
       const injector = container.resolve(Injector);
       const wizard = injector.runInContext(() => optional(Wizard));
-
       expect(wizard).not.toBeUndefined();
       expect(wizard).toBe(container.resolve(Wizard));
+    });
+
+    it("should not throw a circular dependency error", () => {
+      class Wizard {
+        injector = inject(Injector);
+
+        getWand(): Wand {
+          return this.injector.inject(Wand);
+        }
+      }
+
+      @Scoped(Scope.Container)
+      class Wand {
+        wizard = inject(Wizard);
+      }
+
+      container.register(Wizard);
+      container.register(Wand);
+
+      const wizard = container.resolve(Wizard);
+      const wand = wizard.getWand();
+      expect(wand.wizard).toBeInstanceOf(Wizard);
     });
   });
 });

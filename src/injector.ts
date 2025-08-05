@@ -95,26 +95,17 @@ export interface Injector {
  */
 export const Injector: Type<Injector> = /*@__PURE__*/ build<Injector>(() => {
   const context = ensureInjectionContext("Injector factory");
-  const resolution = context.resolution;
-
-  const dependentFrame = resolution.stack.peek();
-  const dependentRef = dependentFrame && resolution.dependents.get(dependentFrame.provider);
-
   const runInContext = <R>(fn: () => R): R => {
     if (useInjectionContext()) {
       return fn();
     }
 
-    const cleanups = [
-      provideInjectionContext(context),
-      dependentFrame && resolution.stack.push(dependentFrame.provider, dependentFrame),
-      dependentRef && resolution.dependents.set(dependentFrame.provider, dependentRef),
-    ];
+    const cleanup = provideInjectionContext(context);
 
     try {
       return fn();
     } finally {
-      cleanups.forEach((cleanup) => cleanup?.());
+      cleanup();
     }
   };
 

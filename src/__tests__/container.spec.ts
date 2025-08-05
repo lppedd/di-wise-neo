@@ -34,7 +34,7 @@ describe("Container", () => {
 
   it("should create container with default options", () => {
     expect(container.options.autoRegister).toBe(false);
-    expect(container.options.defaultScope).toBe(Scope.Inherited);
+    expect(container.options.defaultScope).toBe(Scope.Transient);
   });
 
   it("should create child container with different options", () => {
@@ -333,8 +333,6 @@ describe("Container", () => {
   });
 
   it("should perform method injection with @Optional and @OptionalAll", () => {
-    // Caste will inherit the scope from Wizard, and thus it won't be
-    // instantiated one-off by the container
     class Castle {}
 
     @Scoped(Scope.Container)
@@ -1060,6 +1058,7 @@ describe("Container", () => {
   });
 
   it("should dispose itself and its registrations", () => {
+    @Scoped(Scope.Container)
     class Wand {
       calls = 0;
 

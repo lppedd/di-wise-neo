@@ -18,7 +18,7 @@ export interface ContainerOptions {
   /**
    * The default scope for registrations.
    *
-   * @defaultValue Scope.Inherited
+   * @defaultValue Scope.Transient
    */
   readonly defaultScope: Scope;
 }
@@ -287,7 +287,7 @@ export interface Container {
 export function createContainer(
   options: Partial<ContainerOptions> = {
     autoRegister: false,
-    defaultScope: Scope.Inherited,
+    defaultScope: Scope.Transient,
   },
 ): Container {
   return new ContainerImpl(undefined, options);

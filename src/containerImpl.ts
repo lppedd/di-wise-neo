@@ -34,7 +34,7 @@ export class ContainerImpl implements Container {
     this.myParent = parent;
     this.myOptions = {
       autoRegister: false,
-      defaultScope: Scope.Inherited,
+      defaultScope: Scope.Transient,
       ...options,
     };
 
@@ -383,7 +383,7 @@ export class ContainerImpl implements Container {
       return dependentRef.current;
     }
 
-    const scope = this.resolveScope(options?.scope, context);
+    const scope = options?.scope ?? this.myOptions.defaultScope;
     const cleanups = [
       provideInjectionContext(context),
       resolution.tokenStack.push(token) && (() => resolution.tokenStack.pop()),
@@ -424,18 +424,6 @@ export class ContainerImpl implements Container {
     } finally {
       cleanups.forEach((cleanup) => cleanup && cleanup());
     }
-  }
-
-  private resolveScope(
-    scope = this.myOptions.defaultScope,
-    context = useInjectionContext(),
-  ): Exclude<Scope, typeof Scope.Inherited> {
-    if (scope === Scope.Inherited) {
-      const dependentFrame = context?.resolution.stack.peek();
-      return dependentFrame?.scope || Scope.Transient;
-    }
-
-    return scope;
   }
 
   private resolveCtorDependencies<T>(registration: Registration<T>): any[] {

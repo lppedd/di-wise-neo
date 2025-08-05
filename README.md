@@ -168,13 +168,8 @@ registrar.registerCommand("my.command", () => { console.log("hey!"); });
 
 ## Container scopes
 
-The [Container][source-container] supports four **scope** types that determine how and when
+The [Container][source-container] supports three **scope** types that determine how and when
 values are cached and reused.
-
-### Inherited
-
-Inherits the scope from the requesting (dependent) token.  
-If there is no dependent (i.e., during top-level resolution), it behaves like **Transient**.
 
 ### Transient
 
@@ -183,6 +178,11 @@ Creates a new value every time the dependency is resolved, which means values ar
 - a class registered via `ClassProvider` is instantiated on each resolution
 - a factory function registered via `FactoryProvider` is invoked on each resolution
 - a value registered via `ValueProvider` is always returned as-is
+
+> [!NOTE]
+> When a **Transient** or **Resolution**-scoped value is injected into a **Container**-scoped
+> instance, it effectively inherits the lifecycle of that instance. The value will live as long
+> as the containing instance, even though it is not cached by the container itself.
 
 ### Resolution
 
