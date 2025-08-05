@@ -371,19 +371,18 @@ export class ContainerImpl implements Container {
 
     const resolution = context.resolution;
     const provider = registration.provider;
-    const options = registration.options;
 
     if (resolution.stack.has(provider)) {
       const dependentRef = resolution.dependents.get(provider);
       check(dependentRef, () => {
-        const path = resolution.tokenStack.map(getTokenName).join(" → ");
-        return `circular dependency detected while resolving ${path} → ${getTokenName(token)}`;
+        const path = resolution.tokenStack.map(getTokenName).concat(getTokenName(token)).join(" → ");
+        return `circular dependency detected while resolving ${path}`;
       });
 
       return dependentRef.current;
     }
 
-    const scope = options?.scope ?? this.myOptions.defaultScope;
+    const scope = registration.options?.scope ?? this.myOptions.defaultScope;
     const cleanups = [
       provideInjectionContext(context),
       resolution.tokenStack.push(token) && (() => resolution.tokenStack.pop()),

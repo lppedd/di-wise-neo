@@ -21,10 +21,10 @@ export function throwUnregisteredError(token: Token, name?: string): never {
 
 // @internal
 export function throwExistingUnregisteredError(token: Token, cause: Token | Error): never {
-  const message = tag(`failed to resolve token ${getTokenName(token)}`);
+  const msg = tag(`failed to resolve token ${getTokenName(token)}`);
   throw isError(cause)
-    ? new Error(`${message}\n  [cause] ${untag(cause.message)}`, { cause })
-    : new Error(`${message}\n  [cause] the aliased token ${getTokenName(cause)} is not registered`);
+    ? new Error(`${msg}\n  [cause] ${untag(cause.message)}`, { cause })
+    : new Error(`${msg}\n  [cause] the aliased token ${getTokenName(cause)} is not registered`);
 }
 
 // @internal
@@ -36,8 +36,8 @@ export function throwParameterResolutionError(
 ): never {
   const location = getLocation(ctor, methodKey);
   const tokenName = getTokenName(dependency.tokenRef!.getRefToken());
-  const message = tag(`failed to resolve dependency for ${location}(parameter #${dependency.index}: ${tokenName})`);
-  throw new Error(`${message}\n  [cause] ${untag(cause.message)}`, { cause });
+  const msg = tag(`failed to resolve dependency for ${location}(parameter #${dependency.index}: ${tokenName})`);
+  throw new Error(`${msg}\n  [cause] ${untag(cause.message)}`, { cause });
 }
 
 // @internal
