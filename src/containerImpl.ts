@@ -1,5 +1,11 @@
 import type { Container, ContainerOptions } from "./container";
-import { check, expectNever, throwExistingUnregisteredError, throwUnregisteredError } from "./errors";
+import {
+  check,
+  expectNever,
+  throwExistingUnregisteredError,
+  throwParameterResolutionError,
+  throwUnregisteredError,
+} from "./errors";
 import { injectBy } from "./inject";
 import { injectAll } from "./injectAll";
 import { createResolution, provideInjectionContext, useInjectionContext } from "./injectionContext";
@@ -9,7 +15,7 @@ import { optionalAll } from "./optionalAll";
 import { isClassProvider, isExistingProvider, isFactoryProvider, isValueProvider, type Provider } from "./provider";
 import { Scope } from "./scope";
 import { type Constructor, isConstructor, type Token } from "./token";
-import { isBuilder, type Registration, type RegistrationOptions, TokenRegistry } from "./tokenRegistry";
+import { isBuilder, type MethodDependency, type Registration, type RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 import { isDisposable } from "./utils/disposable";
 
 /**
@@ -454,21 +460,17 @@ export class ContainerImpl implements Container {
           return msg + `, but found ${ctorDeps.length}`;
         });
 
-        return ctorDeps
-          .sort((a, b) => a.index - b.index)
-          .map((dep) => {
-            const token = dep.tokenRef!.getRefToken();
-            switch (dep.appliedBy) {
-              case "Inject":
-                return this.resolve(token, dep.name);
-              case "InjectAll":
-                return this.resolveAll(token);
-              case "Optional":
-                return this.resolve(token, true, dep.name);
-              case "OptionalAll":
-                return this.resolveAll(token, true);
-            }
-          });
+        const args: any[] = [];
+
+        for (const dep of ctorDeps.sort((a, b) => a.index - b.index)) {
+          try {
+            args.push(this.resolveDependency("ctor", dep));
+          } catch (e) {
+            throwParameterResolutionError(ctor, undefined, dep, e as Error);
+          }
+        }
+
+        return args;
       }
     }
 
@@ -496,21 +498,15 @@ export class ContainerImpl implements Container {
           return msg + ` in ${ctor.name}.${String(key)}, but found ${methodDeps.length}`;
         });
 
-        const args = methodDeps
-          .sort((a, b) => a.index - b.index)
-          .map((dep) => {
-            const token = dep.tokenRef!.getRefToken();
-            switch (dep.appliedBy) {
-              case "Inject":
-                return injectBy(instance, token, dep.name);
-              case "InjectAll":
-                return injectAll(token);
-              case "Optional":
-                return optionalBy(instance, token, dep.name);
-              case "OptionalAll":
-                return optionalAll(token);
-            }
-          });
+        const args: any[] = [];
+
+        for (const dep of methodDeps.sort((a, b) => a.index - b.index)) {
+          try {
+            args.push(this.resolveDependency("method", dep, instance));
+          } catch (e) {
+            throwParameterResolutionError(ctor, key, dep, e as Error);
+          }
+        }
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         method.bind(instance)(...args);
@@ -518,6 +514,21 @@ export class ContainerImpl implements Container {
     }
 
     return instance;
+  }
+
+  private resolveDependency(mode: "ctor" | "method", dep: MethodDependency, instance?: any): any {
+    const token = dep.tokenRef!.getRefToken();
+    const name = dep.name;
+    switch (dep.appliedBy) {
+      case "Inject":
+        return mode === "ctor" ? this.resolve(token, name) : injectBy(instance, token, name);
+      case "InjectAll":
+        return mode === "ctor" ? this.resolveAll(token) : injectAll(token);
+      case "Optional":
+        return mode === "ctor" ? this.resolve(token, true, name) : optionalBy(instance, token, name);
+      case "OptionalAll":
+        return mode === "ctor" ? this.resolveAll(token, true) : optionalAll(token);
+    }
   }
 
   private checkDisposed(): void {

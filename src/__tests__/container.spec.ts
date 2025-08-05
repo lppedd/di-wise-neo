@@ -740,7 +740,10 @@ describe("Container", () => {
     }
 
     expect(() => container.register(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] unregistered token Type<Castle>]`,
+      `
+      [Error: [di-wise-neo] failed to resolve dependency at Wizard(parameter #0: Type<Castle>)
+        [cause] unregistered token Type<Castle>]
+      `,
     );
   });
 
@@ -1023,7 +1026,10 @@ describe("Container", () => {
     container.register(Wizard);
 
     expect(() => container.resolve(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] circular dependency detected while resolving Wizard → Wand → Wizard]`,
+      `
+      [Error: [di-wise-neo] failed to resolve dependency at Wizard.setWand(parameter #0: Wand)
+        [cause] circular dependency detected while resolving Wizard → Wand → Wizard]
+      `,
     );
   });
 

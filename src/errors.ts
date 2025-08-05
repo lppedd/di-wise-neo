@@ -1,4 +1,5 @@
-import { isConstructor, type Token } from "./token";
+import { type Constructor, isConstructor, type Token } from "./token";
+import type { MethodDependency } from "./tokenRegistry";
 
 // @internal
 export function check(condition: unknown, message: string | (() => string)): asserts condition {
@@ -24,6 +25,19 @@ export function throwExistingUnregisteredError(token: Token, cause: Token | Erro
   throw isError(cause)
     ? new Error(`${message}\n  [cause] ${untag(cause.message)}`, { cause })
     : new Error(`${message}\n  [cause] the aliased ${describeToken(cause)} is not registered`);
+}
+
+// @internal
+export function throwParameterResolutionError(
+  ctor: Constructor<any>,
+  method: string | symbol | undefined,
+  dependency: MethodDependency,
+  cause: Error,
+): never {
+  const location = method === undefined ? ctor.name : `${ctor.name}.${String(method)}`;
+  const token = dependency.tokenRef!.getRefToken();
+  const message = tag(`failed to resolve dependency at ${location}(parameter #${dependency.index}: ${token.name})`);
+  throw new Error(`${message}\n  [cause] ${untag(cause.message)}`, { cause });
 }
 
 function describeToken(token: Token): string {
