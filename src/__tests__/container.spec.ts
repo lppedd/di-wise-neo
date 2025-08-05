@@ -788,7 +788,7 @@ describe("Container", () => {
     expect(() => {
       @Named("  ") // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {}
-    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] the @Named qualifier must not be empty]`);
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] @Named qualifier must not be empty]`);
 
     expect(() => {
       class Wizard {}
@@ -796,7 +796,7 @@ describe("Container", () => {
         useValue: new Wizard(),
         name: "  ",
       });
-    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] the name qualifier for token Wizard must not be empty]`);
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] name qualifier for token Wizard must not be empty]`);
   });
 
   it("should resolve named class provider", () => {
@@ -1101,8 +1101,8 @@ describe("Container", () => {
 
     expect(container.isDisposed).toBe(true);
     expect(child.isDisposed).toBe(true);
-    expect(() => container.resolve(Wand)).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] the container is disposed]`);
-    expect(() => child.resolve(Wand)).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] the container is disposed]`);
+    expect(() => container.resolve(Wand)).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] container is disposed]`);
+    expect(() => child.resolve(Wand)).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] container is disposed]`);
 
     expect(wizardInstance.calls).toBe(1);
     expect(wizardInstance.wand.calls).toBe(1);

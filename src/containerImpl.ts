@@ -157,7 +157,7 @@ export class ContainerImpl implements Container {
       const [token, provider, options] = args;
       const existingProvider = isExistingProvider(provider);
       const name = existingProvider ? undefined : provider.name;
-      check(name === undefined || name.trim(), `the name qualifier for token ${getTokenName(token)} must not be empty`);
+      check(name === undefined || name.trim(), `name qualifier for token ${getTokenName(token)} must not be empty`);
 
       if (isClassProvider(provider)) {
         const metadata = getMetadata(provider.useClass);
@@ -499,6 +499,6 @@ export class ContainerImpl implements Container {
   }
 
   private checkDisposed(): void {
-    check(!this.myDisposed, "the container is disposed");
+    check(!this.myDisposed, "container is disposed");
   }
 }

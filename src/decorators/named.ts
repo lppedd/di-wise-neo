@@ -22,7 +22,7 @@ import { checkNamedDecorator, describeParam, updateParameterMetadata } from "./u
  * @__NO_SIDE_EFFECTS__
  */
 export function Named(name: string): ClassDecorator & ParameterDecorator {
-  check(name.trim(), "the @Named qualifier must not be empty");
+  check(name.trim(), "@Named qualifier must not be empty");
   return function (target: object, propertyKey?: string | symbol, parameterIndex?: number): void {
     if (parameterIndex === undefined) {
       // The decorator has been applied to the class
