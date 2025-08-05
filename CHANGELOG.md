@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.10.0
+
+### Beta Status
+
+The library is now in **Beta**.  
+From this point on, the public API will no longer introduce breaking changes without prior deprecation.  
+Breaking changes may still occur, but only:
+
+- For critical technical reasons
+- To deliver substantial improvements to developer experience
+
+### Changes
+
+- ❗ Removed the **Inherited** scope, making **Transient** the new default.
+
+  If you still rely on **Inherited**, continue using `0.9.4` until you're ready to migrate.
+  I believe there is no valid use case for **Inherited** that can't be solved with other scopes,
+  so moving away from it should be straightforward.
+
 ## 0.9.4
 
 - Expanded support for unnamed/anonymous classes in error reporting across the entire codebase.
