@@ -1,8 +1,19 @@
 # Changelog
 
+## 0.9.3
+
+- Improved error messages for failed decorator-based parameter injection.
+
+  ```text
+  [di-wise-neo] failed to resolve dependency for Wizard(parameter #0: Type<Castle>)
+    [cause] unregistered token Type<Castle>
+  ```
+- Handled unnamed/anonymous classes in error reporting to keep error messages understandable.
+- Refactored dependency resolution internals to improve long-term maintainability.
+
 ## 0.9.2
 
-- ✨ Improved the circular dependency error message to include the full resolution path.
+- Improved the circular dependency error message to include the full resolution path.
 
   ```text
   [di-wise-neo] circular dependency detected while resolving Wizard → Wand → Wizard
