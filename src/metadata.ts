@@ -19,7 +19,7 @@ export interface ScopeMetadata {
 export class Metadata<This extends object = any> {
   readonly provider: Writable<ClassProvider<This>>;
   readonly dependencies: Dependencies = {
-    constructor: [],
+    ctor: [],
     methods: new Map(),
   };
 
@@ -44,18 +44,18 @@ export class Metadata<This extends object = any> {
     this.provider.name = name;
   }
 
-  getConstructorDependency(index: number): MethodDependency {
-    const i = this.dependencies.constructor.findIndex((d) => d.index === index);
+  getCtorDependency(index: number): MethodDependency {
+    const i = this.dependencies.ctor.findIndex((d) => d.index === index);
 
     if (i > -1) {
-      return this.dependencies.constructor[i]!;
+      return this.dependencies.ctor[i]!;
     }
 
     const dependency: MethodDependency = {
       index: index,
     };
 
-    this.dependencies.constructor.push(dependency);
+    this.dependencies.ctor.push(dependency);
     return dependency;
   }
 

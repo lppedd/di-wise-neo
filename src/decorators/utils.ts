@@ -7,24 +7,24 @@ import type { InjectDecorator, MethodDependency } from "../tokenRegistry";
 export function updateParameterMetadata(
   decorator: InjectDecorator | "Named",
   target: object,
-  propertyKey: string | symbol | undefined,
+  methodKey: string | symbol | undefined,
   parameterIndex: number,
   updateFn: (dependency: MethodDependency) => void,
 ): void {
   // Error out immediately if the decorator has been applied to a static method
-  if (propertyKey !== undefined && typeof target === "function") {
-    check(false, `@${decorator} cannot be used on static method ${target.name}.${String(propertyKey)}`);
+  if (methodKey !== undefined && typeof target === "function") {
+    check(false, `@${decorator} cannot be used on static method ${target.name}.${String(methodKey)}`);
   }
 
-  if (propertyKey === undefined) {
+  if (methodKey === undefined) {
     // Constructor
     const metadata = getMetadata(target as Constructor<any>);
-    const dependency = metadata.getConstructorDependency(parameterIndex);
+    const dependency = metadata.getCtorDependency(parameterIndex);
     updateFn(dependency);
   } else {
     // Instance method
     const metadata = getMetadata(target.constructor as Constructor<any>);
-    const dependency = metadata.getMethodDependency(propertyKey, parameterIndex);
+    const dependency = metadata.getMethodDependency(methodKey, parameterIndex);
     updateFn(dependency);
   }
 }
@@ -37,12 +37,12 @@ export function updateParameterMetadata(
 export function checkSingleDecorator(
   dependency: MethodDependency,
   target: object,
-  propertyKey: string | symbol | undefined,
+  methodKey: string | symbol | undefined,
   parameterIndex: number,
 ): void {
   check(dependency.appliedBy === undefined, () => {
-    const location = getLocation(target, propertyKey, parameterIndex);
-    return `multiple injection decorators on ${location}, but only one is allowed`;
+    const param = describeParam(target, methodKey, parameterIndex);
+    return `multiple injection decorators on ${param}, but only one is allowed`;
   });
 }
 
@@ -53,13 +53,13 @@ export function checkSingleDecorator(
 export function checkNamedDecorator(
   dependency: MethodDependency,
   target: object,
-  propertyKey: string | symbol | undefined,
+  methodKey: string | symbol | undefined,
   parameterIndex: number,
 ): void {
   const { appliedBy, name } = dependency;
   check(name === undefined || (appliedBy !== "InjectAll" && appliedBy !== "OptionalAll"), () => {
-    const location = getLocation(target, propertyKey, parameterIndex);
-    return `@Named has no effect on ${location} when used with @${appliedBy}`;
+    const param = describeParam(target, methodKey, parameterIndex);
+    return `@Named has no effect on ${param} when used with @${appliedBy}`;
   });
 }
 
@@ -67,10 +67,10 @@ export function checkNamedDecorator(
 // For example: "Wizard constructor parameter 2" or "Wizard.set parameter 0"
 //
 // @internal
-export function getLocation(target: object, propertyKey: string | symbol | undefined, parameterIndex: number): string {
+export function describeParam(target: object, methodKey: string | symbol | undefined, parameterIndex: number): string {
   const location =
-    propertyKey === undefined
+    methodKey === undefined
       ? `${(target as Constructor<any>).name} constructor`
-      : `${(target.constructor as Constructor<any>).name}.${String(propertyKey)}`;
+      : `${(target.constructor as Constructor<any>).name}.${String(methodKey)}`;
   return `${location} parameter ${parameterIndex}`;
 }

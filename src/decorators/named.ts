@@ -1,7 +1,7 @@
 import { check } from "../errors";
 import { getMetadata } from "../metadata";
 import type { Constructor } from "../token";
-import { checkNamedDecorator, getLocation, updateParameterMetadata } from "./utils";
+import { checkNamedDecorator, describeParam, updateParameterMetadata } from "./utils";
 
 /**
  * Qualifies a class or an injected parameter with a unique name.
@@ -34,8 +34,8 @@ export function Named(name: string): ClassDecorator & ParameterDecorator {
       // The decorator has been applied to a method parameter
       updateParameterMetadata("Named", target, propertyKey, parameterIndex, (dependency) => {
         check(dependency.name === undefined, () => {
-          const location = getLocation(target, propertyKey, parameterIndex);
-          return `multiple @Named decorators on ${location}, but only one is allowed`;
+          const param = describeParam(target, propertyKey, parameterIndex);
+          return `multiple @Named decorators on ${param}, but only one is allowed`;
         });
 
         dependency.name = name;

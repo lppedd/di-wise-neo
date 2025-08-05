@@ -40,12 +40,10 @@ export function forwardRef<Value>(token: () => Token<Value> | Tokens<Value>): To
 
 // @internal
 export function isTokensRef(value: any): value is TokensRef {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   return value && typeof value === "object" && typeof value.getRefTokens === "function";
 }
 
 // @internal
 export function isTokenRef(value: any): value is TokenRef {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   return value && typeof value === "object" && typeof value.getRefToken === "function";
 }

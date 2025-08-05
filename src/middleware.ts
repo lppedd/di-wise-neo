@@ -63,11 +63,7 @@ export function applyMiddleware(container: Container, middlewares: Middleware[])
     use(key, wrap): MiddlewareComposer {
       // We need to bind the 'this' context of the function to the container
       // before passing it to the middleware wrapper.
-      //
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
       const fn = (container[key] as any).bind(container);
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       container[key] = wrap(fn);
       return composer;
     },

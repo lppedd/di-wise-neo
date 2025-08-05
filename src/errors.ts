@@ -30,11 +30,11 @@ export function throwExistingUnregisteredError(token: Token, cause: Token | Erro
 // @internal
 export function throwParameterResolutionError(
   ctor: Constructor<any>,
-  method: string | symbol | undefined,
+  methodKey: string | symbol | undefined,
   dependency: MethodDependency,
   cause: Error,
 ): never {
-  const location = method === undefined ? ctor.name : `${ctor.name}.${String(method)}`;
+  const location = methodKey === undefined ? ctor.name : `${ctor.name}.${String(methodKey)}`;
   const token = dependency.tokenRef!.getRefToken();
   const message = tag(`failed to resolve dependency at ${location}(parameter #${dependency.index}: ${token.name})`);
   throw new Error(`${message}\n  [cause] ${untag(cause.message)}`, { cause });
@@ -45,7 +45,6 @@ function describeToken(token: Token): string {
 }
 
 function isError(value: any): value is Error {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   return value && value.stack && value.message && typeof value.message === "string";
 }
 

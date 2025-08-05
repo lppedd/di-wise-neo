@@ -344,8 +344,6 @@ export class ContainerImpl implements Container {
 
     if (isClassProvider(provider)) {
       const Class = provider.useClass;
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return this.resolveScopedValue(token, registration, (args) => new Class(...args));
     }
 
@@ -379,11 +377,8 @@ export class ContainerImpl implements Container {
     if (resolution.stack.has(provider)) {
       const dependentRef = resolution.dependents.get(provider);
       check(dependentRef, () => {
-        const tokenStack = resolution.tokenStack
-          .map((t) => t.name)
-          .concat(token.name)
-          .join(" → ");
-        return `circular dependency detected while resolving ${tokenStack}`;
+        const path = resolution.tokenStack.map((t) => t.name).join(" → ");
+        return `circular dependency detected while resolving ${path} → ${token.name}`;
       });
 
       return dependentRef.current;
@@ -405,8 +400,8 @@ export class ContainerImpl implements Container {
             return valueRef.current;
           }
 
-          const args = this.resolveConstructorDependencies(registration);
-          const value = this.injectDependencies(registration, factory(args));
+          const args = this.resolveCtorDependencies(registration);
+          const value = this.injectMethodDependencies(registration, factory(args));
           registration.value = { current: value };
           return value;
         }
@@ -417,14 +412,14 @@ export class ContainerImpl implements Container {
             return valueRef.current;
           }
 
-          const args = this.resolveConstructorDependencies(registration);
-          const value = this.injectDependencies(registration, factory(args));
+          const args = this.resolveCtorDependencies(registration);
+          const value = this.injectMethodDependencies(registration, factory(args));
           resolution.values.set(provider, { current: value });
           return value;
         }
         case Scope.Transient: {
-          const args = this.resolveConstructorDependencies(registration);
-          return this.injectDependencies(registration, factory(args));
+          const args = this.resolveCtorDependencies(registration);
+          return this.injectMethodDependencies(registration, factory(args));
         }
       }
     } finally {
@@ -444,12 +439,12 @@ export class ContainerImpl implements Container {
     return scope;
   }
 
-  private resolveConstructorDependencies<T>(registration: Registration<T>): any[] {
+  private resolveCtorDependencies<T>(registration: Registration<T>): any[] {
     const dependencies = registration.dependencies;
 
     if (dependencies) {
       check(isClassProvider(registration.provider), `internal error: not a ClassProvider`);
-      const ctorDeps = dependencies.constructor.filter((d) => d.appliedBy);
+      const ctorDeps = dependencies.ctor.filter((d) => d.appliedBy);
 
       if (ctorDeps.length > 0) {
         // Let's check if all necessary constructor parameters are decorated.
@@ -460,24 +455,14 @@ export class ContainerImpl implements Container {
           return msg + `, but found ${ctorDeps.length}`;
         });
 
-        const args: any[] = [];
-
-        for (const dep of ctorDeps.sort((a, b) => a.index - b.index)) {
-          try {
-            args.push(this.resolveDependency("ctor", dep));
-          } catch (e) {
-            throwParameterResolutionError(ctor, undefined, dep, e as Error);
-          }
-        }
-
-        return args;
+        return this.resolveArgs(ctorDeps, ctor);
       }
     }
 
     return [];
   }
 
-  private injectDependencies<T>(registration: Registration<T>, instance: T): T {
+  private injectMethodDependencies<T>(registration: Registration<T>, instance: T): T {
     const dependencies = registration.dependencies;
 
     if (dependencies) {
@@ -486,29 +471,18 @@ export class ContainerImpl implements Container {
 
       // Perform method injection
       for (const entry of dependencies.methods) {
-        const key = entry[0];
+        const methodKey = entry[0];
         const methodDeps = entry[1].filter((d) => d.appliedBy);
 
         // Let's check if all necessary method parameters are decorated.
         // If not, we cannot safely invoke the method.
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        const method = (instance as any)[key] as Function;
+        const method = (instance as any)[methodKey] as Function;
         check(methodDeps.length === method.length, () => {
           const msg = `expected ${method.length} decorated method parameters`;
-          return msg + ` in ${ctor.name}.${String(key)}, but found ${methodDeps.length}`;
+          return msg + ` in ${ctor.name}.${String(methodKey)}, but found ${methodDeps.length}`;
         });
 
-        const args: any[] = [];
-
-        for (const dep of methodDeps.sort((a, b) => a.index - b.index)) {
-          try {
-            args.push(this.resolveDependency("method", dep, instance));
-          } catch (e) {
-            throwParameterResolutionError(ctor, key, dep, e as Error);
-          }
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        const args = this.resolveArgs(methodDeps, ctor, instance, methodKey);
         method.bind(instance)(...args);
       }
     }
@@ -516,18 +490,33 @@ export class ContainerImpl implements Container {
     return instance;
   }
 
-  private resolveDependency(mode: "ctor" | "method", dep: MethodDependency, instance?: any): any {
-    const token = dep.tokenRef!.getRefToken();
-    const name = dep.name;
-    switch (dep.appliedBy) {
+  private resolveArgs(deps: MethodDependency[], ctor: Constructor<any>, instance?: any, methodKey?: string | symbol): any[] {
+    const sortedDeps = deps.sort((a, b) => a.index - b.index);
+    const args: any[] = [];
+
+    for (const dep of sortedDeps) {
+      try {
+        args.push(this.resolveDependency(dep, instance));
+      } catch (e) {
+        throwParameterResolutionError(ctor, methodKey, dep, e as Error);
+      }
+    }
+
+    return args;
+  }
+
+  private resolveDependency(dependency: MethodDependency, instance?: any): any {
+    const token = dependency.tokenRef!.getRefToken();
+    const name = dependency.name;
+    switch (dependency.appliedBy) {
       case "Inject":
-        return mode === "ctor" ? this.resolve(token, name) : injectBy(instance, token, name);
+        return instance ? injectBy(instance, token, name) : this.resolve(token, name);
       case "InjectAll":
-        return mode === "ctor" ? this.resolveAll(token) : injectAll(token);
+        return instance ? injectAll(token) : this.resolveAll(token);
       case "Optional":
-        return mode === "ctor" ? this.resolve(token, true, name) : optionalBy(instance, token, name);
+        return instance ? optionalBy(instance, token, name) : this.resolve(token, true, name);
       case "OptionalAll":
-        return mode === "ctor" ? this.resolveAll(token, true) : optionalAll(token);
+        return instance ? optionalAll(token) : this.resolveAll(token, true);
     }
   }
 

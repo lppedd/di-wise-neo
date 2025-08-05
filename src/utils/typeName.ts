@@ -13,10 +13,10 @@ export function getTypeName(value: unknown): string {
       const proto: object | null = Object.getPrototypeOf(value);
 
       if (proto && proto !== Object.prototype) {
-        const constructor: unknown = proto.constructor;
+        const ctor: unknown = proto.constructor;
 
-        if (typeof constructor === "function" && constructor.name) {
-          return constructor.name;
+        if (typeof ctor === "function" && ctor.name) {
+          return ctor.name;
         }
       }
     }

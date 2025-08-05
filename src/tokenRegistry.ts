@@ -31,7 +31,7 @@ export interface MethodDependency {
 
 // @internal
 export interface Dependencies {
-  readonly constructor: MethodDependency[];
+  readonly ctor: MethodDependency[];
   readonly methods: Map<string | symbol, MethodDependency[]>;
 }
 
