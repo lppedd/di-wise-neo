@@ -66,13 +66,8 @@ function getCause(error: any): string {
     return "";
   }
 
-  const message = isError(error) //
-    ? error.message
-    : typeof error === "string"
-      ? error
-      : JSON.stringify(error);
-
-  return `\n  [cause] ${untag(message)}`;
+  const msg = isError(error) ? error.message : String(error);
+  return `\n  [cause] ${untag(msg)}`;
 }
 
 function isError(value: any): value is Error {
