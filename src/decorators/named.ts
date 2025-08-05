@@ -1,4 +1,4 @@
-import { check } from "../errors";
+import { check, getLocation } from "../errors";
 import { getMetadata } from "../metadata";
 import type { Constructor } from "../token";
 import { checkNamedDecorator, describeParam, updateParameterMetadata } from "./utils";
@@ -27,8 +27,9 @@ export function Named(name: string): ClassDecorator & ParameterDecorator {
     if (parameterIndex === undefined) {
       // The decorator has been applied to the class
       const ctor = target as any as Constructor<any>;
+      const location = getLocation(ctor);
       const metadata = getMetadata(ctor);
-      check(metadata.name === undefined, `multiple @Named decorators on class ${ctor.name}, but only one is allowed`);
+      check(metadata.name === undefined, `multiple @Named decorators on class ${location}, but only one is allowed`);
       metadata.name = name;
     } else {
       // The decorator has been applied to a method parameter

@@ -429,7 +429,7 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] expected 2 decorated constructor parameters in Wizard, but found 1]`,
+      `[Error: [di-wise-neo] Wizard expected 2 decorated constructor parameters, but found 1]`,
     );
   });
 
@@ -448,7 +448,7 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] expected 3 decorated constructor parameters in Wizard, but found 2]`,
+      `[Error: [di-wise-neo] Wizard expected 3 decorated constructor parameters, but found 2]`,
     );
   });
 
@@ -467,7 +467,7 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] expected 3 decorated constructor parameters in Wizard, but found 2]`,
+      `[Error: [di-wise-neo] Wizard expected 3 decorated constructor parameters, but found 2]`,
     );
   });
 
@@ -483,7 +483,7 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] expected 3 decorated method parameters in Wizard.set, but found 2]`,
+      `[Error: [di-wise-neo] Wizard.set expected 3 decorated method parameters, but found 2]`,
     );
   });
 
@@ -499,7 +499,7 @@ describe("Container", () => {
 
       container.resolve(Wizard);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] expected 3 decorated method parameters in Wizard.set, but found 2]`,
+      `[Error: [di-wise-neo] Wizard.set expected 3 decorated method parameters, but found 2]`,
     );
   });
 

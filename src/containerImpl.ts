@@ -2,6 +2,7 @@ import type { Container, ContainerOptions } from "./container";
 import {
   check,
   expectNever,
+  getLocation,
   throwExistingUnregisteredError,
   throwParameterResolutionError,
   throwUnregisteredError,
@@ -451,7 +452,8 @@ export class ContainerImpl implements Container {
         // If not, we cannot safely create an instance.
         const ctor = registration.provider.useClass;
         check(ctor.length === ctorDeps.length, () => {
-          const msg = `expected ${ctor.length} decorated constructor parameters in ${ctor.name}`;
+          const location = getLocation(ctor);
+          const msg = `${location} expected ${ctor.length} decorated constructor parameters`;
           return msg + `, but found ${ctorDeps.length}`;
         });
 
@@ -478,8 +480,9 @@ export class ContainerImpl implements Container {
         // If not, we cannot safely invoke the method.
         const method = (instance as any)[methodKey] as Function;
         check(methodDeps.length === method.length, () => {
-          const msg = `expected ${method.length} decorated method parameters`;
-          return msg + ` in ${ctor.name}.${String(methodKey)}, but found ${methodDeps.length}`;
+          const location = getLocation(ctor, methodKey);
+          const msg = `${location} expected ${method.length} decorated method parameters`;
+          return msg + `, but found ${methodDeps.length}`;
         });
 
         const args = this.resolveArgs(methodDeps, ctor, instance, methodKey);

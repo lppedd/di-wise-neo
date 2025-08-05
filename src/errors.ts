@@ -34,10 +34,16 @@ export function throwParameterResolutionError(
   dependency: MethodDependency,
   cause: Error,
 ): never {
-  const location = methodKey === undefined ? ctor.name : `${ctor.name}.${String(methodKey)}`;
+  const location = getLocation(ctor, methodKey);
   const token = dependency.tokenRef!.getRefToken();
   const message = tag(`failed to resolve dependency at ${location}(parameter #${dependency.index}: ${token.name})`);
   throw new Error(`${message}\n  [cause] ${untag(cause.message)}`, { cause });
+}
+
+// @internal
+export function getLocation(ctor: Constructor<any>, methodKey?: string | symbol): string {
+  const ctorName = ctor.name || "<unnamed>";
+  return methodKey ? `${ctorName}.${String(methodKey)}` : ctorName;
 }
 
 function describeToken(token: Token): string {
