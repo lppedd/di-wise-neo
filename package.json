@@ -1,6 +1,6 @@
 {
   "name": "@lppedd/di-wise-neo",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "license": "MIT",
   "description": "Lightweight, type-safe, flexible dependency injection library for TypeScript and JavaScript",
   "author": "Edoardo Luppi <lp.edoardo@gmail.com>",
