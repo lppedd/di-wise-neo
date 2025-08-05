@@ -921,8 +921,8 @@ describe("Container", () => {
     // the error should include the original cause
     expect(() => container.resolve(Registered)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] token resolution error encountered while resolving Registered
-        [cause] the aliased token NotRegistered is not registered]
+      [Error: [di-wise-neo] error while resolving class Registered
+        [cause] the aliased class NotRegistered is not registered]
       `,
     );
 
@@ -932,8 +932,8 @@ describe("Container", () => {
     // non-registered token will throw an error.
     expect(() => container.resolveAll(Registered)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] token resolution error encountered while resolving Registered
-        [cause] the aliased token NotRegistered is not registered]
+      [Error: [di-wise-neo] error while resolving class Registered
+        [cause] the aliased class NotRegistered is not registered]
       `,
     );
   });
@@ -957,7 +957,7 @@ describe("Container", () => {
 
     expect(() => container.resolveAll(Character)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] token resolution error encountered while resolving Type<Character>
+      [Error: [di-wise-neo] error while resolving token Type<Character>
         [cause] circular dependency detected while resolving Type<Character> → Wand → Wizard]
       `,
     );

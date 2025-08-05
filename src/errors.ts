@@ -14,18 +14,20 @@ export function expectNever(value: never): never {
 
 // @internal
 export function throwUnregisteredError(token: Token, name?: string): never {
-  const type = isConstructor(token) ? "class" : "token";
   const spec = name !== undefined ? `[name=${name}]` : "";
-  throw new Error(tag(`unregistered ${type} ${token.name}${spec}`));
+  throw new Error(tag(`unregistered ${describeToken(token)}${spec}`));
 }
 
 // @internal
-export function throwExistingUnregisteredError(sourceToken: Token, targetTokenOrError: Token | Error): never {
-  let message = tag(`token resolution error encountered while resolving ${sourceToken.name}`);
-  message += isError(targetTokenOrError)
-    ? `\n  [cause] ${untag(targetTokenOrError.message)}`
-    : `\n  [cause] the aliased token ${targetTokenOrError.name} is not registered`;
-  throw new Error(message);
+export function throwExistingUnregisteredError(token: Token, cause: Token | Error): never {
+  const message = tag(`error while resolving ${describeToken(token)}`);
+  throw isError(cause)
+    ? new Error(`${message}\n  [cause] ${untag(cause.message)}`, { cause })
+    : new Error(`${message}\n  [cause] the aliased ${describeToken(cause)} is not registered`);
+}
+
+function describeToken(token: Token): string {
+  return `${isConstructor(token) ? "class" : "token"} ${token.name}`;
 }
 
 function isError(value: any): value is Error {
