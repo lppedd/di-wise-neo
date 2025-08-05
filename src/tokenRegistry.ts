@@ -78,7 +78,7 @@ export class TokenRegistry {
 
       if (name !== undefined) {
         const existing = registrations.filter((r) => r.name === name);
-        check(existing.length === 0, `a ${getTokenName(token)} token named '${name}' is already registered`);
+        check(existing.length === 0, `token ${getTokenName(token)} with name '${name}' is already registered`);
       }
     } else {
       this.myMap.set(token, (registrations = []));

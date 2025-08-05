@@ -915,7 +915,7 @@ describe("Container", () => {
 
     container.register(Wizard);
     expect(() => container.register(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] a Wizard token named 'Dumbledore' is already registered]`,
+      `[Error: [di-wise-neo] token Wizard with name 'Dumbledore' is already registered]`,
     );
   });
 
