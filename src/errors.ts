@@ -20,11 +20,9 @@ export function throwUnregisteredError(token: Token, name?: string): never {
 }
 
 // @internal
-export function throwExistingUnregisteredError(token: Token, cause: Token | Error): never {
-  const msg = tag(`failed to resolve token ${getTokenName(token)}`);
-  throw isError(cause)
-    ? new Error(`${msg}\n  [cause] ${untag(cause.message)}`, { cause })
-    : new Error(`${msg}\n  [cause] the aliased token ${getTokenName(cause)} is not registered`);
+export function throwExistingUnregisteredError(token: Token, existingToken: Token): never {
+  const msg = tag(`failed to resolve alias token ${getTokenName(token)}`);
+  throw new Error(`${msg}\n  [cause] useExisting points to unregistered token ${getTokenName(existingToken)}`);
 }
 
 // @internal
@@ -49,10 +47,6 @@ export function getLocation(ctor: Constructor<any>, methodKey?: string | symbol)
 // @internal
 export function getTokenName(token: Token): string {
   return token.name || "<unnamed>";
-}
-
-function isError(value: any): value is Error {
-  return value && value.stack && value.message && typeof value.message === "string";
 }
 
 function tag(message: string): string {

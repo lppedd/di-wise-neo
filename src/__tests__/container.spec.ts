@@ -927,8 +927,8 @@ describe("Container", () => {
     // the error should include the original cause
     expect(() => container.resolve(Registered)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] failed to resolve token Registered
-        [cause] the aliased token NotRegistered is not registered]
+      [Error: [di-wise-neo] failed to resolve alias token Registered
+        [cause] useExisting points to unregistered token NotRegistered]
       `,
     );
 
@@ -938,21 +938,26 @@ describe("Container", () => {
     // non-registered token will throw an error.
     expect(() => container.resolveAll(Registered)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] failed to resolve token Registered
-        [cause] the aliased token NotRegistered is not registered]
+      [Error: [di-wise-neo] failed to resolve alias token Registered
+        [cause] useExisting points to unregistered token NotRegistered]
       `,
     );
   });
 
   it("should throw if resolving existing provider with circular dependency", () => {
+    const IWand = createType<Wand>("Wand");
+    const IWizard = createType<Wizard>("Wizard");
+
+    @Injectable(IWand)
     @Scoped(Scope.Container)
     class Wand {
-      dep = inject(Wizard);
+      dep = inject(IWizard);
     }
 
+    @Injectable(IWizard)
     @Scoped(Scope.Container)
     class Wizard {
-      dep = inject(Wand);
+      dep = inject(IWand);
     }
 
     const Character = createType<Wizard>("Character");
@@ -962,10 +967,7 @@ describe("Container", () => {
     container.register(Character, { useExisting: Wizard });
 
     expect(() => container.resolveAll(Character)).toThrowErrorMatchingInlineSnapshot(
-      `
-      [Error: [di-wise-neo] failed to resolve token Type<Character>
-        [cause] circular dependency detected while resolving Type<Character> → Wand → Wizard]
-      `,
+      `[Error: [di-wise-neo] circular dependency detected while resolving Type<Character> → Type<Wand> → Type<Wizard>]`,
     );
   });
 

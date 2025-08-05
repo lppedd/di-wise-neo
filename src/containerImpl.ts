@@ -304,17 +304,7 @@ export class ContainerImpl implements Container {
       }
     }
 
-    try {
-      return this.resolveProviderValue(token, currRegistration);
-    } catch (e) {
-      // If we were trying to resolve a token registered via ExistingProvider,
-      // we must add the cause of the error to the message
-      if (isExistingProvider(registration.provider)) {
-        throwExistingUnregisteredError(token, e as Error);
-      }
-
-      throw e;
-    }
+    return this.resolveProviderValue(token, currRegistration);
   }
 
   private autoRegisterClass<T extends object>(Class: Constructor<T>, name?: string): Registration<T> | undefined {
