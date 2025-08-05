@@ -181,10 +181,7 @@ export class ContainerImpl implements Container {
         }
       } else {
         if (existingProvider) {
-          check(
-            token !== provider.useExisting,
-            `the useExisting token ${token.name} cannot be the same as the token being registered`,
-          );
+          check(token !== provider.useExisting, `token ${getTokenName(token)} cannot alias itself via useExisting`);
         }
 
         this.myTokenRegistry.set(token, {

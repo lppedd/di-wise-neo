@@ -779,7 +779,7 @@ describe("Container", () => {
     // We should not be able to register a token pointing to itself,
     // as it would cause a circular dependency error
     expect(() => container.register(Wizard, { useExisting: Wizard })).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] the useExisting token Type<Wizard> cannot be the same as the token being registered]`,
+      `[Error: [di-wise-neo] token Type<Wizard> cannot alias itself via useExisting]`,
     );
 
     container.register(Wizard, { useExisting: WizardImpl });
