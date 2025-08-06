@@ -14,24 +14,24 @@ export function throwUnregisteredError(token: Token, name?: string): never {
 }
 
 // @internal
-export function throwResolutionError(token: Token, aliases: Token[], cause: any, name?: string): never {
+export function throwTargetUnregisteredError(token: Token, aliases: Token[], name?: string): never {
   const path = aliases.length > 0 ? ` (alias for ${getTokenPath(aliases)})` : "";
-  const description = getTokenName(token, name) + path;
-  throw new Error(tag(`failed to resolve token ${description}`) + getCause(cause), { cause });
-}
-
-// @internal
-export function throwExistingUnregisteredError(token: Token, aliases: Token[], name?: string): never {
-  const path = aliases.length > 0 ? ` (alias for ${getTokenPath(aliases)})` : "";
-  const description = getTokenName(token, name) + path;
+  const desc = getTokenName(token, name) + path;
   const cause = `\n  [cause] useExisting points to unregistered token ${getTokenName(aliases.at(-1)!, name)}`;
-  throw new Error(tag(`failed to resolve token ${description}`) + cause);
+  throw new Error(tag(`failed to resolve token ${desc}`) + cause);
 }
 
 // @internal
 export function throwCircularAliasError(aliases: Token[]): never {
   const path = getTokenPath(aliases);
   throw new Error(tag(`circular alias detected: ${path}`));
+}
+
+// @internal
+export function throwResolutionError(token: Token, aliases: Token[], cause: any, name?: string): never {
+  const path = aliases.length > 0 ? ` (alias for ${getTokenPath(aliases)})` : "";
+  const desc = getTokenName(token, name) + path;
+  throw new Error(tag(`failed to resolve token ${desc}`) + getCause(cause), { cause });
 }
 
 // @internal

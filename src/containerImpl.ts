@@ -5,9 +5,9 @@ import {
   getTokenName,
   getTokenPath,
   throwCircularAliasError,
-  throwExistingUnregisteredError,
   throwParameterResolutionError,
   throwResolutionError,
+  throwTargetUnregisteredError,
   throwUnregisteredError,
 } from "./errors";
 import { injectBy } from "./inject";
@@ -310,7 +310,7 @@ export class ContainerImpl implements Container {
       nextReg = this.findRegistration(targetToken, name);
 
       if (!nextReg && !optional) {
-        throwExistingUnregisteredError(token, aliases, name);
+        throwTargetUnregisteredError(token, aliases, name);
       }
     }
 
