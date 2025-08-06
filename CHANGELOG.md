@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.11.0
+
+- Reworked the `useExisting` token aliasing mechanism to be more consistent.  
+  The `ExistingProvider` interface now accepts a `name` option, like all other provider types,
+  and can point to a named existing token.
+- Improved various error messages to be more descriptive, and shorter in certain cases.  
+  Each error now includes the complete error trace.
+
 ## 0.10.0
 
 ### Beta Status
