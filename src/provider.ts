@@ -62,11 +62,11 @@ export interface FactoryProvider<Value> {
 /**
  * Provides a static - already constructed - value for a token.
  */
-export interface ValueProvider<T> {
+export interface ValueProvider<Value> {
   /**
    * The static value to associate with the token.
    */
-  readonly useValue: T;
+  readonly useValue: Value;
 
   /**
    * An optional name to qualify this provider.
