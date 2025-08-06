@@ -462,7 +462,7 @@ export class ContainerImpl implements Container {
         check(ctor.length === ctorDeps.length, () => {
           const location = getLocation(ctor);
           const msg = `${location} expected ${ctor.length} decorated constructor parameters`;
-          return msg + `, but found ${ctorDeps.length}`;
+          return `${msg}, but found ${ctorDeps.length}`;
         });
 
         return this.resolveArgs(ctorDeps, ctor);
@@ -490,7 +490,7 @@ export class ContainerImpl implements Container {
         check(methodDeps.length === method.length, () => {
           const location = getLocation(ctor, methodKey);
           const msg = `${location} expected ${method.length} decorated method parameters`;
-          return msg + `, but found ${methodDeps.length}`;
+          return `${msg}, but found ${methodDeps.length}`;
         });
 
         const args = this.resolveArgs(methodDeps, ctor, instance, methodKey);
