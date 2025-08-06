@@ -22,7 +22,6 @@ import {
   isClassProvider,
   isExistingProvider,
   isFactoryProvider,
-  isToken,
   isValueProvider,
   type Provider,
 } from "./provider";
@@ -157,10 +156,7 @@ export class ContainerImpl implements Container {
         this.myTokenRegistry.set(token, {
           name: name,
           provider: {
-            useExisting: {
-              token: Class,
-              name: name,
-            },
+            useExisting: [Class, name],
           },
         });
       }
@@ -341,7 +337,7 @@ export class ContainerImpl implements Container {
 
   private getTargetToken<T>(provider: ExistingProvider<T>): [Token<T>, string?] {
     const token = provider.useExisting;
-    return isToken(token) ? [token] : [token.token, token.name];
+    return Array.isArray(token) ? token : [token];
   }
 
   private autoRegisterClass<T extends object>(Class: Constructor<T>, name?: string): Registration<T> | undefined {

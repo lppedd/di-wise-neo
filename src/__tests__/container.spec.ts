@@ -970,7 +970,7 @@ describe("Container", () => {
     class Target {}
 
     container.register(Target, { useClass: Target, name: "Easy" });
-    container.register(Alias1, { useExisting: { token: Target, name: "Difficult" } });
+    container.register(Alias1, { useExisting: [Target, "Difficult"] });
     container.register(Alias2, { useExisting: Alias1 });
     container.register(Alias3, { useExisting: Alias2 });
 
