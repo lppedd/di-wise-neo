@@ -177,7 +177,7 @@ export class ContainerImpl implements Container {
         const metadata = getMetadata(provider.useClass);
         const registration: Registration = {
           // An explicit provider name overrides what is specified via @Named
-          name: metadata.name ?? provider.name,
+          name: metadata.name ?? name,
           provider: metadata.provider,
           options: {
             // Explicit registration options override what is specified via class decorators (e.g., @Scoped)
