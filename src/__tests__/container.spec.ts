@@ -1002,7 +1002,7 @@ describe("Container", () => {
     container.register(Alias3, { useExisting: Alias2 });
 
     expect(() => container.resolve(Alias3)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] circular alias detected: Alias3 → Alias2 → Alias1 → Alias3]`,
+      `[Error: [di-wise-neo] circular alias detected while resolving Alias3 → Alias2 → Alias1 → Alias3]`,
     );
   });
 

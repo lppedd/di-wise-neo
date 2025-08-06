@@ -27,7 +27,7 @@ export function throwTargetUnregisteredError(tokenInfo: TokenInfo, aliases: Toke
 // @internal
 export function throwCircularAliasError(aliases: TokenInfo[]): never {
   const path = getTokenPath(aliases);
-  throw new Error(tag(`circular alias detected: ${path}`));
+  throw new Error(tag(`circular alias detected while resolving ${path}`));
 }
 
 // @internal
@@ -62,15 +62,14 @@ export function getTokenPath(tokens: TokenInfo[]): string {
 }
 
 // @internal
-export function getFullTokenName(tokenInfo: TokenInfo): string {
+export function getTokenName(token: Token): string {
+  return token.name || "<unnamed>";
+}
+
+function getFullTokenName(tokenInfo: TokenInfo): string {
   const [token, name] = tokenInfo;
   const tokenName = token.name || "<unnamed>";
   return name ? `${tokenName}["${name}"]` : tokenName;
-}
-
-// @internal
-export function getTokenName(token: Token): string {
-  return token.name || "<unnamed>";
 }
 
 function getCause(error: any): string {

@@ -1,7 +1,6 @@
 import type { Container, ContainerOptions } from "./container";
 import {
   check,
-  getFullTokenName,
   getLocation,
   getTokenName,
   getTokenPath,
@@ -170,7 +169,7 @@ export class ContainerImpl implements Container {
     } else {
       const [token, provider, options] = args;
       const name = provider.name;
-      check(name === undefined || name.trim(), () => `name qualifier for token ${getFullTokenName([token])} must not be empty`);
+      check(name === undefined || name.trim(), `name qualifier for token ${getTokenName(token)} must not be empty`);
 
       if (isClassProvider(provider)) {
         const metadata = getMetadata(provider.useClass);
@@ -304,7 +303,7 @@ export class ContainerImpl implements Container {
 
   private resolveRegistration<T>(
     token: Token<T>,
-    registration: Registration<T> | undefined,
+    registration?: Registration<T>,
     optional?: boolean,
     name?: string,
   ): T | undefined {
