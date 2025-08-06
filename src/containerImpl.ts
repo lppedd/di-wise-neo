@@ -22,11 +22,12 @@ import {
   isClassProvider,
   isExistingProvider,
   isFactoryProvider,
+  isToken,
   isValueProvider,
   type Provider,
 } from "./provider";
 import { Scope } from "./scope";
-import { type Constructor, isConstructor, isType, type Token } from "./token";
+import { type Constructor, isConstructor, type Token } from "./token";
 import { isBuilder, type MethodDependency, type Registration, type RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 import { isDisposable } from "./utils/disposable";
 
@@ -339,10 +340,8 @@ export class ContainerImpl implements Container {
   }
 
   private getTargetToken<T>(provider: ExistingProvider<T>): [Token<T>, string?] {
-    const token = provider.useExisting as any;
-    return isType(token) || isConstructor(token) //
-      ? [token as Token<T>]
-      : [token.token, token.name];
+    const token = provider.useExisting;
+    return isToken(token) ? [token] : [token.token, token.name];
   }
 
   private autoRegisterClass<T extends object>(Class: Constructor<T>, name?: string): Registration<T> | undefined {

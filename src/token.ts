@@ -1,5 +1,3 @@
-const typeSymbol = Symbol("di-wise-neo.typeToken");
-
 /**
  * Type API.
  */
@@ -34,11 +32,6 @@ export interface Type<A> {
    * ```
    */
   union<B>(typeName: string, B: Type<B>): Type<A | B>;
-
-  /**
-   * @internal
-   */
-  __type: symbol;
 }
 
 /**
@@ -76,18 +69,12 @@ export function createType<T>(typeName: string): Type<T> {
     name: `Type<${typeName}>`,
     inter: createType,
     union: createType,
-    __type: typeSymbol,
     toString(): string {
       return type.name;
     },
   };
 
   return type;
-}
-
-// @internal
-export function isType<T>(token: Type<T> | Constructor<T & object>): token is Type<T> {
-  return (token as any).__type === typeSymbol;
 }
 
 // @internal

@@ -1,4 +1,4 @@
-import type { Constructor, Token } from "./token";
+import type { Constructor, Token, Type } from "./token";
 
 /**
  * Provides a class instance for a token via a class constructor.
@@ -87,6 +87,14 @@ export interface ValueProvider<T> {
 }
 
 /**
+ * @see ExistingProvider
+ */
+export interface NamedToken<Value> {
+  readonly token: Token<Value>;
+  readonly name?: string;
+}
+
+/**
  * Aliases another registered token.
  *
  * Resolving this token will return the value of the aliased one.
@@ -95,12 +103,7 @@ export interface ExistingProvider<Value> {
   /**
    * The existing token to alias.
    */
-  readonly useExisting:
-    | Token<Value>
-    | {
-        readonly token: Token<Value>;
-        readonly name?: string;
-      };
+  readonly useExisting: Token<Value> | NamedToken<Value>;
 
   /**
    * An optional name to qualify this provider.
@@ -147,4 +150,9 @@ export function isValueProvider<T>(provider: Provider<T>): provider is ValueProv
 // @internal
 export function isExistingProvider<T>(provider: Provider<T>): provider is ExistingProvider<T> {
   return "useExisting" in provider;
+}
+
+// @internal
+export function isToken<T>(token: Type<T> | Constructor<T & object> | NamedToken<T>): token is Type<T> | Constructor<T & object> {
+  return typeof token === "function" || typeof (token as any).union === "function";
 }
