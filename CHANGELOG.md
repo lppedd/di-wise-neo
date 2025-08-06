@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.1
+
+- Improved the type definition for `ExistingProvider`.
+- Cleaned up a couple of JSDoc comments.
+- Removed unnecessary internal code.
+
 ## 0.11.0
 
 - Reworked the `useExisting` token aliasing mechanism to be more consistent.  
