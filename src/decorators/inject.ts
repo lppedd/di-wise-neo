@@ -19,8 +19,8 @@ export function Inject<Value>(token: Token<Value>): ParameterDecorator;
 /**
  * Parameter decorator that injects the value associated with the given token.
  *
- * Allows referencing a token that is declared later in the file by using
- * the {@link forwardRef} helper function.
+ * Allows referencing a token declared later in the file by using the
+ * {@link forwardRef} helper function.
  *
  * Throws an error if the token is not registered in the container.
  *

@@ -21,8 +21,8 @@ export function OptionalAll<Value>(token: Token<Value>): ParameterDecorator;
  * associated with the given token, or an empty array if the token is not registered
  * in the container.
  *
- * Allows referencing a token that is declared later in the file by using
- * the {@link forwardRef} helper function.
+ * Allows referencing a token declared later in the file by using the
+ * {@link forwardRef} helper function.
  *
  * @example
  * ```ts

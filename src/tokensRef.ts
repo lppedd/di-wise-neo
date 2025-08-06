@@ -10,13 +10,13 @@ export interface TokenRef<Value = any> {
 }
 
 /**
- * Allows referencing tokens that are declared later in the file by wrapping them
+ * Allows referencing tokens declared later in the file by wrapping them
  * in a lazily evaluated function.
  */
 export function forwardRef<Value>(token: () => Tokens<Value>): TokensRef<Value>;
 
 /**
- * Allows referencing a token that is declared later in the file by wrapping it
+ * Allows referencing a token declared later in the file by wrapping it
  * in a lazily evaluated function.
  */
 export function forwardRef<Value>(token: () => Token<Value>): TokenRef<Value>;
@@ -24,8 +24,7 @@ export function forwardRef<Value>(token: () => Token<Value>): TokenRef<Value>;
 export function forwardRef<Value>(token: () => Token<Value> | Tokens<Value>): TokensRef<Value> & TokenRef<Value> {
   return {
     getRefTokens: (): Set<Token<Value>> => {
-      // Normalize the single token here, so that we don't have
-      // to do it at every getRefTokens call site
+      // Normalize the single token here so that we don't have to do it at every getRefTokens call site
       const tokenOrTokens = token();
       const tokensArray = Array.isArray(tokenOrTokens) ? tokenOrTokens : [tokenOrTokens];
       return new Set(tokensArray);
