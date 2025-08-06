@@ -156,8 +156,10 @@ export class ContainerImpl implements Container {
         this.myTokenRegistry.set(token, {
           name: name,
           provider: {
-            useExisting: Class,
-            name: name,
+            useExisting: {
+              token: Class,
+              name: name,
+            },
           },
         });
       }
