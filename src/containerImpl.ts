@@ -5,6 +5,7 @@ import {
   getLocation,
   getTokenName,
   getTokenPath,
+  throwCircularAliasError,
   throwExistingUnregisteredError,
   throwParameterResolutionError,
   throwResolutionError,
@@ -233,11 +234,7 @@ export class ContainerImpl implements Container {
       registration = this.autoRegisterClass(token, localName);
     }
 
-    if (registration) {
-      return this.resolveRegistration(token, registration, localName);
-    }
-
-    return localOptional ? undefined : throwUnregisteredError(token, localName);
+    return this.resolveRegistration(token, registration, localOptional, localName);
   }
 
   resolveAll<T>(token: Token<T>, optional?: boolean): NonNullable<T>[] {
@@ -252,13 +249,13 @@ export class ContainerImpl implements Container {
       }
     }
 
-    if (registrations.length > 0) {
-      return registrations //
-        .map((registration) => this.resolveRegistration(token, registration))
-        .filter((value) => value != null);
+    if (registrations.length === 0 && !optional) {
+      throwUnregisteredError(token);
     }
 
-    return optional ? [] : throwUnregisteredError(token);
+    return registrations //
+      .map((registration) => this.resolveRegistration(token, registration, optional))
+      .filter((value) => value != null);
   }
 
   dispose(): void {
@@ -294,25 +291,55 @@ export class ContainerImpl implements Container {
     disposedRefs.clear();
   }
 
-  private resolveRegistration<T>(token: Token<T>, registration: Registration<T>, name?: string): T {
+  private resolveRegistration<T>(
+    token: Token<T>,
+    registration: Registration<T> | undefined,
+    optional?: boolean,
+    name?: string,
+  ): T | undefined {
     const aliases: Token<T>[] = [];
-    let current: Registration<T> | undefined = registration;
+    let nextReg = registration ?? this.findRegistration(token, name);
 
-    while (isExistingProvider(current.provider)) {
-      const existingToken: Token<T> = current.provider.useExisting;
-      current = this.myTokenRegistry.get(existingToken, name);
-      aliases.push(existingToken);
+    while (nextReg && isExistingProvider(nextReg.provider)) {
+      const targetToken = nextReg.provider.useExisting;
 
-      if (!current) {
+      if (aliases.includes(targetToken)) {
+        throwCircularAliasError([token, ...aliases]);
+      }
+
+      aliases.push(targetToken);
+      nextReg = this.findRegistration(targetToken, name);
+
+      if (!nextReg && !optional) {
         throwExistingUnregisteredError(token, aliases, name);
       }
     }
 
+    if (!nextReg) {
+      return optional ? undefined : throwUnregisteredError(token, name);
+    }
+
     try {
-      return this.resolveProviderValue(token, current);
+      return this.resolveProviderValue(token, nextReg);
     } catch (e) {
       throwResolutionError(token, aliases, e, name);
     }
+  }
+
+  private findRegistration<T>(token: Token<T>, name?: string): Registration<T> | undefined {
+    let registration = this.myTokenRegistry.get(token, name);
+
+    // Attempt to get a named registration. If not found and a name was provided,
+    // fall back to the unnamed registration, but only if it is an alias
+    if (!registration && name !== undefined) {
+      registration = this.myTokenRegistry.get(token);
+
+      if (registration && !isExistingProvider(registration.provider)) {
+        registration = undefined;
+      }
+    }
+
+    return registration;
   }
 
   private autoRegisterClass<T extends object>(Class: Constructor<T>, name?: string): Registration<T> | undefined {

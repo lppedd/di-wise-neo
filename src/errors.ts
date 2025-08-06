@@ -29,8 +29,14 @@ export function throwResolutionError(token: Token, aliases: Token[], cause: any,
 export function throwExistingUnregisteredError(token: Token, aliases: Token[], name?: string): never {
   const path = aliases.length > 0 ? ` (alias for ${getTokenPath(aliases)})` : "";
   const description = getTokenName(token, name) + path;
-  const cause = `\n  [cause] useExisting points to unregistered token ${getTokenName(aliases.at(-1)!)}`;
+  const cause = `\n  [cause] useExisting points to unregistered token ${getTokenName(aliases.at(-1)!, name)}`;
   throw new Error(tag(`failed to resolve token ${description}`) + cause);
+}
+
+// @internal
+export function throwCircularAliasError(aliases: Token[]): never {
+  const path = getTokenPath(aliases);
+  throw new Error(tag(`circular alias detected: ${path}`));
 }
 
 // @internal

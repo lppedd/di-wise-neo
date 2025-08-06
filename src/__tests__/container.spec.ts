@@ -938,14 +938,21 @@ describe("Container", () => {
 
     container.register(Registered, { useExisting: NotRegistered });
 
-    // When resolving a token using an ExistingProvider that points to an unregistered token,
-    // the error should include the original cause
     expect(() => container.resolve(Registered)).toThrowErrorMatchingInlineSnapshot(
       `
       [Error: [di-wise-neo] failed to resolve token Registered (alias for NotRegistered)
         [cause] useExisting points to unregistered token NotRegistered]
       `,
     );
+
+    expect(() => container.resolve(Registered, "Unregistered")).toThrowErrorMatchingInlineSnapshot(
+      `
+      [Error: [di-wise-neo] failed to resolve token Registered[name=Unregistered] (alias for NotRegistered)
+        [cause] useExisting points to unregistered token NotRegistered[name=Unregistered]]
+      `,
+    );
+
+    expect(container.resolveAll(Registered, true)).toEqual([]);
 
     // It is unclear to me how this should behave.
     // As of now, let's simply document the fact that a resolveAll call
@@ -956,6 +963,49 @@ describe("Container", () => {
       [Error: [di-wise-neo] failed to resolve token Registered (alias for NotRegistered)
         [cause] useExisting points to unregistered token NotRegistered]
       `,
+    );
+  });
+
+  it("should resolve deep aliases", () => {
+    class Alias1 {}
+    class Alias2 {}
+    class Alias3 {}
+    class Target {}
+
+    container.register(Target);
+    container.register(Alias1, { useExisting: Target });
+    container.register(Alias2, { useExisting: Alias1 });
+    container.register(Alias3, { useExisting: Alias2 });
+
+    expect(container.resolve(Alias3)).toBeInstanceOf(Target);
+
+    container.unregister(Target);
+    container.register(Target, { useClass: Target, name: "Registered" });
+
+    expect(container.resolve(Alias3, "Registered")).toBeInstanceOf(Target);
+    expect(() => container.resolve(Alias3, "Unregistered")).toThrowErrorMatchingInlineSnapshot(
+      `
+      [Error: [di-wise-neo] failed to resolve token Alias3[name=Unregistered] (alias for Alias2 → Alias1 → Target)
+        [cause] useExisting points to unregistered token Target[name=Unregistered]]
+      `,
+    );
+
+    // In case the named registrations doesn't exist but resolution is optional
+    // we should simply return undefined
+    expect(container.resolve(Alias3, true, "Unregistered")).toBeUndefined();
+  });
+
+  it("should throw if circular aliases", () => {
+    class Alias1 {}
+    class Alias2 {}
+    class Alias3 {}
+
+    container.register(Alias1, { useExisting: Alias3 });
+    container.register(Alias2, { useExisting: Alias1 });
+    container.register(Alias3, { useExisting: Alias2 });
+
+    expect(() => container.resolve(Alias3)).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] circular alias detected: Alias3 → Alias2 → Alias1 → Alias3]`,
     );
   });
 
