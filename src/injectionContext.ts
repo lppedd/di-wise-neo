@@ -15,7 +15,7 @@ export interface ResolutionFrame {
 
 // @internal
 export interface Resolution {
-  readonly tokenStack: Token[];
+  readonly tokens: Token[];
   readonly stack: KeyedStack<Provider, ResolutionFrame>;
   readonly values: WeakRefMap<Provider, ValueRef>;
   readonly dependents: WeakRefMap<Provider, ValueRef>;
@@ -30,7 +30,7 @@ export interface InjectionContext {
 // @internal
 export function createResolution(): Resolution {
   return {
-    tokenStack: [],
+    tokens: [],
     stack: new KeyedStack(),
     values: new WeakRefMap(),
     dependents: new WeakRefMap(),
