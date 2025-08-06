@@ -90,26 +90,26 @@ export class TokenRegistry {
   delete<T>(token: Token<T>, name?: string): Registration<T>[] {
     const registrations = this.myMap.get(token);
 
-    if (registrations) {
-      if (name !== undefined) {
-        const removedRegistrations: Registration[] = [];
-        const newRegistrations: Registration[] = [];
-
-        for (const registration of registrations) {
-          const array = registration.name === name ? removedRegistrations : newRegistrations;
-          array.push(registration);
-        }
-
-        if (removedRegistrations.length > 0) {
-          this.myMap.set(token, newRegistrations);
-          return removedRegistrations;
-        }
-      }
-
-      this.myMap.delete(token);
+    if (!registrations) {
+      return [];
     }
 
-    return registrations ?? [];
+    if (name !== undefined) {
+      const removed: Registration[] = [];
+      const updated: Registration[] = [];
+
+      for (const registration of registrations) {
+        (registration.name === name ? removed : updated).push(registration);
+      }
+
+      if (removed.length > 0) {
+        this.myMap.set(token, updated);
+        return removed;
+      }
+    }
+
+    this.myMap.delete(token);
+    return registrations;
   }
 
   deleteAll(): [Token[], Registration[]] {

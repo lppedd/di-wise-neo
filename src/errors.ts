@@ -66,8 +66,7 @@ export function getTokenName(token: Token): string {
   return token.name || "<unnamed>";
 }
 
-function getFullTokenName(tokenInfo: TokenInfo): string {
-  const [token, name] = tokenInfo;
+function getFullTokenName([token, name]: TokenInfo): string {
   const tokenName = token.name || "<unnamed>";
   return name ? `${tokenName}["${name}"]` : tokenName;
 }
