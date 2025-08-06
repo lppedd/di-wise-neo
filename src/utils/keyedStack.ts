@@ -10,8 +10,7 @@ export class KeyedStack<K extends object, V> {
   }
 
   peek(): V | undefined {
-    const entry = this.myEntries.at(-1);
-    return entry?.value;
+    return this.myEntries.at(-1)?.value;
   }
 
   push(key: K, value: V): () => void {
