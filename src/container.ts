@@ -174,7 +174,8 @@ export interface Container {
    *
    * If the class is not registered, but it is decorated with {@link AutoRegister},
    * or {@link ContainerOptions.autoRegister} is true, the class is registered automatically.
-   * Otherwise, resolution fails.
+   * Otherwise, the resolution fails.
+   *
    * The scope for the automatic registration is determined by either
    * the {@link Scoped} decorator on the class, or {@link ContainerOptions.defaultScope}.
    *
@@ -224,7 +225,8 @@ export interface Container {
    *
    * If the class is not registered, but it is decorated with {@link AutoRegister},
    * or {@link ContainerOptions.autoRegister} is true, the class is registered automatically.
-   * Otherwise, resolution fails.
+   * Otherwise, the resolution fails.
+   *
    * The scope for the automatic registration is determined by either
    * the {@link Scoped} decorator on the class, or {@link ContainerOptions.defaultScope}.
    *
