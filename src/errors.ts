@@ -9,11 +9,6 @@ export function check(condition: unknown, message: string | (() => string)): ass
 }
 
 // @internal
-export function expectNever(value: never): never {
-  throw new TypeError(tag(`unexpected value ${String(value)}`));
-}
-
-// @internal
 export function throwUnregisteredError(token: Token, name?: string): never {
   throw new Error(tag(`unregistered token ${getTokenName(token, name)}`));
 }

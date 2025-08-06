@@ -1,7 +1,6 @@
 import type { Container, ContainerOptions } from "./container";
 import {
   check,
-  expectNever,
   getLocation,
   getTokenName,
   getTokenPath,
@@ -380,8 +379,7 @@ export class ContainerImpl implements Container {
       return provider.useValue;
     }
 
-    check(!isExistingProvider(provider), "internal error: unexpected ExistingProvider");
-    expectNever(provider);
+    check(false, "internal error: unexpected ExistingProvider");
   }
 
   private resolveScopedValue<T>(token: Token<T>, registration: Registration<T>, factory: (...args: any[]) => T): T {
