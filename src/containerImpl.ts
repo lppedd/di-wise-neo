@@ -310,29 +310,29 @@ export class ContainerImpl implements Container {
     name?: string,
   ): T | undefined {
     const aliases: TokenInfo[] = [];
-    let nextReg = registration;
 
-    while (nextReg && isExistingProvider(nextReg.provider)) {
-      const [targetToken, targetName] = this.getTargetToken(nextReg.provider);
+    while (registration && isExistingProvider(registration.provider)) {
+      const [targetToken, targetName] = this.getTargetToken(registration.provider);
 
       if (aliases.some(([t]) => t === targetToken)) {
         throwCircularAliasError([[token, name], ...aliases]);
       }
 
+      // eslint-disable-next-line no-param-reassign
+      registration = this.myTokenRegistry.get(targetToken, targetName);
       aliases.push([targetToken, targetName]);
-      nextReg = this.myTokenRegistry.get(targetToken, targetName);
 
-      if (!nextReg && !optional) {
+      if (!registration && !optional) {
         throwTargetUnregisteredError([token, name], aliases);
       }
     }
 
-    if (!nextReg) {
+    if (!registration) {
       return optional ? undefined : throwUnregisteredError([token, name]);
     }
 
     try {
-      return this.resolveProviderValue(token, nextReg);
+      return this.resolveProviderValue(token, registration);
     } catch (e) {
       throwResolutionError([token, name], aliases, e);
     }
