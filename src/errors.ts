@@ -2,6 +2,9 @@ import type { Constructor, Token } from "./token";
 import type { MethodDependency } from "./tokenRegistry";
 
 // @internal
+export type TokenInfo = [Token, string?];
+
+// @internal
 export function check(condition: unknown, message: string | (() => string)): asserts condition {
   if (!condition) {
     throw new Error(tag(typeof message === "string" ? message : message()));
@@ -9,28 +12,28 @@ export function check(condition: unknown, message: string | (() => string)): ass
 }
 
 // @internal
-export function throwUnregisteredError(token: Token, name?: string): never {
-  throw new Error(tag(`unregistered token ${getTokenName(token, name)}`));
+export function throwUnregisteredError(tokenInfo: TokenInfo): never {
+  throw new Error(tag(`unregistered token ${getFullTokenName(tokenInfo)}`));
 }
 
 // @internal
-export function throwTargetUnregisteredError(token: Token, aliases: Token[], name?: string): never {
+export function throwTargetUnregisteredError(tokenInfo: TokenInfo, aliases: TokenInfo[]): never {
   const path = aliases.length > 0 ? ` (alias for ${getTokenPath(aliases)})` : "";
-  const desc = getTokenName(token, name) + path;
-  const cause = `\n  [cause] useExisting points to unregistered token ${getTokenName(aliases.at(-1)!, name)}`;
+  const desc = getFullTokenName(tokenInfo) + path;
+  const cause = `\n  [cause] useExisting points to unregistered token ${getFullTokenName(aliases.at(-1)!)}`;
   throw new Error(tag(`failed to resolve token ${desc}`) + cause);
 }
 
 // @internal
-export function throwCircularAliasError(aliases: Token[]): never {
+export function throwCircularAliasError(aliases: TokenInfo[]): never {
   const path = getTokenPath(aliases);
   throw new Error(tag(`circular alias detected: ${path}`));
 }
 
 // @internal
-export function throwResolutionError(token: Token, aliases: Token[], cause: any, name?: string): never {
+export function throwResolutionError(tokenInfo: TokenInfo, aliases: TokenInfo[], cause: any): never {
   const path = aliases.length > 0 ? ` (alias for ${getTokenPath(aliases)})` : "";
-  const desc = getTokenName(token, name) + path;
+  const desc = getFullTokenName(tokenInfo) + path;
   throw new Error(tag(`failed to resolve token ${desc}`) + getCause(cause), { cause });
 }
 
@@ -42,7 +45,7 @@ export function throwParameterResolutionError(
   cause: any,
 ): never {
   const location = getLocation(ctor, methodKey);
-  const tokenName = getTokenName(dependency.tokenRef!.getRefToken(), dependency.name);
+  const tokenName = getFullTokenName([dependency.tokenRef!.getRefToken(), dependency.name]);
   const msg = tag(`failed to resolve dependency for ${location}(parameter #${dependency.index}: ${tokenName})`);
   throw new Error(msg + getCause(cause), { cause });
 }
@@ -54,14 +57,20 @@ export function getLocation(ctor: Constructor<any>, methodKey?: string | symbol)
 }
 
 // @internal
-export function getTokenName(token: Token, name?: string): string {
+export function getTokenPath(tokens: TokenInfo[]): string {
+  return tokens.map(getFullTokenName).join(" \u2192 ");
+}
+
+// @internal
+export function getFullTokenName(tokenInfo: TokenInfo): string {
+  const [token, name] = tokenInfo;
   const tokenName = token.name || "<unnamed>";
   return name ? `${tokenName}[name=${name}]` : tokenName;
 }
 
 // @internal
-export function getTokenPath(tokens: Token[]): string {
-  return tokens.map((t) => getTokenName(t)).join(" \u2192 ");
+export function getTokenName(token: Token): string {
+  return token.name || "<unnamed>";
 }
 
 function getCause(error: any): string {

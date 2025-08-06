@@ -95,7 +95,29 @@ export interface ExistingProvider<Value> {
   /**
    * The existing token to alias.
    */
-  readonly useExisting: Token<Value>;
+  readonly useExisting:
+    | Token<Value>
+    | {
+        readonly token: Token<Value>;
+        readonly name?: string;
+      };
+
+  /**
+   * An optional name to qualify this provider.
+   * If specified, the token must be resolved using the same name.
+   *
+   * @example
+   * ```ts
+   * export class ExtensionContext {
+   *   // Decorator-based injection
+   *   constructor(@Inject(ISecretStorage) @Named("persistent") secretStorage: SecretStorage) {}
+   *
+   *   // Function-based injection
+   *   constructor(secretStorage = inject(ISecretStorage, "persistent")) {}
+   * }
+   * ```
+   */
+  readonly name?: string;
 }
 
 /**

@@ -1,6 +1,7 @@
 import type { Container, ContainerOptions } from "./container";
 import {
   check,
+  getFullTokenName,
   getLocation,
   getTokenName,
   getTokenPath,
@@ -9,6 +10,7 @@ import {
   throwResolutionError,
   throwTargetUnregisteredError,
   throwUnregisteredError,
+  type TokenInfo,
 } from "./errors";
 import { injectBy } from "./inject";
 import { injectAll } from "./injectAll";
@@ -16,9 +18,16 @@ import { createResolution, provideInjectionContext, useInjectionContext } from "
 import { getMetadata } from "./metadata";
 import { optionalBy } from "./optional";
 import { optionalAll } from "./optionalAll";
-import { isClassProvider, isExistingProvider, isFactoryProvider, isValueProvider, type Provider } from "./provider";
+import {
+  type ExistingProvider,
+  isClassProvider,
+  isExistingProvider,
+  isFactoryProvider,
+  isValueProvider,
+  type Provider,
+} from "./provider";
 import { Scope } from "./scope";
-import { type Constructor, isConstructor, type Token } from "./token";
+import { type Constructor, isConstructor, isType, type Token } from "./token";
 import { isBuilder, type MethodDependency, type Registration, type RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 import { isDisposable } from "./utils/disposable";
 
@@ -128,8 +137,9 @@ export class ContainerImpl implements Container {
     if (args.length === 1) {
       const Class = args[0];
       const metadata = getMetadata(Class);
+      const name = metadata.name;
       const registration: Registration = {
-        name: metadata.name,
+        name: name,
         // The provider is of type ClassProvider, initialized by getMetadata
         provider: metadata.provider,
         options: {
@@ -145,8 +155,10 @@ export class ContainerImpl implements Container {
       // These tokens will point to the original Class token and will have the same scope.
       for (const token of metadata.tokensRef.getRefTokens()) {
         this.myTokenRegistry.set(token, {
+          name: name,
           provider: {
             useExisting: Class,
+            name: name,
           },
         });
       }
@@ -157,9 +169,8 @@ export class ContainerImpl implements Container {
       }
     } else {
       const [token, provider, options] = args;
-      const existingProvider = isExistingProvider(provider);
-      const name = existingProvider ? undefined : provider.name;
-      check(name === undefined || name.trim(), `name qualifier for token ${getTokenName(token)} must not be empty`);
+      const name = provider.name;
+      check(name === undefined || name.trim(), () => `name qualifier for token ${getFullTokenName([token])} must not be empty`);
 
       if (isClassProvider(provider)) {
         const metadata = getMetadata(provider.useClass);
@@ -182,8 +193,9 @@ export class ContainerImpl implements Container {
           this.resolveProviderValue(token, registration);
         }
       } else {
-        if (existingProvider) {
-          check(token !== provider.useExisting, `token ${getTokenName(token)} cannot alias itself via useExisting`);
+        if (isExistingProvider(provider)) {
+          const [targetToken] = this.getTargetToken(provider);
+          check(token !== targetToken, `token ${getTokenName(token)} cannot alias itself via useExisting`);
         }
 
         this.myTokenRegistry.set(token, {
@@ -249,7 +261,7 @@ export class ContainerImpl implements Container {
     }
 
     if (registrations.length === 0 && !optional) {
-      throwUnregisteredError(token);
+      throwUnregisteredError([token]);
     }
 
     return registrations //
@@ -296,49 +308,40 @@ export class ContainerImpl implements Container {
     optional?: boolean,
     name?: string,
   ): T | undefined {
-    const aliases: Token<T>[] = [];
-    let nextReg = registration ?? this.findRegistration(token, name);
+    const aliases: TokenInfo[] = [];
+    let nextReg = registration ?? this.myTokenRegistry.get(token, name);
 
     while (nextReg && isExistingProvider(nextReg.provider)) {
-      const targetToken = nextReg.provider.useExisting;
+      const [targetToken, targetName] = this.getTargetToken(nextReg.provider);
 
-      if (aliases.includes(targetToken)) {
-        throwCircularAliasError([token, ...aliases]);
+      if (aliases.some(([t]) => t === targetToken)) {
+        throwCircularAliasError([[token, name], ...aliases]);
       }
 
-      aliases.push(targetToken);
-      nextReg = this.findRegistration(targetToken, name);
+      aliases.push([targetToken, targetName]);
+      nextReg = this.myTokenRegistry.get(targetToken, targetName);
 
       if (!nextReg && !optional) {
-        throwTargetUnregisteredError(token, aliases, name);
+        throwTargetUnregisteredError([token, name], aliases);
       }
     }
 
     if (!nextReg) {
-      return optional ? undefined : throwUnregisteredError(token, name);
+      return optional ? undefined : throwUnregisteredError([token, name]);
     }
 
     try {
       return this.resolveProviderValue(token, nextReg);
     } catch (e) {
-      throwResolutionError(token, aliases, e, name);
+      throwResolutionError([token, name], aliases, e);
     }
   }
 
-  private findRegistration<T>(token: Token<T>, name?: string): Registration<T> | undefined {
-    let registration = this.myTokenRegistry.get(token, name);
-
-    // Attempt to get a named registration. If not found and a name was provided,
-    // fall back to the unnamed registration, but only if it is an alias
-    if (!registration && name !== undefined) {
-      registration = this.myTokenRegistry.get(token);
-
-      if (registration && !isExistingProvider(registration.provider)) {
-        registration = undefined;
-      }
-    }
-
-    return registration;
+  private getTargetToken<T>(provider: ExistingProvider<T>): [Token<T>, string?] {
+    const token = provider.useExisting as any;
+    return isType(token) || isConstructor(token) //
+      ? [token as Token<T>]
+      : [token.token, token.name];
   }
 
   private autoRegisterClass<T extends object>(Class: Constructor<T>, name?: string): Registration<T> | undefined {
@@ -398,7 +401,7 @@ export class ContainerImpl implements Container {
     if (resolution.stack.has(provider)) {
       const dependentRef = resolution.dependents.get(provider);
       check(dependentRef, () => {
-        const path = getTokenPath(resolution.tokenStack.concat(token));
+        const path = getTokenPath(resolution.tokenStack.concat(token).map((t) => [t]));
         return `circular dependency detected while resolving ${path}`;
       });
 

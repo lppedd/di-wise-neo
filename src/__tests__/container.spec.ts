@@ -936,7 +936,7 @@ describe("Container", () => {
     class Registered {}
     class NotRegistered {}
 
-    container.register(Registered, { useExisting: NotRegistered });
+    container.register(Registered, { useExisting: NotRegistered, name: "Registered" });
 
     expect(() => container.resolve(Registered)).toThrowErrorMatchingInlineSnapshot(
       `
@@ -946,10 +946,7 @@ describe("Container", () => {
     );
 
     expect(() => container.resolve(Registered, "Unregistered")).toThrowErrorMatchingInlineSnapshot(
-      `
-      [Error: [di-wise-neo] failed to resolve token Registered[name=Unregistered] (alias for NotRegistered)
-        [cause] useExisting points to unregistered token NotRegistered[name=Unregistered]]
-      `,
+      `[Error: [di-wise-neo] unregistered token Registered[name=Unregistered]]`,
     );
 
     expect(container.resolveAll(Registered, true)).toEqual([]);
@@ -972,25 +969,25 @@ describe("Container", () => {
     class Alias3 {}
     class Target {}
 
-    container.register(Target);
-    container.register(Alias1, { useExisting: Target });
+    container.register(Target, { useClass: Target, name: "Easy" });
+    container.register(Alias1, { useExisting: { token: Target, name: "Difficult" } });
     container.register(Alias2, { useExisting: Alias1 });
     container.register(Alias3, { useExisting: Alias2 });
 
-    expect(container.resolve(Alias3)).toBeInstanceOf(Target);
-
-    container.unregister(Target);
-    container.register(Target, { useClass: Target, name: "Registered" });
-
-    expect(container.resolve(Alias3, "Registered")).toBeInstanceOf(Target);
-    expect(() => container.resolve(Alias3, "Unregistered")).toThrowErrorMatchingInlineSnapshot(
+    expect(() => container.resolve(Alias3)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] failed to resolve token Alias3[name=Unregistered] (alias for Alias2 → Alias1 → Target)
-        [cause] useExisting points to unregistered token Target[name=Unregistered]]
+      [Error: [di-wise-neo] failed to resolve token Alias3 (alias for Alias2 → Alias1 → Target[name=Difficult])
+        [cause] useExisting points to unregistered token Target[name=Difficult]]
       `,
     );
 
-    // In case the named registrations doesn't exist but resolution is optional
+    container.unregister(Target);
+    expect(container.isRegistered(Target)).toBe(false);
+
+    container.register(Target, { useClass: Target, name: "Difficult" });
+    expect(container.resolve(Alias3)).toBeInstanceOf(Target);
+
+    // In case the named registration doesn't exist, but resolution is optional,
     // we should simply return undefined
     expect(container.resolve(Alias3, true, "Unregistered")).toBeUndefined();
   });
