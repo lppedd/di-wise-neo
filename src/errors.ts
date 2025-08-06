@@ -65,7 +65,7 @@ export function getTokenPath(tokens: TokenInfo[]): string {
 export function getFullTokenName(tokenInfo: TokenInfo): string {
   const [token, name] = tokenInfo;
   const tokenName = token.name || "<unnamed>";
-  return name ? `${tokenName}[name=${name}]` : tokenName;
+  return name ? `${tokenName}["${name}"]` : tokenName;
 }
 
 // @internal
