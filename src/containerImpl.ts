@@ -310,7 +310,7 @@ export class ContainerImpl implements Container {
     name?: string,
   ): T | undefined {
     const aliases: TokenInfo[] = [];
-    let nextReg = registration ?? this.myTokenRegistry.get(token, name);
+    let nextReg = registration;
 
     while (nextReg && isExistingProvider(nextReg.provider)) {
       const [targetToken, targetName] = this.getTargetToken(nextReg.provider);
