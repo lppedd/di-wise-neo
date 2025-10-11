@@ -15,7 +15,7 @@ export function optional<Value>(token: Token<Value>, name?: string): Value | und
 
 export function optional<T>(token: Token<T>, name?: string): T | undefined {
   const context = ensureInjectionContext("optional()");
-  return context.container.resolve(token, true, name);
+  return context.container.tryResolve(token, name);
 }
 
 /**
