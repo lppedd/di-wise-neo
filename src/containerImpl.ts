@@ -243,10 +243,10 @@ export class ContainerImpl implements Container {
       registration = this.autoRegisterClass(token, localName);
     }
 
-    return this.resolveRegistration(token, registration, localOptional, localName);
+    return this.resolveRegistration(token, registration, localOptional, localName)?.value;
   }
 
-  resolveAll<T>(token: Token<T>, optional?: boolean): NonNullable<T>[] {
+  resolveAll<T>(token: Token<T>, optional?: boolean): T[] {
     this.checkDisposed();
     let registrations = this.myTokenRegistry.getAll(token);
 
@@ -262,9 +262,10 @@ export class ContainerImpl implements Container {
       throwUnregisteredError([token]);
     }
 
-    return registrations //
+    return registrations
       .map((registration) => this.resolveRegistration(token, registration, optional))
-      .filter((value) => value != null);
+      .filter((result) => result !== undefined)
+      .map((result) => result.value);
   }
 
   dispose(): void {
@@ -305,7 +306,7 @@ export class ContainerImpl implements Container {
     registration?: Registration<T>,
     optional?: boolean,
     name?: string,
-  ): T | undefined {
+  ): { value: T } | undefined {
     const aliases: TokenInfo[] = [];
 
     while (registration && isExistingProvider(registration.provider)) {
@@ -329,7 +330,9 @@ export class ContainerImpl implements Container {
     }
 
     try {
-      return this.resolveProviderValue(token, registration);
+      return {
+        value: this.resolveProviderValue(token, registration),
+      };
     } catch (e) {
       throwResolutionError([token, name], aliases, e);
     }

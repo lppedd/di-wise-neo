@@ -268,9 +268,9 @@ export interface Container {
    *
    * @see The documentation for `resolve(token: Token)`
    */
-  resolveAll<Value>(token: Token<Value>, optional?: false): NonNullable<Value>[];
-  resolveAll<Value>(token: Token<Value>, optional: true): NonNullable<Value>[];
-  resolveAll<Value>(token: Token<Value>, optional?: boolean): NonNullable<Value>[];
+  resolveAll<Value>(token: Token<Value>, optional?: false): Value[];
+  resolveAll<Value>(token: Token<Value>, optional: true): Value[];
+  resolveAll<Value>(token: Token<Value>, optional?: boolean): Value[];
 
   /**
    * Disposes this container and all its cached values.

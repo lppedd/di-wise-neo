@@ -21,7 +21,7 @@ describe("Middleware", () => {
             log(`[${loggerName}] post resolve    ${String(result)}`);
             return result;
           })
-          .use("resolveAll", (next) => <T>(token: Token<T>): NonNullable<T>[] => {
+          .use("resolveAll", (next) => <T>(token: Token<T>): T[] => {
             log(`[${loggerName}] pre  resolveAll ${token.name}`);
             const result = next(token);
             log(`[${loggerName}] post resolveAll [${String(result)}]`);

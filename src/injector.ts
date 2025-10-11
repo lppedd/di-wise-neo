@@ -36,7 +36,7 @@ export interface Injector {
    *
    * Throws an error if the token is not registered in the container.
    */
-  injectAll<Value>(token: Token<Value>): NonNullable<Value>[];
+  injectAll<Value>(token: Token<Value>): Value[];
 
   /**
    * Injects the instance associated with the given class,
@@ -60,7 +60,7 @@ export interface Injector {
    * Injects all values provided by the registrations associated with the given token,
    * or an empty array if the token is not registered in the container.
    */
-  optionalAll<Value>(token: Token<Value>): NonNullable<Value>[];
+  optionalAll<Value>(token: Token<Value>): Value[];
 
   /**
    * Runs a function inside the injection context of this injector.
@@ -114,6 +114,6 @@ export const Injector: Type<Injector> = /*@__PURE__*/ build<Injector>(() => {
     injectAll: <T>(token: Token<T>) => runInContext(() => injectAll(token)),
     optional: <T>(token: Token<T>, name?: string) => runInContext(() => optional(token, name)),
     optionalAll: <T>(token: Token<T>) => runInContext(() => optionalAll(token)),
-    runInContext,
+    runInContext: runInContext,
   };
 }, "Injector");

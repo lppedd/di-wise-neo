@@ -13,9 +13,9 @@ export function injectAll<Instance extends object>(Class: Constructor<Instance>)
  *
  * Throws an error if the token is not registered in the container.
  */
-export function injectAll<Value>(token: Token<Value>): NonNullable<Value>[];
+export function injectAll<Value>(token: Token<Value>): Value[];
 
-export function injectAll<T>(token: Token<T>): NonNullable<T>[] {
+export function injectAll<T>(token: Token<T>): T[] {
   const context = ensureInjectionContext("injectAll()");
   return context.container.resolveAll(token);
 }
