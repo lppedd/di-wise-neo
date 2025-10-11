@@ -38,7 +38,7 @@ export interface Middleware {
 /**
  * Applies middleware functions to a container.
  *
- * Middlewares are applied in array order, but execute in reverse order.
+ * Middlewares are applied in array order but execute in reverse order.
  *
  * @example
  * ```ts

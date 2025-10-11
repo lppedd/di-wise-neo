@@ -3,7 +3,7 @@ import type { Constructor, Tokens } from "../token";
 import { forwardRef, isTokensRef, type TokenRef, type TokensRef } from "../tokensRef";
 
 /**
- * Class decorator that registers additional aliasing tokens for the decorated type,
+ * Class decorator that registers additional aliasing tokens for the decorated type
  * when the type is first registered in the container.
  *
  * The container uses {@link ExistingProvider} under the hood.
@@ -17,7 +17,7 @@ import { forwardRef, isTokensRef, type TokenRef, type TokensRef } from "../token
 export function Injectable<This extends object, Value extends This>(...tokens: Tokens<Value>): ClassDecorator;
 
 /**
- * Class decorator that registers additional aliasing tokens for the decorated type,
+ * Class decorator that registers additional aliasing tokens for the decorated type
  * when the type is first registered in the container.
  *
  * The container uses {@link ExistingProvider} under the hood.

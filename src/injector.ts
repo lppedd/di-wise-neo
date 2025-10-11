@@ -51,13 +51,13 @@ export interface Injector {
   optional<Value>(token: Token<Value>, name?: string): Value | undefined;
 
   /**
-   * Injects all instances provided by the registrations associated with the given class,
+   * Injects all instances provided by the registrations associated with the given class
    * or an empty array if the class is not registered in the container.
    */
   optionalAll<Instance extends object>(Class: Constructor<Instance>): Instance[];
 
   /**
-   * Injects all values provided by the registrations associated with the given token,
+   * Injects all values provided by the registrations associated with the given token
    * or an empty array if the token is not registered in the container.
    */
   optionalAll<Value>(token: Token<Value>): Value[];
