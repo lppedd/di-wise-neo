@@ -179,9 +179,8 @@ export interface Container {
    * The scope for the automatic registration is determined by either
    * the {@link Scoped} decorator on the class, or {@link ContainerOptions.defaultScope}.
    *
-   * If `optional` is false or is not passed and the class is not registered in the container
-   * (and could not be auto-registered), an error is thrown.
-   * Otherwise, if `optional` is true, `undefined` is returned.
+   * If the class is not registered in this container or any of its parent containers,
+   * and could not be auto-registered, an error is thrown.
    *
    * The resolution behavior depends on the {@link Provider} used during registration:
    * - For {@link ValueProvider}, the explicitly provided instance is returned.
@@ -193,9 +192,6 @@ export interface Container {
    * in the container's internal registry.
    */
   resolve<Instance extends object>(Class: Constructor<Instance>, name?: string): Instance;
-  resolve<Instance extends object>(Class: Constructor<Instance>, optional?: false, name?: string): Instance;
-  resolve<Instance extends object>(Class: Constructor<Instance>, optional: true, name?: string): Instance | undefined;
-  resolve<Instance extends object>(Class: Constructor<Instance>, optional?: boolean, name?: string): Instance | undefined;
 
   /**
    * Resolves the given token to the value associated with it.
@@ -203,8 +199,7 @@ export interface Container {
    * If the token is registered in this container or any of its parent containers,
    * its value is resolved using the most recent registration.
    *
-   * If `optional` is false or not passed and the token is not registered in the container,
-   * an error is thrown. Otherwise, if `optional` is true, `undefined` is returned.
+   * If the token is not registered in this container or any of its parent containers, an error is thrown.
    *
    * The resolution behavior depends on the {@link Provider} used during registration:
    * - For {@link ValueProvider}, the explicitly provided value is returned.
@@ -216,9 +211,53 @@ export interface Container {
    * in the container's internal registry.
    */
   resolve<Value>(token: Token<Value>, name?: string): Value;
-  resolve<Value>(token: Token<Value>, optional?: false, name?: string): Value;
-  resolve<Value>(token: Token<Value>, optional: true, name?: string): Value | undefined;
-  resolve<Value>(token: Token<Value>, optional?: boolean, name?: string): Value | undefined;
+
+  /**
+   * Resolves the given class to the instance associated with it.
+   *
+   * If the class is registered in this container or any of its parent containers,
+   * an instance is created using the most recent registration.
+   *
+   * If the class is not registered, but it is decorated with {@link AutoRegister},
+   * or {@link ContainerOptions.autoRegister} is true, the class is registered automatically.
+   * Otherwise, the resolution fails.
+   *
+   * The scope for the automatic registration is determined by either
+   * the {@link Scoped} decorator on the class, or {@link ContainerOptions.defaultScope}.
+   *
+   * If the class is not registered in this container or any of its parent containers,
+   * and could not be auto-registered, `undefined` is returned instead.
+   *
+   * The resolution behavior depends on the {@link Provider} used during registration:
+   * - For {@link ValueProvider}, the explicitly provided instance is returned.
+   * - For {@link FactoryProvider}, the factory function is invoked to create the instance.
+   * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
+   * - For {@link ExistingProvider}, the instance is resolved by referring to another registered token.
+   *
+   * If the class is registered with _container_ scope, the resolved instance is cached
+   * in the container's internal registry.
+   */
+  tryResolve<Instance extends object>(Class: Constructor<Instance>, name?: string): Instance | undefined;
+
+  /**
+   * Tries to resolve the given token to the value associated with it.
+   *
+   * If the token is registered in this container or any of its parent containers,
+   * its value is resolved using the most recent registration.
+   *
+   * If the token is not registered in this container or any of its parent containers,
+   * `undefined` is returned instead.
+   *
+   * The resolution behavior depends on the {@link Provider} used during registration:
+   * - For {@link ValueProvider}, the explicitly provided value is returned.
+   * - For {@link FactoryProvider}, the factory function is invoked to create the value.
+   * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
+   * - For {@link ExistingProvider}, the value is resolved by referring to another registered token.
+   *
+   * If the token is registered with _container_ scope, the resolved value is cached
+   * in the container's internal registry.
+   */
+  tryResolve<Value>(token: Token<Value>, name?: string): Value | undefined;
 
   /**
    * Resolves the given class to all instances provided by the registrations associated with it.
@@ -230,9 +269,8 @@ export interface Container {
    * The scope for the automatic registration is determined by either
    * the {@link Scoped} decorator on the class, or {@link ContainerOptions.defaultScope}.
    *
-   * If `optional` is false or is not passed and the class is not registered in the container
-   * (and could not be auto-registered), an error is thrown.
-   * Otherwise, if `optional` is true, an empty array is returned.
+   * If the class is not registered in this container or any of its parent containers,
+   * and could not be auto-registered, an error is thrown.
    *
    * The resolution behavior depends on the {@link Provider} used during registration:
    * - For {@link ValueProvider}, the explicitly provided instance is returned.
@@ -247,15 +285,12 @@ export interface Container {
    *
    * @see The documentation for `resolve(Class: Constructor)`
    */
-  resolveAll<Instance extends object>(Class: Constructor<Instance>, optional?: false): Instance[];
-  resolveAll<Instance extends object>(Class: Constructor<Instance>, optional: true): Instance[];
-  resolveAll<Instance extends object>(Class: Constructor<Instance>, optional?: boolean): Instance[];
+  resolveAll<Instance extends object>(Class: Constructor<Instance>): Instance[];
 
   /**
    * Resolves the given token to all values provided by the registrations associated with it.
    *
-   * If `optional` is false or not passed and the token is not registered in the container,
-   * an error is thrown. Otherwise, if `optional` is true, an empty array is returned.
+   * If the token is not registered in this container or any of its parent containers, an error is thrown.
    *
    * The resolution behavior depends on the {@link Provider} used during registration:
    * - For {@link ValueProvider}, the explicitly provided value is returned.
@@ -268,9 +303,54 @@ export interface Container {
    *
    * @see The documentation for `resolve(token: Token)`
    */
-  resolveAll<Value>(token: Token<Value>, optional?: false): Value[];
-  resolveAll<Value>(token: Token<Value>, optional: true): Value[];
-  resolveAll<Value>(token: Token<Value>, optional?: boolean): Value[];
+  resolveAll<Value>(token: Token<Value>): Value[];
+
+  /**
+   * Resolves the given class to all instances provided by the registrations associated with it.
+   *
+   * If the class is not registered, but it is decorated with {@link AutoRegister},
+   * or {@link ContainerOptions.autoRegister} is true, the class is registered automatically.
+   * Otherwise, the resolution fails.
+   *
+   * The scope for the automatic registration is determined by either
+   * the {@link Scoped} decorator on the class, or {@link ContainerOptions.defaultScope}.
+   *
+   * If the class is not registered in this container or any of its parent containers,
+   * and could not be auto-registered, `undefined` is returned instead.
+   *
+   * The resolution behavior depends on the {@link Provider} used during registration:
+   * - For {@link ValueProvider}, the explicitly provided instance is returned.
+   * - For {@link FactoryProvider}, the factory function is invoked to create the instance.
+   * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
+   * - For {@link ExistingProvider}, the instance is resolved by referring to another registered token.
+   *
+   * If the class is registered with _container_ scope, the resolved instances are cached
+   * in the container's internal registry.
+   *
+   * A separate instance of the class is created for each provider.
+   *
+   * @see The documentation for `resolve(Class: Constructor)`
+   */
+  tryResolveAll<Instance extends object>(Class: Constructor<Instance>): Instance[];
+
+  /**
+   * Resolves the given token to all values provided by the registrations associated with it.
+   *
+   * If the token is not registered in this container or any of its parent containers,
+   * `undefined` is returned instead.
+   *
+   * The resolution behavior depends on the {@link Provider} used during registration:
+   * - For {@link ValueProvider}, the explicitly provided value is returned.
+   * - For {@link FactoryProvider}, the factory function is invoked to create the value.
+   * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
+   * - For {@link ExistingProvider}, the value is resolved by referring to another registered token.
+   *
+   * If the token is registered with _container_ scope, the resolved values are cached
+   * in the container's internal registry.
+   *
+   * @see The documentation for `resolve(token: Token)`
+   */
+  tryResolveAll<Value>(token: Token<Value>): Value[];
 
   /**
    * Disposes this container and all its cached values.

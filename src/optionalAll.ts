@@ -15,5 +15,5 @@ export function optionalAll<Value>(token: Token<Value>): Value[];
 
 export function optionalAll<T>(token: Token<T>): T[] {
   const context = ensureInjectionContext("optionalAll()");
-  return context.container.resolveAll(token, true);
+  return context.container.tryResolveAll(token);
 }

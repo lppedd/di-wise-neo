@@ -779,7 +779,7 @@ describe("Container", () => {
   it("should return empty array if resolution is optional", () => {
     @Scoped(Scope.Container)
     class Character {}
-    expect(container.resolveAll(Character, true)).toEqual([]);
+    expect(container.tryResolveAll(Character)).toEqual([]);
   });
 
   it("should resolve existing providers", () => {
@@ -949,7 +949,7 @@ describe("Container", () => {
       `[Error: [di-wise-neo] unregistered token Registered["Unregistered"]]`,
     );
 
-    expect(container.resolveAll(Registered, true)).toEqual([]);
+    expect(container.tryResolveAll(Registered)).toEqual([]);
 
     // It is unclear to me how this should behave.
     // As of now, let's simply document the fact that a resolveAll call
@@ -989,7 +989,7 @@ describe("Container", () => {
 
     // In case the named registration doesn't exist, but resolution is optional,
     // we should simply return undefined
-    expect(container.resolve(Alias3, true, "Unregistered")).toBeUndefined();
+    expect(container.tryResolve(Alias3, "Unregistered")).toBeUndefined();
   });
 
   it("should throw if circular aliases", () => {

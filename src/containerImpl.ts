@@ -93,7 +93,6 @@ export class ContainerImpl implements Container {
 
   getAllCached<T>(token: Token<T>): T[] {
     this.checkDisposed();
-
     const registrations = this.myTokenRegistry.getAll(token);
     const values = new Set<T>();
 
@@ -110,7 +109,6 @@ export class ContainerImpl implements Container {
 
   resetRegistry(): unknown[] {
     this.checkDisposed();
-
     const [, registrations] = this.myTokenRegistry.deleteAll();
     const values = new Set<unknown>();
 
@@ -209,7 +207,6 @@ export class ContainerImpl implements Container {
 
   unregister<T>(token: Token<T>, name?: string): T[] {
     this.checkDisposed();
-
     const registrations = this.myTokenRegistry.delete(token, name);
     const values = new Set<T>();
 
@@ -224,48 +221,24 @@ export class ContainerImpl implements Container {
     return Array.from(values);
   }
 
-  resolve<T>(token: Token<T>, optionalOrName?: boolean | string, name?: string): T | undefined {
+  resolve<T>(token: Token<T>, name?: string): T {
     this.checkDisposed();
-
-    let localOptional: boolean | undefined;
-    let localName: string | undefined;
-
-    if (typeof optionalOrName === "string") {
-      localName = optionalOrName;
-    } else {
-      localOptional = optionalOrName;
-      localName = name;
-    }
-
-    let registration = this.myTokenRegistry.get(token, localName);
-
-    if (!registration && isConstructor(token)) {
-      registration = this.autoRegisterClass(token, localName);
-    }
-
-    return this.resolveRegistration(token, registration, localOptional, localName)?.value;
+    return this.resolveToken(token, name, false);
   }
 
-  resolveAll<T>(token: Token<T>, optional?: boolean): T[] {
+  tryResolve<T>(token: Token<T>, name?: string): T | undefined {
     this.checkDisposed();
-    let registrations = this.myTokenRegistry.getAll(token);
+    return this.resolveToken(token, name, true);
+  }
 
-    if (registrations.length === 0 && isConstructor(token)) {
-      const registration = this.autoRegisterClass(token);
+  resolveAll<T>(token: Token<T>): T[] {
+    this.checkDisposed();
+    return this.resolveAllToken(token, false);
+  }
 
-      if (registration) {
-        registrations = [registration];
-      }
-    }
-
-    if (registrations.length === 0 && !optional) {
-      throwUnregisteredError([token]);
-    }
-
-    return registrations
-      .map((registration) => this.resolveRegistration(token, registration, optional))
-      .filter((result) => result !== undefined)
-      .map((result) => result.value);
+  tryResolveAll<T>(token: Token<T>): T[] {
+    this.checkDisposed();
+    return this.resolveAllToken(token, true);
   }
 
   dispose(): void {
@@ -299,6 +272,39 @@ export class ContainerImpl implements Container {
 
     // Allow values to be GCed
     disposedRefs.clear();
+  }
+
+  private resolveToken<T>(token: Token<T>, name: string | undefined, optional: false): T;
+  private resolveToken<T>(token: Token<T>, name: string | undefined, optional: true): T | undefined;
+  private resolveToken<T>(token: Token<T>, name: string | undefined, optional: boolean): T | undefined {
+    let registration = this.myTokenRegistry.get(token, name);
+
+    if (!registration && isConstructor(token)) {
+      registration = this.autoRegisterClass(token, name);
+    }
+
+    return this.resolveRegistration(token, registration, optional, name)?.value;
+  }
+
+  private resolveAllToken<T>(token: Token<T>, optional: boolean): T[] {
+    let registrations = this.myTokenRegistry.getAll(token);
+
+    if (registrations.length === 0 && isConstructor(token)) {
+      const registration = this.autoRegisterClass(token);
+
+      if (registration) {
+        registrations = [registration];
+      }
+    }
+
+    if (registrations.length === 0 && !optional) {
+      throwUnregisteredError([token]);
+    }
+
+    return registrations
+      .map((registration) => this.resolveRegistration(token, registration, optional))
+      .filter((result) => result !== undefined)
+      .map((result) => result.value);
   }
 
   private resolveRegistration<T>(
@@ -527,9 +533,9 @@ export class ContainerImpl implements Container {
       case "InjectAll":
         return instance ? injectAll(token) : this.resolveAll(token);
       case "Optional":
-        return instance ? optionalBy(instance, token, name) : this.resolve(token, true, name);
+        return instance ? optionalBy(instance, token, name) : this.tryResolve(token, name);
       case "OptionalAll":
-        return instance ? optionalAll(token) : this.resolveAll(token, true);
+        return instance ? optionalAll(token) : this.tryResolveAll(token);
     }
   }
 
