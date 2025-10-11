@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.2
+
+- Do not filter out `null` or `undefined` values from `Container.resolveAll`.  
+  Token providers may legitimately return these values, so they should not be discarded by the library.
+- Cleaned up a couple of JSDoc comments.
+
 ## 0.11.1
 
 - Improved the type definition for `ExistingProvider`.
