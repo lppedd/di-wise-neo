@@ -69,7 +69,7 @@ export interface Injector {
    * are only usable synchronously: they cannot be called from asynchronous callbacks
    * or after any `await` points.
    *
-   * @param fn The function to be run in the context of this injector.
+   * @param fn - The function to be run in the context of this injector.
    * @returns The return value of the function, if any.
    */
   runInContext<ReturnType>(fn: () => ReturnType): ReturnType;

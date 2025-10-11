@@ -115,8 +115,8 @@ export function getMetadata<T extends object>(Class: Constructor<T>): Metadata<T
  * This allows libraries or consumers that manipulate constructors, such as through
  * class decorators, to inform the DI system about the real "identity" of a class.
  *
- * @param transformedClass The constructor function returned by a class decorator or factory.
- * @param originalClass The original constructor function.
+ * @param transformedClass - The constructor function returned by a class decorator or factory.
+ * @param originalClass - The original constructor function.
  *
  * @remarks
  * This API affects the core class identity resolution mechanism of the DI system.

@@ -179,7 +179,7 @@ export interface Container {
    * The scope for the automatic registration is determined by either
    * the {@link Scoped} decorator on the class, or {@link ContainerOptions.defaultScope}.
    *
-   * If the class is not registered in this container or any of its parent containers,
+   * If the class is not registered in this container or any of its parent containers
    * and could not be auto-registered, an error is thrown.
    *
    * The resolution behavior depends on the {@link Provider} used during registration:
@@ -225,7 +225,7 @@ export interface Container {
    * The scope for the automatic registration is determined by either
    * the {@link Scoped} decorator on the class, or {@link ContainerOptions.defaultScope}.
    *
-   * If the class is not registered in this container or any of its parent containers,
+   * If the class is not registered in this container or any of its parent containers
    * and could not be auto-registered, `undefined` is returned instead.
    *
    * The resolution behavior depends on the {@link Provider} used during registration:
@@ -269,7 +269,7 @@ export interface Container {
    * The scope for the automatic registration is determined by either
    * the {@link Scoped} decorator on the class, or {@link ContainerOptions.defaultScope}.
    *
-   * If the class is not registered in this container or any of its parent containers,
+   * If the class is not registered in this container or any of its parent containers
    * and could not be auto-registered, an error is thrown.
    *
    * The resolution behavior depends on the {@link Provider} used during registration:
@@ -315,7 +315,7 @@ export interface Container {
    * The scope for the automatic registration is determined by either
    * the {@link Scoped} decorator on the class, or {@link ContainerOptions.defaultScope}.
    *
-   * If the class is not registered in this container or any of its parent containers,
+   * If the class is not registered in this container or any of its parent containers
    * and could not be auto-registered, `undefined` is returned instead.
    *
    * The resolution behavior depends on the {@link Provider} used during registration:
