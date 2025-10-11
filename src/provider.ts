@@ -93,7 +93,19 @@ export interface ValueProvider<Value> {
  */
 export interface ExistingProvider<Value> {
   /**
-   * The existing token to alias.
+   * The existing token to alias, with an optional name qualifier.
+   *
+   * @example
+   * ```ts
+   * container.register(ISecretStorage, {
+   *   useExisting: PersistentSecretStorage,
+   * });
+   *
+   * // Or in case we need to alias a name-qualified token
+   * container.register(ISecretStorage, {
+   *   useExisting: [PersistentSecretStorage, "fileSystem"],
+   * });
+   * ```
    */
   readonly useExisting: Token<Value> | [Token<Value>, string?];
 
