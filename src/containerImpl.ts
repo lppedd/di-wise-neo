@@ -303,7 +303,7 @@ export class ContainerImpl implements Container {
 
   private resolveRegistration<T>(
     token: Token<T>,
-    registration?: Registration<T>,
+    registration: Registration<T> | undefined,
     optional?: boolean,
     name?: string,
   ): { value: T } | undefined {
