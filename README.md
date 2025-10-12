@@ -94,17 +94,17 @@ yarn add @lppedd/di-wise-neo
 
 ### API reference
 
-You can find the complete API reference at [lppedd.github.io/di-wise-neo](https://lppedd.github.io/di-wise-neo).
+You can find the complete API reference at [lppedd.github.io/di-wise-neo][di-wise-neo].
 
 ### Ergonomics
 
 - Does **not** depend on other libraries.
-- Does **not** use [reflect-metadata](https://www.npmjs.com/package/reflect-metadata) to drive decorators.
+- Does **not** use [reflect-metadata][reflect-metadata] to drive decorators.
 - **Can** be used from JavaScript with function-based injection.
 
 ### Requirements
 
-- The JavaScript environment must support features such as `Array.flat`, `WeakSet`, `WeakMap`, `Set`, and `Map`.
+- The JS environment must support features such as `Array.at`, `Array.flat`, `WeakRef`, `WeakMap`, `Set`, `Map`.
 
 #### Decorator-based injection
 
@@ -598,6 +598,7 @@ All credits to the original author for focusing on a clean architecture and on c
 [InversifyJS]: https://github.com/inversify/InversifyJS
 [redi]: https://github.com/wzhudev/redi
 [di-wise]: https://github.com/exuanbo/di-wise
+[di-wise-neo]: https://lppedd.github.io/di-wise-neo
 [reflect-metadata]: https://github.com/microsoft/reflect-metadata
 [esbuild-issue]: https://github.com/evanw/esbuild/issues/257
 [source-container]: https://github.com/lppedd/di-wise-neo/blob/main/src/container.ts#L29
