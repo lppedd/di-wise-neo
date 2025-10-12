@@ -282,8 +282,6 @@ export interface Container {
    * in the container's internal registry.
    *
    * A separate instance of the class is created for each provider.
-   *
-   * @see The documentation for `resolve(Class: Constructor)`
    */
   resolveAll<Instance extends object>(Class: Constructor<Instance>): Instance[];
 
@@ -300,8 +298,6 @@ export interface Container {
    *
    * If the token is registered with _container_ scope, the resolved values are cached
    * in the container's internal registry.
-   *
-   * @see The documentation for `resolve(token: Token)`
    */
   resolveAll<Value>(token: Token<Value>): Value[];
 
@@ -328,8 +324,6 @@ export interface Container {
    * in the container's internal registry.
    *
    * A separate instance of the class is created for each provider.
-   *
-   * @see The documentation for `resolve(Class: Constructor)`
    */
   tryResolveAll<Instance extends object>(Class: Constructor<Instance>): Instance[];
 
@@ -347,8 +341,6 @@ export interface Container {
    *
    * If the token is registered with _container_ scope, the resolved values are cached
    * in the container's internal registry.
-   *
-   * @see The documentation for `resolve(token: Token)`
    */
   tryResolveAll<Value>(token: Token<Value>): Value[];
 
