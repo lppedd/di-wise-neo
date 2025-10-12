@@ -79,8 +79,7 @@ export function injectBy<T>(thisArg: any, token: Token<T>, name?: string): T {
     return inject(token, name);
   }
 
-  const currentRef = { current: thisArg };
-  const cleanup = resolution.dependents.set(currentFrame.provider, currentRef);
+  const cleanup = resolution.dependents.set(currentFrame.provider, { current: thisArg });
 
   try {
     return inject(token, name);

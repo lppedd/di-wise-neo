@@ -57,8 +57,7 @@ export function optionalBy<T>(thisArg: any, token: Token<T>, name?: string): T |
     return optional(token, name);
   }
 
-  const currentRef = { current: thisArg };
-  const cleanup = resolution.dependents.set(currentFrame.provider, currentRef);
+  const cleanup = resolution.dependents.set(currentFrame.provider, { current: thisArg });
 
   try {
     return optional(token, name);
