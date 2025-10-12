@@ -5,16 +5,15 @@
 
 [![npm](https://img.shields.io/npm/v/@lppedd/di-wise-neo?color=%23de1f1f&logo=npm)](https://www.npmjs.com/package/@lppedd/di-wise-neo)
 [![ecmascript](https://img.shields.io/badge/ES-2022-blue?logo=javascript)](https://en.wikipedia.org/wiki/ECMAScript_version_history#13th_edition_%E2%80%93_ECMAScript_2022)
+[![status](https://img.shields.io/badge/status-beta-AC29EC)](https://github.com/lppedd/di-wise-neo/blob/main/CHANGELOG.md#0100)
 [![build](https://img.shields.io/github/actions/workflow/status/lppedd/di-wise-neo/test.yml.svg?branch=main)](https://github.com/lppedd/di-wise-neo/actions/workflows/test.yml)
 [![coverage](https://img.shields.io/codecov/c/github/lppedd/di-wise-neo/main?token=R9XZFTQ0BA)](https://app.codecov.io/gh/lppedd/di-wise-neo/tree/main/src)
-[![npm gzipped size](https://img.shields.io/bundlejs/size/@lppedd/di-wise-neo)](https://bundlejs.com/?q=@lppedd/di-wise-neo)
 [![license](https://img.shields.io/github/license/lppedd/di-wise-neo?color=blue)](https://github.com/lppedd/di-wise-neo/blob/main/LICENSE)
 
 </div>
 <img align="center" src="./.github/images/neo-wall.jpg" alt="di-wise-neo" style="border: 3px solid black; border-radius: 15px;" />
 
 > [!NOTE]
->
 > **di-wise-neo** is a fork of [di-wise][di-wise], aiming to provide a simpler yet more powerful API,
 > in part thanks to TypeScript's experimental decorators. Shout out to [@exuanbo](https://github.com/exuanbo)
 > for the strong foundations!
@@ -43,7 +42,7 @@ Part of the problem is the crazy amount of parameter passing, and the many expor
 global values floating around waiting to be imported and to generate yet another
 coupling point.
 
-My background with Java is full of such cases, that have been (partially) mitigated
+My background with Java is full of such cases that have been (partially) mitigated
 by introducing dependency-injection libraries based on Java's powerful Contexts and
 Dependency Injection (see [Weld][cdi-weld], the reference implementation).
 
@@ -54,24 +53,23 @@ I've also explored on my own and discovered [redi][redi] and [di-wise][di-wise].
 
 What I was looking for is a lightweight solution that offers:
 
-- full type safety
-- scoped resolution of dependencies
-- optional decorator support for constructor and method injection.  
-  Yes I know, forget type-safety with decorators, but they are extremely
-  intuitive to pick up for Java devs.
-- no dependency on [reflect-metadata][reflect-metadata], as I'm an ESBuild user
-  and ESBuild [does not][esbuild-issue] support `emitDecoratorMetadata`
+- Full type safety.
+- Scoped resolution of dependencies.
+- Optional decorator support for constructor and method injection.  
+  Yes, I know, forget type-safety with decorators, but they are extremely intuitive to pick up for Java devs.
+- No dependency on [reflect-metadata][reflect-metadata], as I'm an ESBuild user and ESBuild
+  [does not][esbuild-issue] support `emitDecoratorMetadata`.
 
-Unfortunately both [tsyringe][tsyringe] and [InversifyJS][InversifyJS] require
+Unfortunately, both [tsyringe][tsyringe] and [InversifyJS][InversifyJS] require
 [reflect-metadata][reflect-metadata] to run correctly. [Awilix][Awilix] looks good,
 but it's probably too much for what I need to do, and it does not support decorators.
 Plus, the API just didn't click for me.
 
 [redi][redi] focuses _only_ on constructor injection via decorators, which is nice.
 However, it falls short when it comes to type safety and resolution scopes:
-it only supports singletons, with a decorator-based trick to create fresh instances.
+it only supports singletons with a decorator-based trick to create fresh instances.
 
-And lastly, [di-wise][di-wise]. This small library was quite the surprise! Easy to pick up,
+And lastly, [di-wise][di-wise]. This small library was quite a surprise! Easy to pick up,
 no scope creep, injection context support, and full type safety via Angular-like
 `inject<T>()` functions (that's more like a service locator, but whatever).
 The only problems are the slightly overcomplicated API - especially regarding typings - and
@@ -96,18 +94,21 @@ yarn add @lppedd/di-wise-neo
 
 ### API reference
 
-You can find the complete API reference at [lppedd.github.io/di-wise-neo](https://lppedd.github.io/di-wise-neo)
+You can find the complete API reference at [lppedd.github.io/di-wise-neo](https://lppedd.github.io/di-wise-neo).
 
 ### Ergonomics
 
-- Does **not** depend on other libraries
-- Does **not** use [reflect-metadata](https://www.npmjs.com/package/reflect-metadata) to drive decorators
-- **Can** be used from JavaScript with function-based injection
+- Does **not** depend on other libraries.
+- Does **not** use [reflect-metadata](https://www.npmjs.com/package/reflect-metadata) to drive decorators.
+- **Can** be used from JavaScript with function-based injection.
 
 ### Requirements
 
-- When using decorator-based injection, `experimentalDecorators` must be enabled in your `tsconfig.json` file
-- The JavaScript environment must support features such as `Array.flat`, `WeakSet`, `WeakMap`, `Set`, and `Map`
+- The JavaScript environment must support features such as `Array.flat`, `WeakSet`, `WeakMap`, `Set`, and `Map`.
+
+#### Decorator-based injection
+
+- When using decorator-based injection, `experimentalDecorators` must be enabled in your `tsconfig.json` file.
 
 ## Quickstart
 
@@ -176,9 +177,9 @@ values are cached and reused.
 
 Creates a new value every time the dependency is resolved, which means values are never cached.
 
-- a class registered via `ClassProvider` is instantiated on each resolution
-- a factory function registered via `FactoryProvider` is invoked on each resolution
-- a value registered via `ValueProvider` is always returned as-is
+- A class registered via `ClassProvider` is instantiated on each resolution
+- A factory function registered via `FactoryProvider` is invoked on each resolution
+- A value registered via `ValueProvider` is always returned as-is
 
 > [!NOTE]
 > When a **Transient** or **Resolution**-scoped value is injected into a **Container**-scoped
@@ -188,8 +189,7 @@ Creates a new value every time the dependency is resolved, which means values ar
 ### Resolution
 
 Creates and caches a single value per resolution graph.  
-The same value is reused during a single resolution request, but a new one is created
-for each separate request.
+The same value is reused during a single resolution request, but a new one is created for each request.
 
 ### Container
 
@@ -197,7 +197,7 @@ Creates and caches a single value per container.
 If the value is not found in the current container, it is looked up in the parent container,
 and so on.
 
-It effectively behaves like a **singleton** scope, but allows container-specific overrides.
+It effectively behaves like a **singleton** scope but allows container-specific overrides.
 
 ## Token registration
 
@@ -292,9 +292,10 @@ All injection functions must be invoked inside an _injection context_, which sto
 the currently active container.  
 The _injection context_ is available in these situations:
 
-- inside the `constructor` of a class instantiated by the DI container
-- in property initializers of such classes
-- within factory functions used by `FactoryProvider`
+- Inside the `constructor` of a class instantiated by the DI container.
+- In property initializers of such classes.
+- Within factory functions used by `FactoryProvider`.
+- Within functions passed to `Injector.runInContext`.
 
 ### `inject<T>(Token): T`
 
@@ -343,7 +344,7 @@ export class ProcessManager {
 
 ### `optionalAll<T>(Token): T[]`
 
-Injects all values associated with a token, or an **empty array** if the token
+Injects all values associated with a token or an **empty array** if the token
 has never been registered in the container.
 
 ```ts
@@ -357,10 +358,11 @@ export class ExtensionContext {
 
 ## Decorator-based injection
 
-You can also perform dependency injection using TypeScript's experimental decorators.
+You can also perform dependency injection using TypeScript's experimental decorators.  
+**di-wise-neo** supports decorating constructor and instance method parameters.
 
-**di-wise-neo** supports decorating constructor's and instance method's parameters.  
-It does not support property injection by design.
+> [!NOTE]
+> Property injection is **not** supported by design.
 
 ### `@Inject(Token)`
 
@@ -414,7 +416,7 @@ export class ProcessManager {
 
 ### `@OptionalAll(Token)`
 
-Injects all values associated with a token, or an **empty array** if the token
+Injects all values associated with a token or an **empty array** if the token
 has never been registered in the container.
 
 ```ts
@@ -428,7 +430,7 @@ export class ExtensionContext {
 
 ### Forward references
 
-Sometimes you may need to reference a token or class that is declared later in the file.  
+Sometimes you may need to reference a token or class declared later in the file.  
 Normally, attempting to do that would result in a `ReferenceError`:
 
 > ReferenceError: Cannot access 'IStore' before initialization
@@ -502,8 +504,8 @@ The container will throw an error at registration time if the name is already ta
 
 ### `@AutoRegister`
 
-Enables automatic registration of the decorated class when it is resolved,
-if it has not been registered beforehand.
+Enables automatic registration of the decorated class when it is resolved if it has not
+been registered beforehand.
 
 ```ts
 @AutoRegister()
@@ -517,8 +519,7 @@ container.resolve(ExtensionContext);
 
 ### `@EagerInstantiate`
 
-Sets the default class scope to **Container** and marks the class for eager instantiation
-upon registration.
+Sets the default class scope to **Container** and marks the class for eager instantiation upon registration.
 
 This causes the container to immediately create and cache the instance of the class
 at registration time, instead of deferring instantiation until the first resolution.
