@@ -312,7 +312,7 @@ export interface Container {
    * the {@link Scoped} decorator on the class, or {@link ContainerOptions.defaultScope}.
    *
    * If the class is not registered in this container or any of its parent containers
-   * and could not be auto-registered, `undefined` is returned instead.
+   * and could not be auto-registered, an empty array is returned instead.
    *
    * The resolution behavior depends on the {@link Provider} used during registration:
    * - For {@link ValueProvider}, the explicitly provided instance is returned.
@@ -331,7 +331,7 @@ export interface Container {
    * Resolves the given token to all values provided by the registrations associated with it.
    *
    * If the token is not registered in this container or any of its parent containers,
-   * `undefined` is returned instead.
+   * an empty array is returned instead.
    *
    * The resolution behavior depends on the {@link Provider} used during registration:
    * - For {@link ValueProvider}, the explicitly provided value is returned.
