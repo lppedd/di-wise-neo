@@ -1,8 +1,31 @@
 # Changelog
 
+## 0.12.0
+
+- ❗ Split `Container.resolve` and `Container.resolveAll` into separate functions for
+  **required** and **optional** resolution.
+
+  This change simplifies the container API and reduces long-term maintenance effort.
+
+  #### Before
+
+  ```ts
+  container.resolve(token, true /* optional */);
+  container.resolveAll(token, true /* optional */);
+  ```
+
+  #### After
+
+  ```ts
+  container.tryResolve(token);
+  container.tryResolveAll(token);
+  ```
+
+- Improved JSDoc comments for parts of the public API.
+
 ## 0.11.2
 
-- Do not filter out `null` or `undefined` values from `Container.resolveAll`.  
+- Avoided filtering out `null` or `undefined` values from `Container.resolveAll`.  
   Token providers may legitimately return these values, so they should not be discarded by the library.
 - Cleaned up a couple of JSDoc comments.
 
