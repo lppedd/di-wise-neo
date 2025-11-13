@@ -46,6 +46,14 @@ describe("Container", () => {
     expect(child.options.autoRegister).toBe(true);
     expect(child.options.defaultScope).toBe(Scope.Container);
 
+    const childOfChild = child.createChild({
+      defaultScope: Scope.Resolution,
+    });
+
+    expect(childOfChild.options.autoRegister).toBe(true);
+    expect(childOfChild.options.defaultScope).toBe(Scope.Resolution);
+
+    childOfChild.dispose();
     child.dispose();
   });
 
