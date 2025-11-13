@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.1
+
+- Fixed an issue where explicitly passing `undefined` in container or child container
+  creation options could override default values, causing unexpected behavior.
+
 ## 0.12.0
 
 - ❗ Split `Container.resolve` and `Container.resolveAll` into separate functions for
