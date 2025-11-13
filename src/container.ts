@@ -1,6 +1,6 @@
 import { ContainerImpl } from "./containerImpl";
 import type { ClassProvider, ExistingProvider, FactoryProvider, ValueProvider } from "./provider";
-import { Scope } from "./scope";
+import type { Scope } from "./scope";
 import type { Constructor, Token } from "./token";
 import type { RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 
@@ -358,11 +358,6 @@ export interface Container {
 /**
  * Creates a new container.
  */
-export function createContainer(
-  options: Partial<ContainerOptions> = {
-    autoRegister: false,
-    defaultScope: Scope.Transient,
-  },
-): Container {
+export function createContainer(options?: Partial<ContainerOptions>): Container {
   return new ContainerImpl(undefined, options);
 }

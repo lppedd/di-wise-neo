@@ -40,11 +40,11 @@ export class ContainerImpl implements Container {
   private readonly myTokenRegistry: TokenRegistry;
   private myDisposed: boolean = false;
 
-  constructor(parent: ContainerImpl | undefined, options: Partial<ContainerOptions>) {
+  constructor(parent: ContainerImpl | undefined, options?: Partial<ContainerOptions>) {
     this.myParent = parent;
     this.myOptions = {
-      autoRegister: options.autoRegister ?? false,
-      defaultScope: options.defaultScope ?? Scope.Transient,
+      autoRegister: options?.autoRegister ?? false,
+      defaultScope: options?.defaultScope ?? Scope.Transient,
     };
 
     this.myTokenRegistry = new TokenRegistry(this.myParent?.myTokenRegistry);
