@@ -43,9 +43,8 @@ export class ContainerImpl implements Container {
   constructor(parent: ContainerImpl | undefined, options: Partial<ContainerOptions>) {
     this.myParent = parent;
     this.myOptions = {
-      autoRegister: false,
-      defaultScope: Scope.Transient,
-      ...options,
+      autoRegister: options.autoRegister ?? false,
+      defaultScope: options.defaultScope ?? Scope.Transient,
     };
 
     this.myTokenRegistry = new TokenRegistry(this.myParent?.myTokenRegistry);
@@ -72,8 +71,8 @@ export class ContainerImpl implements Container {
   createChild(options?: Partial<ContainerOptions>): Container {
     this.checkDisposed();
     const container = new ContainerImpl(this, {
-      ...this.myOptions,
-      ...options,
+      autoRegister: options?.autoRegister ?? this.myOptions.autoRegister,
+      defaultScope: options?.defaultScope ?? this.myOptions.defaultScope,
     });
 
     this.myChildren.add(container);
