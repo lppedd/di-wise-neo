@@ -201,6 +201,7 @@ describe("Container", () => {
     expect(container.isRegistered(IWizard)).toBe(true);
 
     const wizardInstance = container.resolve(IWizard);
+    expect(wizardInstance).toBeInstanceOf(Wizard);
     expect(wizardInstance.name).toBe("Dumbledore");
     expect(wizardInstance).toBe(container.resolve(IWizard));
   });
