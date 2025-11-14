@@ -13,7 +13,7 @@ export interface Type<T> {
   /**
    * Returns the stringified representation of the type.
    */
-  toString: () => string;
+  readonly toString: () => string;
 
   /**
    * Ensures that different `Type<T>` types are not structurally compatible.
