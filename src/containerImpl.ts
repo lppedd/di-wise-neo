@@ -26,7 +26,7 @@ import {
   type Provider,
 } from "./provider";
 import { Scope } from "./scope";
-import { type Constructor, isConstructor, type ProviderType, type Token, type Type } from "./token";
+import { type Constructor, isConstructor, type ProviderType, type Token } from "./token";
 import { isBuilder, type MethodDependency, type Registration, type RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 import { isDisposable } from "./utils/disposable";
 
@@ -140,10 +140,10 @@ export class ContainerImpl implements Container {
       if (isConstructor(token)) {
         this.registerClass(token);
       } else {
-        this.registerType(token, token.provider, token.options);
+        this.registerToken(token, token.provider, token.options);
       }
     } else {
-      this.registerType(...args);
+      this.registerToken(...args);
     }
 
     return this;
@@ -251,9 +251,9 @@ export class ContainerImpl implements Container {
     }
   }
 
-  private registerType<T>(type: Type<T>, provider: Provider<T>, options?: RegistrationOptions): void {
+  private registerToken<T>(token: Token<T>, provider: Provider<T>, options?: RegistrationOptions): void {
     const name = provider.name;
-    check(name === undefined || name.trim(), `name qualifier for token ${getTokenName(type)} must not be empty`);
+    check(name === undefined || name.trim(), `name qualifier for token ${getTokenName(token)} must not be empty`);
 
     if (isClassProvider(provider)) {
       const metadata = getMetadata(provider.useClass);
@@ -269,19 +269,19 @@ export class ContainerImpl implements Container {
         dependencies: metadata.dependencies,
       };
 
-      this.myTokenRegistry.set(type, registration);
+      this.myTokenRegistry.set(token, registration);
 
       // Eager-instantiate only if the provided class is container-scoped
       if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
-        this.resolveProviderValue(type, registration);
+        this.resolveProviderValue(token, registration);
       }
     } else {
       if (isExistingProvider(provider)) {
         const [targetToken] = this.getTargetToken(provider);
-        check(type !== targetToken, `token ${getTokenName(type)} cannot alias itself via useExisting`);
+        check(token !== targetToken, `token ${getTokenName(token)} cannot alias itself via useExisting`);
       }
 
-      this.myTokenRegistry.set(type, {
+      this.myTokenRegistry.set(token, {
         name: name,
         provider: provider,
         options: options,

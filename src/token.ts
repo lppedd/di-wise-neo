@@ -11,18 +11,13 @@ export interface Type<T> {
   readonly name: string;
 
   /**
-   * Returns the stringified representation of the type.
-   */
-  readonly toString: () => string;
-
-  /**
    * Ensures that different `Type<T>` types are not structurally compatible.
    *
-   * This property is never used at runtime.
+   * This property is always `undefined` and is never used at runtime.
    *
    * @private
    */
-  readonly __type?: T;
+  readonly __type: T | undefined;
 }
 
 /**
@@ -52,7 +47,7 @@ export interface Constructor<Instance extends object> {
  * Token type.
  */
 export type Token<Value = any> = [Value] extends [object] // Avoids distributive union behavior
-  ? Type<Value> | Constructor<Value>
+  ? Type<Value> | Constructor<Value & object>
   : Type<Value>;
 
 /**
@@ -98,8 +93,8 @@ export function createType<T>(
   const name = `Type<${typeName}>`;
   const toString = (): string => name;
   return provider //
-    ? { name, provider, options, toString }
-    : { name, toString };
+    ? ({ name, provider, options, toString } as ProviderType<T>)
+    : ({ name, toString } as Type<T>);
 }
 
 // @internal
