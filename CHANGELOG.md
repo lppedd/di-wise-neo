@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.14.0
+
+- Added support for passing a default `Provider`, and optionally default registration options,
+  directly when creating a `Type` via `createType`.
+  ```ts
+  const ITaskManager = createType<TaskManager>("TaskManager", { useClass: CloudTaskManagerImpl });
+  
+  // No need to pass in a provider at registration site
+  container.register(ITaskManager);
+  ```
+
 ## 0.13.0
 
 - Removed the `Type.inter` and `Type.union` utility functions.  
