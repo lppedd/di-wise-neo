@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.14.1
+
+- Restored the correct type checking for `Type`.  
+  This was accidentally broken in 0.13.0 with the removal of `Type.inter` and `Type.union`.
+
 ## 0.14.0
 
 - Added support for passing a default `Provider`, and optionally default registration options,
