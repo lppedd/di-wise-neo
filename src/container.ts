@@ -1,7 +1,7 @@
 import { ContainerImpl } from "./containerImpl";
 import type { ClassProvider, ExistingProvider, FactoryProvider, ValueProvider } from "./provider";
 import type { Scope } from "./scope";
-import type { Constructor, Token } from "./token";
+import type { Constructor, ProviderType, Token } from "./token";
 import type { RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 
 /**
@@ -118,6 +118,11 @@ export interface Container {
    * or by the {@link ContainerOptions.defaultScope} value.
    */
   register<Instance extends object>(Class: Constructor<Instance>): Container;
+
+  /**
+   * Registers a token type with a default {@link Provider} and optional default registration options.
+   */
+  register<Value>(token: ProviderType<Value>): Container;
 
   /**
    * Registers a {@link ClassProvider} with a token.

@@ -1,11 +1,19 @@
+import type { Provider } from "./provider";
+import type { RegistrationOptions } from "./tokenRegistry";
+
 /**
- * Type API.
+ * An injectable type `T`.
  */
 export interface Type<T> {
   /**
    * The name of the type.
    */
   readonly name: string;
+
+  /**
+   * Returns the stringified representation of the type.
+   */
+  toString: () => string;
 
   /**
    * Ensures that different `Type<T>` types are not structurally compatible.
@@ -15,6 +23,21 @@ export interface Type<T> {
    * @private
    */
   readonly __type?: T;
+}
+
+/**
+ * An injectable type `T` with a default {@link Provider} and optional default registration options.
+ */
+export interface ProviderType<T> extends Type<T> {
+  /**
+   * The type's default provider.
+   */
+  readonly provider: Provider<T>;
+
+  /**
+   * The type's default registration options.
+   */
+  readonly options?: RegistrationOptions;
 }
 
 /**
@@ -43,16 +66,40 @@ export type Tokens<Value = any> = [Token<Value>, ...Token<Value>[]];
  * @example
  * ```ts
  * const ISpell = createType<Spell>("Spell");
+ * container.register(ISpell, {
+ *   useFactory: () => getDefaultSpell(),
+ * });
  * ```
- *
- * @__NO_SIDE_EFFECTS__
  */
-export function createType<T>(typeName: string): Type<T> {
+export function createType<T>(typeName: string): Type<T>;
+
+/**
+ * Creates a type token with a default {@link Provider} and optional default registration options.
+ *
+ * @example
+ * ```ts
+ * // Notice how we pass in a Provider directly at type creation site
+ * const ISpell = createType<Spell>("Spell", {
+ *   useFactory: () => getDefaultSpell(),
+ * });
+ *
+ * container.register(ISpell);
+ * ```
+ */
+export function createType<T>(typeName: string, provider: Provider<T>, options?: RegistrationOptions): ProviderType<T>;
+
+// @internal
+// @__NO_SIDE_EFFECTS__
+export function createType<T>(
+  typeName: string,
+  provider?: Provider<T>,
+  options?: RegistrationOptions,
+): Type<T> | ProviderType<T> {
   const name = `Type<${typeName}>`;
-  return <Type<T>>{
-    name: name,
-    toString: () => name,
-  };
+  const toString = (): string => name;
+  return provider //
+    ? { name, provider, options, toString }
+    : { name, toString };
 }
 
 // @internal

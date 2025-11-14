@@ -3,7 +3,19 @@
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { AutoRegister, build, createContainer, Inject, inject, injectAll, injectBy, Injector, Optional, Scope, Scoped } from "..";
+import {
+  AutoRegister,
+  build,
+  createContainer,
+  Inject,
+  inject,
+  injectAll,
+  injectBy,
+  Injector,
+  Optional,
+  Scope,
+  Scoped
+} from "..";
 import { useInjectionContext } from "../injectionContext";
 import { optional, optionalBy } from "../optional";
 
