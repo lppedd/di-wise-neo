@@ -1,37 +1,20 @@
 /**
  * Type API.
  */
-export interface Type<A> {
+export interface Type<T> {
   /**
    * The name of the type.
    */
   readonly name: string;
 
   /**
-   * Creates an intersection type from another type.
+   * Ensures that different `Type<T>` types are not structurally compatible.
    *
-   * @example
-   * ```ts
-   * const A = createType<A>("A");
-   * const B = createType<B>("B");
+   * This property is never used at runtime.
    *
-   * A.inter("I", B); // => Type<A & B>
-   * ```
+   * @private
    */
-  inter<B>(typeName: string, B: Type<B>): Type<A & B>;
-
-  /**
-   * Creates a union type from another type.
-   *
-   * @example
-   * ```ts
-   * const A = createType<A>("A");
-   * const B = createType<B>("B");
-   *
-   * A.union("U", B); // => Type<A | B>
-   * ```
-   */
-  union<B>(typeName: string, B: Type<B>): Type<A | B>;
+  readonly __type?: T;
 }
 
 /**
@@ -65,16 +48,11 @@ export type Tokens<Value = any> = [Token<Value>, ...Token<Value>[]];
  * @__NO_SIDE_EFFECTS__
  */
 export function createType<T>(typeName: string): Type<T> {
-  const type = {
-    name: `Type<${typeName}>`,
-    inter: createType,
-    union: createType,
-    toString(): string {
-      return type.name;
-    },
+  const name = `Type<${typeName}>`;
+  return <Type<T>>{
+    name: name,
+    toString: () => name,
   };
-
-  return type;
 }
 
 // @internal
