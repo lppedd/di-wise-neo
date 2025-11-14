@@ -185,6 +185,26 @@ describe("Container", () => {
     expect(container.resolve(Wizard)).toBe(container.resolve(Dumbledore));
   });
 
+  it("should register and resolve types with a default provider", () => {
+    class Wizard {
+      constructor(readonly name: string) {}
+    }
+
+    // prettier-ignore
+    const IWizard = createType<Wizard>(
+      "Character",
+      { useFactory: () => new Wizard("Dumbledore") },
+      { scope: "Container" },
+    );
+
+    container.register(IWizard);
+    expect(container.isRegistered(IWizard)).toBe(true);
+
+    const wizardInstance = container.resolve(IWizard);
+    expect(wizardInstance.name).toBe("Dumbledore");
+    expect(wizardInstance).toBe(container.resolve(IWizard));
+  });
+
   it("should use the same provider for the same class", () => {
     const Character = createType<{}>("Character");
     const Hero = createType<{}>("Hero");

@@ -26,7 +26,7 @@ import {
   type Provider,
 } from "./provider";
 import { Scope } from "./scope";
-import { type Constructor, isConstructor, type Token } from "./token";
+import { type Constructor, isConstructor, type ProviderType, type Token, type Type } from "./token";
 import { isBuilder, type MethodDependency, type Registration, type RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 import { isDisposable } from "./utils/disposable";
 
@@ -127,81 +127,97 @@ export class ContainerImpl implements Container {
     return this.myTokenRegistry.get(token, name) !== undefined;
   }
 
-  register<T>(...args: [Constructor<T & object>] | [Token<T>, Provider<T>, RegistrationOptions?]): Container {
+  register<T>(
+    ...args:
+      | [Constructor<T & object> | ProviderType<T>] //
+      | [Token<T>, Provider<T>, RegistrationOptions?]
+  ): Container {
     this.checkDisposed();
 
     if (args.length === 1) {
-      const Class = args[0];
-      const metadata = getMetadata(Class);
-      const name = metadata.name;
-      const registration: Registration = {
+      const [token] = args;
+
+      if (isConstructor(token)) {
+        this.registerClass(token);
+      } else {
+        this.registerType(token, token.provider, token.options);
+      }
+    } else {
+      this.registerType(...args);
+    }
+
+    return this;
+  }
+
+  private registerClass<T extends object>(Class: Constructor<T>): void {
+    const metadata = getMetadata(Class);
+    const name = metadata.name;
+    const registration: Registration = {
+      name: name,
+      // The provider is of type ClassProvider, initialized by getMetadata
+      provider: metadata.provider,
+      options: {
+        scope: metadata.scope?.value ?? this.myOptions.defaultScope,
+      },
+      dependencies: metadata.dependencies,
+    };
+
+    // Register the class itself
+    this.myTokenRegistry.set(Class, registration);
+
+    // Register the additional tokens specified via class decorators.
+    // These tokens will point to the original Class token and will have the same scope.
+    for (const token of metadata.tokensRef.getRefTokens()) {
+      this.myTokenRegistry.set(token, {
         name: name,
-        // The provider is of type ClassProvider, initialized by getMetadata
+        provider: {
+          useExisting: [Class, name],
+        },
+      });
+    }
+
+    // Eager-instantiate only if the class is container-scoped
+    if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
+      this.resolveProviderValue(Class, registration);
+    }
+  }
+
+  private registerType<T>(token: Type<T>, provider: Provider<T>, options?: RegistrationOptions): void {
+    const name = provider.name;
+    check(name === undefined || name.trim(), `name qualifier for token ${getTokenName(token)} must not be empty`);
+
+    if (isClassProvider(provider)) {
+      const metadata = getMetadata(provider.useClass);
+      const registration: Registration = {
+        // An explicit provider name overrides what is specified via @Named
+        name: metadata.name ?? name,
         provider: metadata.provider,
         options: {
+          // Explicit registration options override what is specified via class decorators (e.g., @Scoped)
           scope: metadata.scope?.value ?? this.myOptions.defaultScope,
+          ...options,
         },
         dependencies: metadata.dependencies,
       };
 
-      // Register the class itself
-      this.myTokenRegistry.set(Class, registration);
+      this.myTokenRegistry.set(token, registration);
 
-      // Register the additional tokens specified via class decorators.
-      // These tokens will point to the original Class token and will have the same scope.
-      for (const token of metadata.tokensRef.getRefTokens()) {
-        this.myTokenRegistry.set(token, {
-          name: name,
-          provider: {
-            useExisting: [Class, name],
-          },
-        });
-      }
-
-      // Eager-instantiate only if the class is container-scoped
+      // Eager-instantiate only if the provided class is container-scoped
       if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
-        this.resolveProviderValue(Class, registration);
+        this.resolveProviderValue(token, registration);
       }
     } else {
-      const [token, provider, options] = args;
-      const name = provider.name;
-      check(name === undefined || name.trim(), `name qualifier for token ${getTokenName(token)} must not be empty`);
-
-      if (isClassProvider(provider)) {
-        const metadata = getMetadata(provider.useClass);
-        const registration: Registration = {
-          // An explicit provider name overrides what is specified via @Named
-          name: metadata.name ?? name,
-          provider: metadata.provider,
-          options: {
-            // Explicit registration options override what is specified via class decorators (e.g., @Scoped)
-            scope: metadata.scope?.value ?? this.myOptions.defaultScope,
-            ...options,
-          },
-          dependencies: metadata.dependencies,
-        };
-
-        this.myTokenRegistry.set(token, registration);
-
-        // Eager-instantiate only if the provided class is container-scoped
-        if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
-          this.resolveProviderValue(token, registration);
-        }
-      } else {
-        if (isExistingProvider(provider)) {
-          const [targetToken] = this.getTargetToken(provider);
-          check(token !== targetToken, `token ${getTokenName(token)} cannot alias itself via useExisting`);
-        }
-
-        this.myTokenRegistry.set(token, {
-          name: name,
-          provider: provider,
-          options: options,
-        });
+      if (isExistingProvider(provider)) {
+        const [targetToken] = this.getTargetToken(provider);
+        check(token !== targetToken, `token ${getTokenName(token)} cannot alias itself via useExisting`);
       }
-    }
 
-    return this;
+      this.myTokenRegistry.set(token, {
+        name: name,
+        provider: provider,
+        options: options,
+      });
+    }
   }
 
   unregister<T>(token: Token<T>, name?: string): T[] {
