@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.13.0
+
+- Removed the `Type.inter` and `Type.union` utility functions.  
+  They were untested, and revealed to be practically unnecessary in real-world usages.
+
 ## 0.12.1
 
 - Fixed an issue where explicitly passing `undefined` in container or child container
