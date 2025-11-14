@@ -4,6 +4,7 @@
 
 - Added support for passing a default `Provider`, and optionally default registration options,
   directly when creating a `Type` via `createType`.
+
   ```ts
   const ITaskManager = createType<TaskManager>("TaskManager", { useClass: CloudTaskManagerImpl });
   
