@@ -35,14 +35,14 @@ export function Injectable<This extends object, Value extends This>(...tokens: T
  */
 export function Injectable<This extends object, Value extends This>(tokens: TokenRef<Value> | TokensRef<Value>): ClassDecorator;
 
-/**
- * @__NO_SIDE_EFFECTS__
- */
-export function Injectable(...args: unknown[]): ClassDecorator {
+// @__NO_SIDE_EFFECTS__
+export function Injectable<This extends object, Value extends This>(
+  ...args: [...Tokens<Value>] | [TokenRef<Value> | TokensRef<Value>]
+): ClassDecorator {
   return function (Class): void {
-    const metadata = getMetadata(Class as any as Constructor<any>);
+    const metadata = getMetadata(Class as any as Constructor<This>);
     const arg0 = args[0];
-    const tokensRef = isTokensRef(arg0) ? arg0 : forwardRef(() => args as Tokens);
+    const tokensRef = isTokensRef(arg0) ? arg0 : forwardRef(() => args as Tokens<Value>);
     const existingTokensRef = metadata.tokensRef;
     metadata.tokensRef = {
       getRefTokens: () => {
