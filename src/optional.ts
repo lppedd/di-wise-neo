@@ -4,12 +4,18 @@ import type { Constructor, Token } from "./token";
 /**
  * Injects the instance associated with the given class,
  * or `undefined` if the class is not registered in the container.
+ *
+ * Throws an error if a circular dependency is detected.
+ * Use {@link optionalBy} if resolving circular dependencies is necessary.
  */
 export function optional<Instance extends object>(Class: Constructor<Instance>, name?: string): Instance | undefined;
 
 /**
  * Injects the value associated with the given token,
  * or `undefined` if the token is not registered in the container.
+ *
+ * Throws an error if a circular dependency is detected.
+ * Use {@link optionalBy} if resolving circular dependencies is necessary.
  */
 export function optional<Value>(token: Token<Value>, name?: string): Value | undefined;
 
@@ -23,7 +29,7 @@ export function optional<T>(token: Token<T>, name?: string): T | undefined {
  * or `undefined` if the class is not registered in the container.
  *
  * Compared to {@link optional}, `optionalBy` accepts a `thisArg` argument
- * (the containing class) which is used to resolve circular dependencies.
+ * (e.g., the containing class instance) which is used to resolve circular dependencies.
  *
  * @param thisArg - The containing instance, used to help resolve circular dependencies.
  * @param Class - The class to resolve.
@@ -40,7 +46,7 @@ export function optionalBy<Instance extends object>(
  * or `undefined` if the token is not registered in the container.
  *
  * Compared to {@link optional}, `optionalBy` accepts a `thisArg` argument
- * (the containing class) which is used to resolve circular dependencies.
+ * (e.g., the containing class instance) which is used to resolve circular dependencies.
  *
  * @param thisArg - The containing instance, used to help resolve circular dependencies.
  * @param token - The token to resolve.

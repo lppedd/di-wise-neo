@@ -4,12 +4,16 @@ import type { Constructor, Token } from "./token";
 /**
  * Injects all instances provided by the registrations associated with the given class
  * or an empty array if the class is not registered in the container.
+ *
+ * Throws an error if a circular dependency is detected.
  */
 export function optionalAll<Instance extends object>(Class: Constructor<Instance>): Instance[];
 
 /**
  * Injects all values provided by the registrations associated with the given token
  * or an empty array if the token is not registered in the container.
+ *
+ * Throws an error if a circular dependency is detected.
  */
 export function optionalAll<Value>(token: Token<Value>): Value[];
 

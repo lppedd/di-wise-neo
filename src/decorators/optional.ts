@@ -5,12 +5,18 @@ import { checkSingleDecorator, updateParameterMetadata } from "./utils";
 /**
  * Parameter decorator that injects the instance associated with the given class,
  * or `undefined` if the class is not registered in the container.
+ *
+ * Throws an error if a circular dependency is detected. Use function injection
+ * with {@link optionalBy} if resolving circular dependencies is necessary.
  */
 export function Optional<Instance extends object>(Class: Constructor<Instance>): ParameterDecorator;
 
 /**
  * Parameter decorator that injects the value associated with the given token,
  * or `undefined` if the token is not registered in the container.
+ *
+ * Throws an error if a circular dependency is detected. Use function injection
+ * with {@link optionalBy} if resolving circular dependencies is necessary.
  */
 export function Optional<Value>(token: Token<Value>): ParameterDecorator;
 
@@ -20,6 +26,9 @@ export function Optional<Value>(token: Token<Value>): ParameterDecorator;
  *
  * Allows referencing a token declared later in the file by using the
  * {@link forwardRef} helper function.
+ *
+ * Throws an error if a circular dependency is detected. Use function injection
+ * with {@link optionalBy} if resolving circular dependencies is necessary.
  *
  * @example
  * ```ts

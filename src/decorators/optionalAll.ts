@@ -6,6 +6,8 @@ import { checkNamedDecorator, checkSingleDecorator, updateParameterMetadata } fr
  * Parameter decorator that injects all instances provided by the registrations
  * associated with the given class or an empty array if the class is not registered
  * in the container.
+ *
+ * Throws an error if a circular dependency is detected.
  */
 export function OptionalAll<Instance extends object>(Class: Constructor<Instance>): ParameterDecorator;
 
@@ -13,6 +15,8 @@ export function OptionalAll<Instance extends object>(Class: Constructor<Instance
  * Parameter decorator that injects all values provided by the registrations
  * associated with the given token or an empty array if the token is not registered
  * in the container.
+ *
+ * Throws an error if a circular dependency is detected.
  */
 export function OptionalAll<Value>(token: Token<Value>): ParameterDecorator;
 
@@ -23,6 +27,8 @@ export function OptionalAll<Value>(token: Token<Value>): ParameterDecorator;
  *
  * Allows referencing a token declared later in the file by using the
  * {@link forwardRef} helper function.
+ *
+ * Throws an error if a circular dependency is detected.
  *
  * @example
  * ```ts
