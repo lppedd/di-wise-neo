@@ -83,7 +83,6 @@ export function createType<T>(typeName: string): Type<T>;
  */
 export function createType<T>(typeName: string, provider: Provider<T>, options?: RegistrationOptions): ProviderType<T>;
 
-// @internal
 // @__NO_SIDE_EFFECTS__
 export function createType<T>(
   typeName: string,

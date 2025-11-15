@@ -44,6 +44,7 @@ export function Inject<Value>(token: Token<Value>): ParameterDecorator;
  */
 export function Inject<Value>(tokens: TokenRef<Value>): ParameterDecorator;
 
+// @__NO_SIDE_EFFECTS__
 export function Inject<T>(token: Token<T> | TokenRef<T>): ParameterDecorator {
   return function (target, propertyKey, parameterIndex): void {
     updateParameterMetadata("Inject", target, propertyKey, parameterIndex, (dependency) => {

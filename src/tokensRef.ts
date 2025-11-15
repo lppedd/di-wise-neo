@@ -21,6 +21,7 @@ export function forwardRef<Value>(token: () => Tokens<Value>): TokensRef<Value>;
  */
 export function forwardRef<Value>(token: () => Token<Value>): TokenRef<Value>;
 
+// @__NO_SIDE_EFFECTS__
 export function forwardRef<Value>(token: () => Token<Value> | Tokens<Value>): TokensRef<Value> & TokenRef<Value> {
   return {
     getRefTokens: (): Set<Token<Value>> => {
