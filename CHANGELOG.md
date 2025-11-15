@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.14.2
+
+- Updated JSDocs to better clarify when injection decorators and injection functions may throw.
+- Cleaned up internal code.
+
 ## 0.14.1
 
 - Restored the correct type checking for `Type`.  
