@@ -2,7 +2,7 @@ import type { Constructor, Token } from "./token";
 import type { MethodDependency } from "./tokenRegistry";
 
 // @internal
-export type TokenInfo = [Token, string?];
+export type TokenInfo = [Token?, string?];
 
 // @internal
 export function check(condition: unknown, message: string | (() => string)): asserts condition {
@@ -45,7 +45,7 @@ export function throwParameterResolutionError(
   cause: any,
 ): never {
   const location = getLocation(ctor, methodKey);
-  const tokenName = getFullTokenName([dependency.tokenRef!.getRefToken(), dependency.name]);
+  const tokenName = getFullTokenName([dependency.tokenRef?.getRefToken(), dependency.name]);
   const msg = tag(`failed to resolve dependency for ${location}(parameter #${dependency.index}: ${tokenName})`);
   throw new Error(msg + getCause(cause), { cause });
 }
@@ -67,7 +67,7 @@ export function getTokenName(token: Token): string {
 }
 
 function getFullTokenName([token, name]: TokenInfo): string {
-  const tokenName = token.name || "<unnamed>";
+  const tokenName = token ? token.name || "<unnamed>" : "<undefined token>";
   return name ? `${tokenName}["${name}"]` : tokenName;
 }
 

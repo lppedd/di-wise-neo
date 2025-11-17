@@ -495,6 +495,7 @@ export class ContainerImpl implements Container {
     return [];
   }
 
+  // Call context: decorator-based injection
   private injectMethodDependencies<T>(registration: Registration<T>, instance: T): T {
     const dependencies = registration.dependencies;
 
@@ -524,6 +525,7 @@ export class ContainerImpl implements Container {
     return instance;
   }
 
+  // Call context: decorator-based injection
   private resolveArgs(deps: MethodDependency[], ctor: Constructor<any>, instance?: any, methodKey?: string | symbol): any[] {
     const sortedDeps = deps.sort((a, b) => a.index - b.index);
     const args: any[] = [];
@@ -539,8 +541,11 @@ export class ContainerImpl implements Container {
     return args;
   }
 
+  // Call context: decorator-based injection
   private resolveDependency(dependency: MethodDependency, instance?: any): any {
-    const token = dependency.tokenRef!.getRefToken();
+    const token = dependency.tokenRef?.getRefToken();
+    check(token, `token passed to @${dependency.appliedBy} was undefined (possible circular imports)`);
+
     const name = dependency.name;
     switch (dependency.appliedBy) {
       case "Inject":
