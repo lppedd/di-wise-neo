@@ -1,10 +1,23 @@
 import { check, getTokenName } from "./errors";
-import type { FactoryProvider, Provider } from "./provider";
+import type { ExistingProvider, FactoryProvider, Provider, ValueProvider } from "./provider";
 import { Scope } from "./scope";
 import { type Constructor, createType, type Token, type Type } from "./token";
 import type { TokenRef } from "./tokensRef";
 import { getTypeName } from "./utils/typeName";
 import type { ValueRef } from "./valueRef";
+
+// @internal
+export interface ConstructorProvider<Instance extends object> {
+  readonly useClass: Constructor<Instance>;
+  readonly name?: string;
+}
+
+// @internal
+export type RegistrationProvider<Value = any> =
+  | ConstructorProvider<Value & object>
+  | FactoryProvider<Value>
+  | ValueProvider<Value>
+  | ExistingProvider<Value>;
 
 /**
  * Token registration options.
@@ -38,7 +51,7 @@ export interface Dependencies {
 // @internal
 export interface Registration<T = any> {
   readonly name?: string;
-  readonly provider: Provider<T>;
+  readonly provider: RegistrationProvider<T>;
   readonly options?: RegistrationOptions;
   readonly dependencies?: Dependencies;
 

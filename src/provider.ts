@@ -1,4 +1,5 @@
 import type { Constructor, Token } from "./token";
+import type { ClassRef } from "./tokensRef";
 
 /**
  * Provides a class instance for a token via a class constructor.
@@ -7,7 +8,7 @@ export interface ClassProvider<Instance extends object> {
   /**
    * The class to instantiate for the token.
    */
-  readonly useClass: Constructor<Instance>;
+  readonly useClass: Constructor<Instance> | ClassRef<Instance>;
 
   /**
    * An optional name to qualify this provider.

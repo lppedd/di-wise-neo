@@ -25,5 +25,5 @@ export type { Constructor, ProviderType, Token, Tokens, Type } from "./token";
 export { createType } from "./token";
 export type { RegistrationOptions } from "./tokenRegistry";
 export { build } from "./tokenRegistry";
-export type { TokenRef, TokensRef } from "./tokensRef";
-export { forwardRef } from "./tokensRef";
+export type { ClassRef, TokenRef, TokensRef } from "./tokensRef";
+export { classRef, forwardRef } from "./tokensRef";

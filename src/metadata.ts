@@ -1,8 +1,7 @@
-import type { ClassProvider } from "./provider";
 import type { Scope } from "./scope";
 import type { Constructor } from "./token";
-import type { Dependencies, MethodDependency } from "./tokenRegistry";
-import type { TokensRef } from "./tokensRef";
+import type { ConstructorProvider, Dependencies, MethodDependency } from "./tokenRegistry";
+import { type ClassRef, isClassRef, type TokensRef } from "./tokensRef";
 
 // @internal
 export type Writable<T> = {
@@ -17,7 +16,7 @@ export interface ScopeMetadata {
 
 // @internal
 export class Metadata<This extends object = any> {
-  readonly provider: Writable<ClassProvider<This>>;
+  readonly provider: Writable<ConstructorProvider<This>>;
   readonly dependencies: Dependencies = {
     ctor: [],
     methods: new Map(),
@@ -82,7 +81,8 @@ export class Metadata<This extends object = any> {
 }
 
 // @internal
-export function getMetadata<T extends object>(Class: Constructor<T>): Metadata<T> {
+export function getMetadata<T extends object>(classOrRef: Constructor<T> | ClassRef<T>): Metadata<T> {
+  const Class = isClassRef(classOrRef) ? classOrRef.getRefClass() : classOrRef;
   const originalClass = classIdentityMap.get(Class) ?? Class;
   let metadata = metadataMap.get(originalClass);
 

@@ -6,6 +6,7 @@ import { afterEach, assert, describe, expect, it } from "vitest";
 import {
   AutoRegister,
   build,
+  classRef,
   createContainer,
   createType,
   EagerInstantiate,
@@ -709,6 +710,25 @@ describe("Container", () => {
     const characters = container.resolveAll(Character);
     expect(characters).toHaveLength(2);
     expect(characters.map(({ name }) => name)).toEqual(["Wizard", "Witch"]);
+  });
+
+  it("should resolve forward class references", () => {
+    const Env = createType<string>("Env");
+    const IWizard = createType<Wizard>("LazyWizard", {
+      // The Wizard class is declared later.
+      // Without classRef we'd see 'Class Wizard used before its declaration'.
+      useClass: classRef(() => Wizard),
+    });
+
+    class Wizard {
+      constructor(@Inject(Env) readonly env: string) {}
+    }
+
+    container.register(Env, { useValue: "production" });
+    container.register(IWizard);
+
+    const wizardInstance = container.resolve(IWizard);
+    expect(wizardInstance.env).toBe("production");
   });
 
   it("should instantiate container-scoped @EagerInstantiate classes", () => {
