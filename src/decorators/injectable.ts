@@ -1,6 +1,6 @@
 import { getMetadata } from "../metadata";
 import type { Constructor, Tokens } from "../token";
-import { forwardRef, isTokensRef, type TokenRef, type TokensRef } from "../tokenRef";
+import { isTokensRef, type TokenRef, tokenRef, type TokensRef } from "../tokenRef";
 
 /**
  * Class decorator that registers additional aliasing tokens for the decorated type
@@ -23,11 +23,11 @@ export function Injectable<This extends object, Value extends This>(...tokens: T
  * The container uses {@link ExistingProvider} under the hood.
  *
  * Allows referencing tokens that are declared later in the file by using
- * the {@link forwardRef} helper function.
+ * the {@link tokenRef} helper function.
  *
  * @example
  * ```ts
- * @Injectable(forwardRef() => Weapon) // Weapon is declared after Wand
+ * @Injectable(tokenRef() => Weapon) // Weapon is declared after Wand
  * class Wizard {}
  * // Other code...
  * class Weapon {}
@@ -42,7 +42,7 @@ export function Injectable<This extends object, Value extends This>(
   return function (Class): void {
     const metadata = getMetadata(Class as any as Constructor<This>);
     const arg0 = args[0];
-    const tokensRef = isTokensRef(arg0) ? arg0 : forwardRef(() => args as Tokens<Value>);
+    const tokensRef = isTokensRef(arg0) ? arg0 : tokenRef(() => args as Tokens<Value>);
     const existingTokensRef = metadata.tokensRef;
     metadata.tokensRef = {
       getRefTokens: () => {

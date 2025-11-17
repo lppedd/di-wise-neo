@@ -1,5 +1,5 @@
 import type { Constructor, Token } from "../token";
-import { forwardRef, isTokenRef, type TokenRef } from "../tokenRef";
+import { isTokenRef, type TokenRef, tokenRef } from "../tokenRef";
 import { checkNamedDecorator, checkSingleDecorator, updateParameterMetadata } from "./utils";
 
 /**
@@ -26,14 +26,14 @@ export function OptionalAll<Value>(token: Token<Value>): ParameterDecorator;
  * in the container.
  *
  * Allows referencing a token declared later in the file by using the
- * {@link forwardRef} helper function.
+ * {@link tokenRef} helper function.
  *
  * Throws an error if a circular dependency is detected.
  *
  * @example
  * ```ts
  * class Wizard {
- *   constructor(@OptionalAll(forwardRef(() => Wand)) readonly wands: Wand[]) {}
+ *   constructor(@OptionalAll(tokenRef(() => Wand)) readonly wands: Wand[]) {}
  * }
  * // Other code...
  * class Wand {}
@@ -47,7 +47,7 @@ export function OptionalAll<T>(token: Token<T> | TokenRef<T>): ParameterDecorato
     updateParameterMetadata("OptionalAll", target, propertyKey, parameterIndex, (dependency) => {
       checkSingleDecorator(dependency, target, propertyKey, parameterIndex);
       dependency.appliedBy = "OptionalAll";
-      dependency.tokenRef = isTokenRef(token) ? token : forwardRef(() => token);
+      dependency.tokenRef = isTokenRef(token) ? token : tokenRef(() => token);
       checkNamedDecorator(dependency, target, propertyKey, parameterIndex);
     });
   };

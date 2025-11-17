@@ -435,11 +435,11 @@ Normally, attempting to do that would result in a `ReferenceError`:
 
 > ReferenceError: Cannot access 'IStore' before initialization
 
-We can work around this problem by using the `forwardRef` helper function:
+We can work around this problem by using the `tokenRef` helper function:
 
 ```ts
 export class ExtensionContext {
-  constructor(@OptionalAll(forwardRef(() => IStore)) readonly stores: Store[]) {}
+  constructor(@OptionalAll(tokenRef(() => IStore)) readonly stores: Store[]) {}
 
   /* ... */
 }

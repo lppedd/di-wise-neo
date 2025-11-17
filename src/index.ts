@@ -24,6 +24,6 @@ export { Scope } from "./scope";
 export type { Constructor, ProviderType, Token, Tokens, Type } from "./token";
 export { createType } from "./token";
 export type { ClassRef, TokenRef, TokensRef } from "./tokenRef";
-export { classRef, forwardRef } from "./tokenRef";
+export { classRef, tokenRef } from "./tokenRef";
 export type { RegistrationOptions } from "./tokenRegistry";
 export { build } from "./tokenRegistry";

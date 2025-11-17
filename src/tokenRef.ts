@@ -29,16 +29,16 @@ export function classRef<Instance extends object>(Class: () => Constructor<Insta
  * Allows referencing tokens declared later in the file by wrapping them
  * in a lazily evaluated function.
  */
-export function forwardRef<Value>(token: () => Tokens<Value>): TokensRef<Value>;
+export function tokenRef<Value>(token: () => Tokens<Value>): TokensRef<Value>;
 
 /**
  * Allows referencing a token declared later in the file by wrapping it
  * in a lazily evaluated function.
  */
-export function forwardRef<Value>(token: () => Token<Value>): TokenRef<Value>;
+export function tokenRef<Value>(token: () => Token<Value>): TokenRef<Value>;
 
 // @__NO_SIDE_EFFECTS__
-export function forwardRef<Value>(token: () => Tokens<Value> | Token<Value>): TokensRef<Value> & TokenRef<Value> {
+export function tokenRef<Value>(token: () => Tokens<Value> | Token<Value>): TokensRef<Value> & TokenRef<Value> {
   return {
     getRefTokens: () => {
       // Normalize the single token here so that we don't have to do it at every getRefTokens call site

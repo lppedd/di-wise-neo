@@ -1,5 +1,5 @@
 import type { Constructor, Token } from "../token";
-import { forwardRef, isTokenRef, type TokenRef } from "../tokenRef";
+import { isTokenRef, type TokenRef, tokenRef } from "../tokenRef";
 import { checkSingleDecorator, updateParameterMetadata } from "./utils";
 
 /**
@@ -25,7 +25,7 @@ export function Optional<Value>(token: Token<Value>): ParameterDecorator;
  * or `undefined` if the token is not registered in the container.
  *
  * Allows referencing a token declared later in the file by using the
- * {@link forwardRef} helper function.
+ * {@link tokenRef} helper function.
  *
  * Throws an error if a circular dependency is detected. Use function injection
  * with {@link optionalBy} if resolving circular dependencies is necessary.
@@ -33,7 +33,7 @@ export function Optional<Value>(token: Token<Value>): ParameterDecorator;
  * @example
  * ```ts
  * class Wizard {
- *   constructor(@Optional(forwardRef(() => Wand)) readonly wand: Wand | undefined) {}
+ *   constructor(@Optional(tokenRef(() => Wand)) readonly wand: Wand | undefined) {}
  * }
  * // Other code...
  * class Wand {}
@@ -47,7 +47,7 @@ export function Optional<T>(token: Token<T> | TokenRef<T>): ParameterDecorator {
     updateParameterMetadata("Optional", target, propertyKey, parameterIndex, (dependency) => {
       checkSingleDecorator(dependency, target, propertyKey, parameterIndex);
       dependency.appliedBy = "Optional";
-      dependency.tokenRef = isTokenRef(token) ? token : forwardRef(() => token);
+      dependency.tokenRef = isTokenRef(token) ? token : tokenRef(() => token);
     });
   };
 }

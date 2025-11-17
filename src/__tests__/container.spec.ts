@@ -10,7 +10,6 @@ import {
   createContainer,
   createType,
   EagerInstantiate,
-  forwardRef,
   Inject,
   inject,
   Injectable,
@@ -19,7 +18,8 @@ import {
   Optional,
   OptionalAll,
   Scope,
-  Scoped
+  Scoped,
+  tokenRef
 } from "..";
 import { Named } from "../decorators";
 import { useInjectionContext } from "../injectionContext";
@@ -329,11 +329,11 @@ describe("Container", () => {
         this.castle = castle;
       }
 
-      setWand(@Inject(forwardRef(() => Wand)) wand: Wand): void {
+      setWand(@Inject(tokenRef(() => Wand)) wand: Wand): void {
         this.wand = wand;
       }
 
-      setWands(@InjectAll(forwardRef(() => Wand)) wands: Wand[]): void {
+      setWands(@InjectAll(tokenRef(() => Wand)) wands: Wand[]): void {
         this.wands = wands;
       }
     }
@@ -374,7 +374,7 @@ describe("Container", () => {
         this.castle = castle;
       }
 
-      setWands(@OptionalAll(forwardRef(() => Wand)) wands: Wand[]): void {
+      setWands(@OptionalAll(tokenRef(() => Wand)) wands: Wand[]): void {
         this.wands = wands;
       }
     }
@@ -692,8 +692,8 @@ describe("Container", () => {
     }
 
     // Injectable decorators can be stacked
-    @Injectable(forwardRef(() => Person))
-    @Injectable(forwardRef(() => [Character]))
+    @Injectable(tokenRef(() => Person))
+    @Injectable(tokenRef(() => [Character]))
     class Witch {
       name = "Witch";
     }

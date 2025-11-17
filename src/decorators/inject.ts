@@ -1,5 +1,5 @@
 import type { Constructor, Token } from "../token";
-import { forwardRef, isTokenRef, type TokenRef } from "../tokenRef";
+import { isTokenRef, type TokenRef, tokenRef } from "../tokenRef";
 import { checkSingleDecorator, updateParameterMetadata } from "./utils";
 
 /**
@@ -26,7 +26,7 @@ export function Inject<Value>(token: Token<Value>): ParameterDecorator;
  * Parameter decorator that injects the value associated with the given token.
  *
  * Allows referencing a token declared later in the file by using the
- * {@link forwardRef} helper function.
+ * {@link tokenRef} helper function.
  *
  * Throws an error if:
  * - The token is not registered in the container.
@@ -36,7 +36,7 @@ export function Inject<Value>(token: Token<Value>): ParameterDecorator;
  * @example
  * ```ts
  * class Wizard {
- *   constructor(@Inject(forwardRef(() => Wand)) readonly wand: Wand) {}
+ *   constructor(@Inject(tokenRef(() => Wand)) readonly wand: Wand) {}
  * }
  * // Other code...
  * class Wand {}
@@ -50,7 +50,7 @@ export function Inject<T>(token: Token<T> | TokenRef<T>): ParameterDecorator {
     updateParameterMetadata("Inject", target, propertyKey, parameterIndex, (dependency) => {
       checkSingleDecorator(dependency, target, propertyKey, parameterIndex);
       dependency.appliedBy = "Inject";
-      dependency.tokenRef = isTokenRef(token) ? token : forwardRef(() => token);
+      dependency.tokenRef = isTokenRef(token) ? token : tokenRef(() => token);
     });
   };
 }
