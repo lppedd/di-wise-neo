@@ -38,7 +38,7 @@ export function forwardRef<Value>(token: () => Tokens<Value>): TokensRef<Value>;
 export function forwardRef<Value>(token: () => Token<Value>): TokenRef<Value>;
 
 // @__NO_SIDE_EFFECTS__
-export function forwardRef<Value>(token: () => Token<Value> | Tokens<Value>): TokensRef<Value> & TokenRef<Value> {
+export function forwardRef<Value>(token: () => Tokens<Value> | Token<Value>): TokensRef<Value> & TokenRef<Value> {
   return {
     getRefTokens: () => {
       // Normalize the single token here so that we don't have to do it at every getRefTokens call site
@@ -55,6 +55,11 @@ export function forwardRef<Value>(token: () => Token<Value> | Tokens<Value>): To
 }
 
 // @internal
+export function isClassRef<T extends object>(value: any): value is ClassRef<T> {
+  return value && typeof value === "object" && typeof value.getRefClass === "function";
+}
+
+// @internal
 export function isTokensRef<T>(value: any): value is TokensRef<T> {
   return value && typeof value === "object" && typeof value.getRefTokens === "function";
 }
@@ -62,9 +67,4 @@ export function isTokensRef<T>(value: any): value is TokensRef<T> {
 // @internal
 export function isTokenRef<T>(value: any): value is TokenRef<T> {
   return value && typeof value === "object" && typeof value.getRefToken === "function";
-}
-
-// @internal
-export function isClassRef<T extends object>(value: any): value is ClassRef<T> {
-  return value && typeof value === "object" && typeof value.getRefClass === "function";
 }
