@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.15.0
+
+- Renamed the `forwardRef` utility function to `tokenRef`.
+- Allowed passing a forward class reference to `ClassProvider`.  
+  This is especially useful when creating a `ProviderType`, which might be used to hide
+  the underlying implementation (we export the injectable type, not the class).
+
+  ```ts
+  const ISecretStore = createType<SecretStore>("SecretStore", {
+    useClass: classRef(() => SecretStoreImpl), // SecretStoreImpl is defined later in the file 
+  });
+  ```
+
 ## 0.14.2
 
 - Updated JSDocs to better clarify when injection decorators and injection functions may throw.
