@@ -1,5 +1,5 @@
 import type { Constructor, Token } from "./token";
-import type { ClassRef } from "./tokensRef";
+import type { ClassRef } from "./tokenRef";
 
 /**
  * Provides a class instance for a token via a class constructor.

@@ -23,7 +23,7 @@ export type { ClassProvider, ExistingProvider, FactoryProvider, Provider, ValueP
 export { Scope } from "./scope";
 export type { Constructor, ProviderType, Token, Tokens, Type } from "./token";
 export { createType } from "./token";
+export type { ClassRef, TokenRef, TokensRef } from "./tokenRef";
+export { classRef, forwardRef } from "./tokenRef";
 export type { RegistrationOptions } from "./tokenRegistry";
 export { build } from "./tokenRegistry";
-export type { ClassRef, TokenRef, TokensRef } from "./tokensRef";
-export { classRef, forwardRef } from "./tokensRef";

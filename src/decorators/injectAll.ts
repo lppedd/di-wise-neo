@@ -1,5 +1,5 @@
 import type { Constructor, Token } from "../token";
-import { forwardRef, isTokenRef, type TokenRef } from "../tokensRef";
+import { forwardRef, isTokenRef, type TokenRef } from "../tokenRef";
 import { checkNamedDecorator, checkSingleDecorator, updateParameterMetadata } from "./utils";
 
 /**

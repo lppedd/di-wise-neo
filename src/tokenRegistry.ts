@@ -2,7 +2,7 @@ import { check, getTokenName } from "./errors";
 import type { ExistingProvider, FactoryProvider, Provider, ValueProvider } from "./provider";
 import { Scope } from "./scope";
 import { type Constructor, createType, type Token, type Type } from "./token";
-import type { TokenRef } from "./tokensRef";
+import type { TokenRef } from "./tokenRef";
 import { getTypeName } from "./utils/typeName";
 import type { ValueRef } from "./valueRef";
 

@@ -1,7 +1,7 @@
 import type { Scope } from "./scope";
 import type { Constructor } from "./token";
+import { type ClassRef, isClassRef, type TokensRef } from "./tokenRef";
 import type { ConstructorProvider, Dependencies, MethodDependency } from "./tokenRegistry";
-import { type ClassRef, isClassRef, type TokensRef } from "./tokensRef";
 
 // @internal
 export type Writable<T> = {
