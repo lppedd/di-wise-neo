@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.15.1
+
+- Improved error reporting for unexpected `undefined` tokens passed to injection decorators.  
+  The error message now references potential circular imports.
+
 ## 0.15.0
 
 - Renamed the `forwardRef` utility function to `tokenRef`.
