@@ -13,6 +13,7 @@ export {
 } from "./decorators";
 export { inject, injectBy } from "./inject";
 export { injectAll } from "./injectAll";
+export { assertInjectionContext } from "./injectionContext";
 export { Injector } from "./injector";
 export { setClassIdentityMapping } from "./metadata";
 export type { Middleware, MiddlewareComposer } from "./middleware";

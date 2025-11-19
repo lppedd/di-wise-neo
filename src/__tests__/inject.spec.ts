@@ -4,6 +4,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  assertInjectionContext,
   AutoRegister,
   build,
   createContainer,
@@ -63,6 +64,16 @@ describe("inject", () => {
       container.register(Wizard).resolve(Wizard);
       vi.runAllTimers();
     }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] injectAll() can only be invoked within an injection context]`);
+
+    expect(() => {
+      const myFun = (): void => assertInjectionContext(myFun);
+      myFun();
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] myFun() can only be invoked within an injection context]`);
+
+    expect(() => {
+      const injector = container.resolve(Injector);
+      injector.runInContext(() => assertInjectionContext("arrow function"));
+    }).not.toThrow();
 
     vi.restoreAllMocks();
   });
