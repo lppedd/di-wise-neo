@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.16.0
+
+- Added support for container hooks, to be notified whenever a `Provider` provides
+  a value for a `Token`, or whenever a container-managed value is disposed.
+  See the `ContainerHook` interface for additional documentation.
+
+  ```ts
+  // Adding a hook
+  container.addHook({
+    onProvide: (value) => { /* ... */ },
+    onDispose: (value) => { /* ... */ },
+  });
+
+  // Removing a hook
+  container.removeHook(myHook);
+  ```
+- Exported the `assertInjectionContext` function, to allow consumers to assert that
+  the current stack frame is within an injection context.
+
 ## 0.15.1
 
 - Improved error reporting for unexpected `undefined` tokens passed to injection decorators.  
