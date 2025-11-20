@@ -1,4 +1,4 @@
-export type { Container, ContainerOptions } from "./container";
+export type { ChildContainerOptions, Container, ContainerHook, ContainerOptions } from "./container";
 export { createContainer } from "./container";
 export {
   AutoRegister,

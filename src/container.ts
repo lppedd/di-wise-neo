@@ -24,6 +24,37 @@ export interface ContainerOptions {
 }
 
 /**
+ * Child container creation options.
+ */
+export interface ChildContainerOptions extends ContainerOptions {
+  /**
+   * Whether to copy {@link ContainerHook}(s) from the parent container.
+   *
+   * @defaultValue true
+   */
+  readonly copyHooks: boolean;
+}
+
+/**
+ * A hook into the lifecycle of a container-managed value.
+ */
+export interface ContainerHook {
+  /**
+   * Called when the container provides a value for a {@link Token}.
+   * - For _container_ scoped tokens, it is called only once when the token is first resolved and cached.
+   * - For _resolution_ scoped tokens, it is called once per token resolution graph.
+   * - For _transient_ scoped tokens, it is called each time the token is resolved,
+   *   which might mean multiple times per resolution graph.
+   */
+  readonly onProvide?: (value: unknown) => void;
+
+  /**
+   * Called when a _container_ scoped value is about to be disposed.
+   */
+  readonly onDispose?: (value: unknown) => void;
+}
+
+/**
  * Container API.
  */
 export interface Container {
@@ -57,7 +88,7 @@ export interface Container {
    *
    * You can pass specific options to override the inherited ones.
    */
-  createChild(options?: Partial<ContainerOptions>): Container;
+  createChild(options?: Partial<ChildContainerOptions>): Container;
 
   /**
    * Clears and returns all distinct cached values from this container's internal registry.
@@ -350,6 +381,20 @@ export interface Container {
   tryResolveAll<Value>(token: Token<Value>): Value[];
 
   /**
+   * Adds a hook to observe the lifecycle of container-managed values.
+   *
+   * Does nothing if the hook has already been added.
+   */
+  addHook(hook: ContainerHook): void;
+
+  /**
+   * Removes a previously added hook.
+   *
+   * Does nothing if the hook has not been added yet.
+   */
+  removeHook(hook: ContainerHook): void;
+
+  /**
    * Disposes this container and all its cached values.
    *
    * Token values implementing a `Disposable` interface (e.g., objects with a `dispose()` function)
@@ -364,5 +409,5 @@ export interface Container {
  * Creates a new container.
  */
 export function createContainer(options?: Partial<ContainerOptions>): Container {
-  return new ContainerImpl(undefined, options);
+  return new ContainerImpl(undefined, undefined, options);
 }

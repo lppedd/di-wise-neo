@@ -1,4 +1,4 @@
-import type { Container, ContainerOptions } from "./container";
+import type { ChildContainerOptions, Container, ContainerHook, ContainerOptions } from "./container";
 import {
   check,
   getLocation,
@@ -38,10 +38,12 @@ export class ContainerImpl implements Container {
   private readonly myChildren: Set<ContainerImpl> = new Set();
   private readonly myOptions: ContainerOptions;
   private readonly myTokenRegistry: TokenRegistry;
+  private readonly myHooks: Set<ContainerHook>;
   private myDisposed: boolean = false;
 
-  constructor(parent: ContainerImpl | undefined, options?: Partial<ContainerOptions>) {
+  constructor(parent: ContainerImpl | undefined, hooks?: Set<ContainerHook>, options?: Partial<ContainerOptions>) {
     this.myParent = parent;
+    this.myHooks = hooks ?? new Set();
     this.myOptions = {
       autoRegister: options?.autoRegister ?? false,
       defaultScope: options?.defaultScope ?? Scope.Transient,
@@ -68,9 +70,11 @@ export class ContainerImpl implements Container {
     return this.myDisposed;
   }
 
-  createChild(options?: Partial<ContainerOptions>): Container {
+  createChild(options?: Partial<ChildContainerOptions>): Container {
     this.checkDisposed();
-    const container = new ContainerImpl(this, {
+
+    const hooks = options?.copyHooks === false ? undefined : new Set(this.myHooks);
+    const container = new ContainerImpl(this, hooks, {
       autoRegister: options?.autoRegister ?? this.myOptions.autoRegister,
       defaultScope: options?.defaultScope ?? this.myOptions.defaultScope,
     });
@@ -185,6 +189,14 @@ export class ContainerImpl implements Container {
     return this.resolveAllToken(token, true);
   }
 
+  addHook(hook: ContainerHook): void {
+    this.myHooks.add(hook);
+  }
+
+  removeHook(hook: ContainerHook): void {
+    this.myHooks.delete(hook);
+  }
+
   dispose(): void {
     if (this.myDisposed) {
       return;
@@ -209,6 +221,7 @@ export class ContainerImpl implements Container {
       const value = registration.value?.current;
 
       if (isDisposable(value) && !disposedRefs.has(value)) {
+        this.notifyDisposeHooks(value);
         disposedRefs.add(value);
         value.dispose();
       }
@@ -216,6 +229,7 @@ export class ContainerImpl implements Container {
 
     // Allow values to be GCed
     disposedRefs.clear();
+    this.myHooks.clear();
   }
 
   private registerClass<T extends object>(Class: Constructor<T>): void {
@@ -451,6 +465,7 @@ export class ContainerImpl implements Container {
           const args = this.resolveCtorDependencies(registration);
           const value = this.injectMethodDependencies(registration, factory(args));
           registration.value = { current: value };
+          this.notifyProvideHooks(value);
           return value;
         }
         case Scope.Resolution: {
@@ -463,11 +478,14 @@ export class ContainerImpl implements Container {
           const args = this.resolveCtorDependencies(registration);
           const value = this.injectMethodDependencies(registration, factory(args));
           resolution.values.set(provider, { current: value });
+          this.notifyProvideHooks(value);
           return value;
         }
         case Scope.Transient: {
           const args = this.resolveCtorDependencies(registration);
-          return this.injectMethodDependencies(registration, factory(args));
+          const value = this.injectMethodDependencies(registration, factory(args));
+          this.notifyProvideHooks(value);
+          return value;
         }
       }
     } finally {
@@ -499,7 +517,6 @@ export class ContainerImpl implements Container {
     return [];
   }
 
-  // Call context: decorator-based injection
   private injectMethodDependencies<T>(registration: Registration<T>, instance: T): T {
     const dependencies = registration.dependencies;
 
@@ -560,6 +577,18 @@ export class ContainerImpl implements Container {
         return instance ? optionalBy(instance, token, name) : this.tryResolve(token, name);
       case "OptionalAll":
         return instance ? optionalAll(token) : this.tryResolveAll(token);
+    }
+  }
+
+  private notifyProvideHooks(value: unknown): void {
+    for (const hook of this.myHooks) {
+      hook.onProvide?.(value);
+    }
+  }
+
+  private notifyDisposeHooks(value: unknown): void {
+    for (const hook of this.myHooks) {
+      hook.onDispose?.(value);
     }
   }
 

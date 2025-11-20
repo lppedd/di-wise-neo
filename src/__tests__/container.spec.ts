@@ -1,12 +1,13 @@
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 /* eslint-disable no-use-before-define */
 
-import { afterEach, assert, describe, expect, it } from "vitest";
+import { afterEach, assert, describe, expect, it, vi } from "vitest";
 
 import {
   AutoRegister,
   build,
   classRef,
+  type ContainerHook,
   createContainer,
   createType,
   EagerInstantiate,
@@ -15,16 +16,16 @@ import {
   Injectable,
   InjectAll,
   injectAll,
+  Named,
   Optional,
+  optional,
   OptionalAll,
+  optionalAll,
   Scope,
   Scoped,
   tokenRef
 } from "..";
-import { Named } from "../decorators";
 import { useInjectionContext } from "../injectionContext";
-import { optional } from "../optional";
-import { optionalAll } from "../optionalAll";
 
 describe("Container", () => {
   const container = createContainer();
@@ -1176,6 +1177,85 @@ describe("Container", () => {
 
     const wizard = container.resolve(Wizard);
     expect(wizard.wand.decoration).toBe(wizard.decoration);
+  });
+
+  it("should notify container hooks with container-scoped tokens", () => {
+    @Scoped(Scope.Container)
+    class Wand {
+      dispose(): void {}
+    }
+
+    const onProvide = vi.fn(() => {});
+    const onDispose = vi.fn(() => {});
+
+    const hookContainer = createContainer();
+    const hook: ContainerHook = {
+      onProvide: onProvide,
+      onDispose: onDispose,
+    };
+
+    hookContainer.addHook(hook);
+    hookContainer.register(Wand);
+
+    // Verify onProvide is called when we resolve Wand, and onDispose is not called
+    let wandInstance = hookContainer.resolve(Wand);
+    expect(wandInstance).toBeInstanceOf(Wand);
+    expect(onProvide).toHaveBeenCalledExactlyOnceWith(wandInstance);
+    expect(onDispose).not.toHaveBeenCalled();
+
+    onProvide.mockClear();
+    onDispose.mockClear();
+
+    // Verify the hook is actually removed and not called anymore
+    hookContainer.removeHook(hook);
+    wandInstance = hookContainer.resolve(Wand);
+    expect(wandInstance).toBeInstanceOf(Wand);
+    expect(onProvide).not.toHaveBeenCalled();
+    expect(onDispose).not.toHaveBeenCalled();
+
+    onProvide.mockClear();
+    onDispose.mockClear();
+
+    // Add back the hook and verify onDispose is called when we dispose the container
+    hookContainer.addHook(hook);
+    hookContainer.dispose();
+    expect(onProvide).not.toHaveBeenCalled();
+    expect(onDispose).toHaveBeenCalledExactlyOnceWith(wandInstance);
+  });
+
+  it("should notify container hooks with transient-scoped tokens", () => {
+    const onProvide = vi.fn(() => {});
+    const onDispose = vi.fn(() => {});
+
+    const hookContainer = createContainer();
+    hookContainer.addHook({
+      onProvide: onProvide,
+      onDispose: onDispose,
+    });
+
+    const Env = createType<string>("Env");
+    hookContainer.register(Env, { useFactory: () => "Production" });
+
+    let env = hookContainer.resolve(Env);
+    expect(env).toBe("Production");
+    expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production");
+    expect(onDispose).not.toHaveBeenCalled();
+
+    onProvide.mockClear();
+    onDispose.mockClear();
+
+    // Verify we get notified on every resolution
+    env = hookContainer.resolve(Env);
+    expect(env).toBe("Production");
+    expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production");
+    expect(onDispose).not.toHaveBeenCalled();
+
+    onProvide.mockClear();
+    onDispose.mockClear();
+
+    hookContainer.dispose();
+    expect(onProvide).not.toHaveBeenCalled();
+    expect(onDispose).not.toHaveBeenCalled();
   });
 
   it("should dispose itself and its registrations", () => {
