@@ -46,12 +46,12 @@ export interface ContainerHook {
    * - For _transient_ scoped tokens, it is called each time the token is resolved,
    *   which might mean multiple times per resolution graph.
    */
-  readonly onProvide?: (value: unknown) => void;
+  readonly onProvide: (value: unknown) => void;
 
   /**
    * Called when a _container_ scoped value is about to be disposed.
    */
-  readonly onDispose?: (value: unknown) => void;
+  readonly onDispose: (value: unknown) => void;
 }
 
 /**

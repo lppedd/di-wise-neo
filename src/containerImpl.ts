@@ -582,13 +582,13 @@ export class ContainerImpl implements Container {
 
   private notifyProvideHooks(value: unknown): void {
     for (const hook of this.myHooks) {
-      hook.onProvide?.(value);
+      hook.onProvide(value);
     }
   }
 
   private notifyDisposeHooks(value: unknown): void {
     for (const hook of this.myHooks) {
-      hook.onDispose?.(value);
+      hook.onDispose(value);
     }
   }
 
