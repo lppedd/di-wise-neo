@@ -8,6 +8,7 @@
 [![status](https://img.shields.io/badge/status-beta-AC29EC)](https://github.com/lppedd/di-wise-neo/blob/main/CHANGELOG.md#0100)
 [![build](https://img.shields.io/github/actions/workflow/status/lppedd/di-wise-neo/test.yml.svg?branch=main)](https://github.com/lppedd/di-wise-neo/actions/workflows/test.yml)
 [![coverage](https://img.shields.io/codecov/c/github/lppedd/di-wise-neo/main?token=R9XZFTQ0BA)](https://app.codecov.io/gh/lppedd/di-wise-neo/tree/main/src)
+[![minified size](https://img.shields.io/bundlejs/size/@lppedd/di-wise-neo)](https://bundlejs.com/?q=@lppedd/di-wise-neo)
 [![license](https://img.shields.io/badge/license-MIT-F7F7F7)](https://github.com/lppedd/di-wise-neo/blob/main/LICENSE)
 
 </div>
