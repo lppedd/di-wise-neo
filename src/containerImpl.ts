@@ -45,11 +45,11 @@ export class ContainerImpl implements Container {
     this.myParent = parent;
     this.myHooks = hooks ?? new Set();
     this.myOptions = {
-      autoRegister: options?.autoRegister ?? false,
       defaultScope: options?.defaultScope ?? Scope.Transient,
+      autoRegister: options?.autoRegister ?? false,
     };
 
-    this.myTokenRegistry = new TokenRegistry(this.myParent?.myTokenRegistry);
+    this.myTokenRegistry = new TokenRegistry(parent?.myTokenRegistry);
   }
 
   get registry(): TokenRegistry {
@@ -75,8 +75,8 @@ export class ContainerImpl implements Container {
 
     const hooks = options?.copyHooks === false ? undefined : new Set(this.myHooks);
     const container = new ContainerImpl(this, hooks, {
-      autoRegister: options?.autoRegister ?? this.myOptions.autoRegister,
       defaultScope: options?.defaultScope ?? this.myOptions.defaultScope,
+      autoRegister: options?.autoRegister ?? this.myOptions.autoRegister,
     });
 
     this.myChildren.add(container);

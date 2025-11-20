@@ -41,8 +41,8 @@ describe("Container", () => {
 
   it("should create child container with different options", () => {
     const child = container.createChild({
-      autoRegister: true,
       defaultScope: Scope.Container,
+      autoRegister: true,
     });
 
     expect(child.options.autoRegister).toBe(true);

@@ -9,18 +9,18 @@ import type { RegistrationOptions, TokenRegistry } from "./tokenRegistry";
  */
 export interface ContainerOptions {
   /**
-   * Whether to automatically register an unregistered class when resolving it as a token.
-   *
-   * @defaultValue false
-   */
-  readonly autoRegister: boolean;
-
-  /**
    * The default scope for registrations.
    *
    * @defaultValue Scope.Transient
    */
   readonly defaultScope: Scope;
+
+  /**
+   * Whether to automatically register an unregistered class when resolving it as a token.
+   *
+   * @defaultValue false
+   */
+  readonly autoRegister: boolean;
 }
 
 /**
