@@ -56,15 +56,15 @@ export function tokenRef<Value>(token: () => Tokens<Value> | Token<Value>): Toke
 
 // @internal
 export function isClassRef<T extends object>(value: any): value is ClassRef<T> {
-  return value && typeof value === "object" && typeof value.getRefClass === "function";
+  return value != null && typeof value === "object" && typeof value.getRefClass === "function";
 }
 
 // @internal
 export function isTokensRef<T>(value: any): value is TokensRef<T> {
-  return value && typeof value === "object" && typeof value.getRefTokens === "function";
+  return value != null && typeof value === "object" && typeof value.getRefTokens === "function";
 }
 
 // @internal
 export function isTokenRef<T>(value: any): value is TokenRef<T> {
-  return value && typeof value === "object" && typeof value.getRefToken === "function";
+  return value != null && typeof value === "object" && typeof value.getRefToken === "function";
 }

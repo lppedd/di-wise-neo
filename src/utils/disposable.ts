@@ -5,5 +5,5 @@ export interface Disposable {
 
 // @internal
 export function isDisposable(value: any): value is Disposable {
-  return value && typeof value === "object" && typeof value.dispose === "function";
+  return value != null && typeof value === "object" && typeof value.dispose === "function";
 }
