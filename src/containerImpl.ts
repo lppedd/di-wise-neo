@@ -395,7 +395,7 @@ export class ContainerImpl implements Container {
 
     if (isFactoryProvider(provider)) {
       const factory = provider.useFactory;
-      return this.resolveScopedValue(token, registration, factory);
+      return this.resolveScopedValue(token, registration, () => factory());
     }
 
     if (isValueProvider(provider)) {
