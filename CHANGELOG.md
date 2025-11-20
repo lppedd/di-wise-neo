@@ -2,7 +2,7 @@
 
 ## 0.16.0
 
-- Added support for container hooks, to be notified whenever a `Provider` provides
+- Added support for container hooks, to be notified whenever the container provides
   a value for a `Token`, or whenever a container-managed value is disposed.
   See the `ContainerHook` interface for additional documentation.
 
