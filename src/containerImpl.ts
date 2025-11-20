@@ -245,7 +245,9 @@ export class ContainerImpl implements Container {
       });
     }
 
-    // Eager-instantiate only if the class is container-scoped
+    // Eager-instantiate only if the class is container-scoped.
+    // Note that we are comparing the scope using the registration configured just above,
+    // which takes into account both the metadata and the container option as a fallback.
     if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
       this.resolveProviderValue(Class, registration);
     }
@@ -271,7 +273,9 @@ export class ContainerImpl implements Container {
 
       this.myTokenRegistry.set(token, registration);
 
-      // Eager-instantiate only if the provided class is container-scoped
+      // Eager-instantiate only if the provided class is container-scoped.
+      // Note that we are comparing the scope using the registration configured just above,
+      // which takes into account both the metadata and the container option as a fallback.
       if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
         this.resolveProviderValue(token, registration);
       }
