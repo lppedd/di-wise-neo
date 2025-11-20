@@ -14,11 +14,12 @@ import {
   injectBy,
   Injector,
   Optional,
+  optional,
+  optionalBy,
   Scope,
   Scoped
 } from "..";
 import { useInjectionContext } from "../injectionContext";
-import { optional, optionalBy } from "../optional";
 
 describe("inject", () => {
   const container = createContainer();
