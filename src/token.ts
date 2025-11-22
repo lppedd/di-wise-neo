@@ -18,6 +18,11 @@ export interface Type<T> {
    * @private
    */
   readonly __type: T | undefined;
+
+  /**
+   * Returns the type's {@link Type.name|name}.
+   */
+  readonly toString: () => string;
 }
 
 /**
@@ -90,13 +95,16 @@ export function createType<T>(
   options?: RegistrationOptions,
 ): Type<T> | ProviderType<T> {
   const name = `Type<${typeName}>`;
-  const toString = (): string => name;
-  return provider //
-    ? ({ name, provider, options, toString } as ProviderType<T>)
-    : ({ name, toString } as Type<T>);
+  const type: Type<T> = {
+    name,
+    __type: undefined,
+    toString: () => name,
+  };
+
+  return provider ? { ...type, provider, options } : type;
 }
 
 // @internal
 export function isConstructor<T>(token: Type<T> | Constructor<T & object>): token is Constructor<T & object> {
-  return typeof token === "function";
+  return !("__type" in token) && typeof token === "function";
 }

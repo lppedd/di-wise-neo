@@ -2,11 +2,7 @@ import type { Scope } from "./scope";
 import type { Constructor } from "./token";
 import { type ClassRef, isClassRef, type TokensRef } from "./tokenRef";
 import type { ConstructorProvider, Dependencies, MethodDependency } from "./tokenRegistry";
-
-// @internal
-export type Writable<T> = {
-  -readonly [P in keyof T]: T[P];
-};
+import type { Writable } from "./utils/writable";
 
 // @internal
 export interface ScopeMetadata {
