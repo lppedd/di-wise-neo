@@ -399,6 +399,29 @@ describe("Container", () => {
     expect(wizardInstance.wands![0]).toBe(wand);
   });
 
+  it("should perform single-value injection with @Type decorator", () => {
+    const Env = createType<string>("Env");
+    const Platform = createType<string>("Platform");
+    class Product {
+      platform?: string;
+
+      constructor(@Env readonly env: string) {}
+
+      setPlatform(@Platform platform: string): void {
+        this.platform = platform;
+      }
+    }
+
+    container.register(Env, { useValue: "production" });
+    container.register(Platform, { useFactory: () => "Node.js" });
+    container.register(Product);
+
+    const productInstance = container.resolve(Product);
+    expect(productInstance).toBeInstanceOf(Product);
+    expect(productInstance.env).toBe("production");
+    expect(productInstance.platform).toBe("Node.js");
+  });
+
   it("should throw when @Inject is applied to static methods", () => {
     expect(() => {
       const Wand = createType<string>("Wand");

@@ -1,10 +1,13 @@
+import { checkSingleDecorator, updateParameterMetadata } from "./decorators/utils";
 import type { Provider } from "./provider";
+import { tokenRef } from "./tokenRef";
 import type { RegistrationOptions } from "./tokenRegistry";
+import type { Writable } from "./utils/writable";
 
 /**
  * An injectable type `T`.
  */
-export interface Type<T> {
+export interface Type<T> extends ParameterDecorator {
   /**
    * The name of the type.
    */
@@ -95,16 +98,28 @@ export function createType<T>(
   options?: RegistrationOptions,
 ): Type<T> | ProviderType<T> {
   const name = `Type<${typeName}>`;
-  const type: Type<T> = {
-    name,
-    __type: undefined,
-    toString: () => name,
+  const decorator: ParameterDecorator = (target, propertyKey, parameterIndex) => {
+    updateParameterMetadata(name, target, propertyKey, parameterIndex, (dependency) => {
+      checkSingleDecorator(dependency, target, propertyKey, parameterIndex);
+      dependency.appliedBy = "Inject";
+      dependency.tokenRef = tokenRef(() => decorator as Type<T>);
+    });
   };
 
-  return provider ? { ...type, provider, options } : type;
+  const type = decorator as ParameterDecorator & Writable<ProviderType<T>>;
+  Object.defineProperty(type, "name", { value: name });
+
+  if (provider) {
+    type.provider = provider;
+    type.options = options;
+  }
+
+  type.__type = undefined;
+  type.toString = () => name;
+  return type;
 }
 
 // @internal
 export function isConstructor<T>(token: Type<T> | Constructor<T & object>): token is Constructor<T & object> {
-  return !("__type" in token) && typeof token === "function";
+  return !("__type" in token);
 }

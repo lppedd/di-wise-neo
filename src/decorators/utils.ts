@@ -1,11 +1,11 @@
 import { check } from "../errors";
 import { getMetadata } from "../metadata";
 import type { Constructor } from "../token";
-import type { InjectDecorator, MethodDependency } from "../tokenRegistry";
+import type { MethodDependency } from "../tokenRegistry";
 
 // @internal
 export function updateParameterMetadata(
-  decorator: InjectDecorator | "Named",
+  decorator: string,
   target: object,
   methodKey: string | symbol | undefined,
   parameterIndex: number,
