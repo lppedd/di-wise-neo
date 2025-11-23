@@ -11,6 +11,7 @@ import {
   throwUnregisteredError,
   type TokenInfo,
 } from "./errors";
+import { HookRegistry } from "./hookRegistry";
 import { injectBy } from "./inject";
 import { injectAll } from "./injectAll";
 import { createResolution, provideInjectionContext, useInjectionContext } from "./injectionContext";
@@ -37,18 +38,18 @@ export class ContainerImpl implements Container {
   private readonly myParent?: ContainerImpl;
   private readonly myChildren: Set<ContainerImpl> = new Set();
   private readonly myOptions: ContainerOptions;
+  private readonly myHookRegistry: HookRegistry;
   private readonly myTokenRegistry: TokenRegistry;
-  private readonly myHooks: Set<ContainerHook>;
   private myDisposed: boolean = false;
 
-  constructor(parent: ContainerImpl | undefined, hooks?: Set<ContainerHook>, options?: Partial<ContainerOptions>) {
+  constructor(parent: ContainerImpl | undefined, options?: Partial<ContainerOptions>) {
     this.myParent = parent;
-    this.myHooks = hooks ?? new Set();
     this.myOptions = {
       defaultScope: options?.defaultScope ?? "Transient",
       autoRegister: options?.autoRegister ?? false,
     };
 
+    this.myHookRegistry = new HookRegistry(parent?.myHookRegistry);
     this.myTokenRegistry = new TokenRegistry(parent?.myTokenRegistry);
   }
 
@@ -72,9 +73,7 @@ export class ContainerImpl implements Container {
 
   createChild(options?: Partial<ChildContainerOptions>): Container {
     this.checkDisposed();
-
-    const hooks = options?.copyHooks === false ? undefined : new Set(this.myHooks);
-    const container = new ContainerImpl(this, hooks, {
+    const container = new ContainerImpl(this, {
       defaultScope: options?.defaultScope ?? this.myOptions.defaultScope,
       autoRegister: options?.autoRegister ?? this.myOptions.autoRegister,
     });
@@ -190,11 +189,11 @@ export class ContainerImpl implements Container {
   }
 
   addHook(hook: ContainerHook): void {
-    this.myHooks.add(hook);
+    this.myHookRegistry.add(hook);
   }
 
   removeHook(hook: ContainerHook): void {
-    this.myHooks.delete(hook);
+    this.myHookRegistry.delete(hook);
   }
 
   dispose(): void {
@@ -227,7 +226,7 @@ export class ContainerImpl implements Container {
     }
 
     this.notifyDisposeHooks(Array.from(values));
-    this.myHooks.clear();
+    this.myHookRegistry.clear();
   }
 
   private registerClass<T extends object>(Class: Constructor<T>): void {
@@ -579,13 +578,13 @@ export class ContainerImpl implements Container {
   }
 
   private notifyProvideHooks(value: unknown, scope: Scope): void {
-    for (const hook of this.myHooks) {
+    for (const hook of this.myHookRegistry.get()) {
       hook.onProvide?.(value, scope);
     }
   }
 
   private notifyDisposeHooks(values: unknown[]): void {
-    for (const hook of this.myHooks) {
+    for (const hook of this.myHookRegistry.get()) {
       hook.onDispose?.(values);
     }
   }

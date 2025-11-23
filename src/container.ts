@@ -408,5 +408,5 @@ export interface Container {
  * Creates a new container.
  */
 export function createContainer(options?: Partial<ContainerOptions>): Container {
-  return new ContainerImpl(undefined, undefined, options);
+  return new ContainerImpl(undefined, options);
 }
