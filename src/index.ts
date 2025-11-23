@@ -16,8 +16,6 @@ export { injectAll } from "./injectAll";
 export { assertInjectionContext } from "./injectionContext";
 export { Injector } from "./injector";
 export { setClassIdentityMapping } from "./metadata";
-export type { Middleware, MiddlewareComposer } from "./middleware";
-export { applyMiddleware } from "./middleware";
 export { optional, optionalBy } from "./optional";
 export { optionalAll } from "./optionalAll";
 export type { ClassProvider, ExistingProvider, FactoryProvider, Provider, ValueProvider } from "./provider";

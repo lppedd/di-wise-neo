@@ -65,11 +65,6 @@ export interface Container {
   /**
    * @internal
    */
-  api?: Readonly<Container>;
-
-  /**
-   * @internal
-   */
   readonly registry: TokenRegistry;
 
   /**
