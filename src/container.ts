@@ -110,7 +110,7 @@ export interface Container {
    * the cached value is taken from the most recent of those registrations.
    * Otherwise, it may be retrieved from parent containers, if any.
    *
-   * Values are never cached for tokens with _transient_ or _resolution_ scope,
+   * Values are never cached for tokens with **Transient** or **Resolution** scope,
    * or for {@link ValueProvider} registrations.
    */
   getCached<Value>(token: Token<Value>): Value | undefined;
@@ -123,7 +123,7 @@ export interface Container {
    * cached values are taken from those registrations.
    * Otherwise, cached values may be retrieved from parent containers, if any.
    *
-   * Values are never cached for tokens with _transient_ or _resolution_ scope,
+   * Values are never cached for tokens with **Transient** or **Resolution** scope,
    * or for {@link ValueProvider} registrations.
    */
   getAllCached<Value>(token: Token<Value>): Value[];
@@ -228,7 +228,7 @@ export interface Container {
    * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
    * - For {@link ExistingProvider}, the instance is resolved by referring to another registered token.
    *
-   * If the class is registered with _container_ scope, the resolved instance is cached
+   * If the class is registered with **Container** scope, the resolved instance is cached
    * in the container's internal registry.
    */
   resolve<Instance extends object>(Class: Constructor<Instance>, name?: string): Instance;
@@ -247,7 +247,7 @@ export interface Container {
    * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
    * - For {@link ExistingProvider}, the value is resolved by referring to another registered token.
    *
-   * If the token is registered with _container_ scope, the resolved value is cached
+   * If the token is registered with **Container** scope, the resolved value is cached
    * in the container's internal registry.
    */
   resolve<Value>(token: Token<Value>, name?: string): Value;
@@ -274,7 +274,7 @@ export interface Container {
    * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
    * - For {@link ExistingProvider}, the instance is resolved by referring to another registered token.
    *
-   * If the class is registered with _container_ scope, the resolved instance is cached
+   * If the class is registered with **Container** scope, the resolved instance is cached
    * in the container's internal registry.
    */
   tryResolve<Instance extends object>(Class: Constructor<Instance>, name?: string): Instance | undefined;
@@ -294,7 +294,7 @@ export interface Container {
    * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
    * - For {@link ExistingProvider}, the value is resolved by referring to another registered token.
    *
-   * If the token is registered with _container_ scope, the resolved value is cached
+   * If the token is registered with **Container** scope, the resolved value is cached
    * in the container's internal registry.
    */
   tryResolve<Value>(token: Token<Value>, name?: string): Value | undefined;
@@ -318,7 +318,7 @@ export interface Container {
    * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
    * - For {@link ExistingProvider}, the instance is resolved by referring to another registered token.
    *
-   * If the class is registered with _container_ scope, the resolved instances are cached
+   * If the class is registered with **Container** scope, the resolved instances are cached
    * in the container's internal registry.
    *
    * A separate instance of the class is created for each provider.
@@ -336,7 +336,7 @@ export interface Container {
    * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
    * - For {@link ExistingProvider}, the value is resolved by referring to another registered token.
    *
-   * If the token is registered with _container_ scope, the resolved values are cached
+   * If the token is registered with **Container** scope, the resolved values are cached
    * in the container's internal registry.
    */
   resolveAll<Value>(token: Token<Value>): Value[];
@@ -360,7 +360,7 @@ export interface Container {
    * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
    * - For {@link ExistingProvider}, the instance is resolved by referring to another registered token.
    *
-   * If the class is registered with _container_ scope, the resolved instances are cached
+   * If the class is registered with **Container** scope, the resolved instances are cached
    * in the container's internal registry.
    *
    * A separate instance of the class is created for each provider.
@@ -379,7 +379,7 @@ export interface Container {
    * - For {@link ClassProvider}, a new instance of the class is created according to its scope.
    * - For {@link ExistingProvider}, the value is resolved by referring to another registered token.
    *
-   * If the token is registered with _container_ scope, the resolved values are cached
+   * If the token is registered with **Container** scope, the resolved values are cached
    * in the container's internal registry.
    */
   tryResolveAll<Value>(token: Token<Value>): Value[];

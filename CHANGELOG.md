@@ -176,7 +176,7 @@ Breaking changes may still occur, but only:
 
 - ❗ Prohibited implicit class registration during resolution.  
   Previously, the library allowed resolving classes that had never been registered,
-  as long as they were not in _Container_ scope. For example:
+  as long as they were not in **Container** scope. For example:
 
   ```ts
   @Scoped(Scope.Transient)
@@ -187,7 +187,7 @@ Breaking changes may still occur, but only:
   container.resolve(UnregisteredClass);
   ```
 
-  would successfully return an instance of `UnregisteredClass` as it is in _Transient_ scope,
+  would successfully return an instance of `UnregisteredClass` as it is in **Transient** scope,
   even without prior explicit registration.
 
   This behavior had two major issues:
