@@ -125,7 +125,7 @@ export class ContainerImpl implements Container {
     return Array.from(values);
   }
 
-  isRegistered(token: Token, name?: string): boolean {
+  isRegistered<T>(token: Token<T>, name?: string): boolean {
     this.checkDisposed();
     return this.myTokenRegistry.get(token, name) !== undefined;
   }

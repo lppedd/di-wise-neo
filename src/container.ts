@@ -137,7 +137,7 @@ export interface Container {
   /**
    * Returns whether the token is registered in this container or in parent containers, if any.
    */
-  isRegistered(token: Token, name?: string): boolean;
+  isRegistered<Value>(token: Token<Value>, name?: string): boolean;
 
   /**
    * Registers a {@link ClassProvider}, using the class itself as its token.
