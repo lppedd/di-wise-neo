@@ -1,6 +1,9 @@
 <!--suppress HtmlDeprecatedAttribute -->
 <h1 align="center">di-wise-neo</h1>
-<p align="center">Lightweight, type-safe, flexible dependency injection library for TypeScript and JavaScript</p>
+<p align="center">
+Lightweight, type-safe, flexible dependency injection library for TypeScript and JavaScript<br>
+with a strong focus on type correctness and clear error reporting
+</p>
 <div align="center">
 
 [![npm](https://img.shields.io/npm/v/@lppedd/di-wise-neo?color=%23de1f1f&logo=npm)](https://www.npmjs.com/package/@lppedd/di-wise-neo)
