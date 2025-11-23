@@ -60,7 +60,7 @@ export interface ContainerHook {
 }
 
 /**
- * Container API.
+ * A Dependency Injection container.
  */
 export interface Container {
   /**

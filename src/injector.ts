@@ -7,7 +7,24 @@ import type { Constructor, Token, Type } from "./token";
 import { build } from "./tokenRegistry";
 
 /**
- * Injector API.
+ * Allows performing injections outside the normal injection context window.
+ *
+ * @example
+ * ```ts
+ * class Wizard {
+ *   private injector = inject(Injector);
+ *
+ *   // Lazily initialize the wand property
+ *   private wand?: Wand;
+ *
+ *   getWand(): Wand {
+ *     // An injection context does not exist here, but the
+ *     // Injector instance retains and reuse the context
+ *     // that was present at the time of its injection
+ *     return (this.wand ??= this.injector.inject(Wand));
+ *   }
+ * }
+ * ```
  */
 export interface Injector {
   /**
@@ -76,21 +93,23 @@ export interface Injector {
 }
 
 /**
- * Injector token for dynamic injections.
+ * Allows performing injections outside the normal injection context window.
  *
  * @example
  * ```ts
  * class Wizard {
  *   private injector = inject(Injector);
+ *
+ *   // Lazily initialize the wand property
  *   private wand?: Wand;
  *
  *   getWand(): Wand {
+ *     // An injection context does not exist here, but the
+ *     // Injector instance retains and reuse the context
+ *     // that was present at the time of its injection
  *     return (this.wand ??= this.injector.inject(Wand));
  *   }
  * }
- *
- * const wizard = container.resolve(Wizard);
- * wizard.getWand(); // => Wand
  * ```
  */
 export const Injector: Type<Injector> = /*@__PURE__*/ build<Injector>(() => {
