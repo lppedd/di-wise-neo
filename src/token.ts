@@ -74,7 +74,7 @@ export type Tokens<Value = any> = [Token<Value>, ...Token<Value>[]];
  * });
  * ```
  */
-export function createType<T>(typeName: string): Type<T>;
+export function createType<Value>(typeName: string): Type<Value>;
 
 /**
  * Creates a type token with a default {@link Provider} and optional default registration options.
@@ -89,7 +89,11 @@ export function createType<T>(typeName: string): Type<T>;
  * container.register(ISpell);
  * ```
  */
-export function createType<T>(typeName: string, provider: Provider<T>, options?: RegistrationOptions): ProviderType<T>;
+export function createType<Value>(
+  typeName: string,
+  provider: Provider<Value>,
+  options?: RegistrationOptions,
+): ProviderType<Value>;
 
 // @__NO_SIDE_EFFECTS__
 export function createType<T>(
