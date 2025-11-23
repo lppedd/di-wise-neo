@@ -1,5 +1,47 @@
 # Changelog
 
+## 0.17.0
+
+Overall, **di-wise-neo** has reached significant maturity by this point.  
+After 33 releases over the past 6 months, the library now feels ready for a round
+of final polishing before the `1.0.0` milestone.
+
+`0.17.0` is the first (and possibly the only) release in a short series of `0.x`
+releases dedicated to ensuring that no bugs are present and that all essential
+features are in place for `1.0.0`.
+
+### Changes
+
+- ❗ Removed the `Middleware` API.  
+  While it had its use cases, its design (carried over from **di-wise**) did not align
+  with the direction of **di-wise-neo**. Equivalent functionality may return in the
+  future through an extended `ContainerHook` support.
+- ❗ Modified the `ContainerHook.onDispose` callback so that it is invoked after the
+  container has been disposed, with a single array of all cached values, instead of
+  being called individually for each value.
+- Updated the `ContainerHook.onProvide` callback to also receive the scope of the
+  provided token value.
+- Added support for using a `@Type` decorator as shorthand for `@Inject(Type)`.  
+  Since `@Inject` is both frequently used and relatively verbose, this change improves
+  DevEx by reducing repetitive boilerplate code.
+
+  Before:
+  ```ts
+  class Extension {
+    constructor(@Inject(ILogOutputChannel) readonly log: vscode.LogOutputChannel) {}
+    /* ... */
+  }
+  ```
+
+  After:
+  ```ts
+  class Extension {
+    constructor(@ILogOutputChannel readonly log: vscode.LogOutputChannel) {}
+    /* ... */
+  }
+  ```
+- Refactored internals to ensure better type correctness and long-term maintainability.
+
 ## 0.16.0
 
 - Added support for container hooks, to be notified whenever the container provides
