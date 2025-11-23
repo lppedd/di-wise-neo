@@ -1,4 +1,4 @@
 // @internal
-export interface ValueRef<T = any> {
+export interface ValueRef<T> {
   readonly current: T;
 }

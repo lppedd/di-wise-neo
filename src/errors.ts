@@ -2,7 +2,7 @@ import type { Constructor, Token } from "./token";
 import type { MethodDependency } from "./tokenRegistry";
 
 // @internal
-export type TokenInfo = [Token?, string?];
+export type TokenInfo = [Token<any>?, string?];
 
 // @internal
 export function check(condition: unknown, message: string | (() => string)): asserts condition {
@@ -62,7 +62,7 @@ export function getTokenPath(tokens: TokenInfo[]): string {
 }
 
 // @internal
-export function getTokenName(token: Token): string {
+export function getTokenName(token: Token<any>): string {
   return token.name || "<unnamed>";
 }
 

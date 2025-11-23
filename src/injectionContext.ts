@@ -10,15 +10,15 @@ import type { ValueRef } from "./valueRef";
 // @internal
 export interface ResolutionFrame {
   readonly scope: Scope;
-  readonly provider: Provider;
+  readonly provider: Provider<any>;
 }
 
 // @internal
 export interface Resolution {
-  readonly tokens: Token[];
-  readonly stack: KeyedStack<Provider, ResolutionFrame>;
-  readonly values: WeakRefMap<Provider, ValueRef>;
-  readonly dependents: WeakRefMap<Provider, ValueRef>;
+  readonly tokens: Token<any>[];
+  readonly stack: KeyedStack<Provider<any>, ResolutionFrame>;
+  readonly values: WeakRefMap<Provider<any>, ValueRef<any>>;
+  readonly dependents: WeakRefMap<Provider<any>, ValueRef<any>>;
 }
 
 // @internal

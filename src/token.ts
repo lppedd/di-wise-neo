@@ -54,14 +54,14 @@ export interface Constructor<Instance extends object> {
 /**
  * Token type.
  */
-export type Token<Value = any> = [Value] extends [object] // Avoids distributive union behavior
+export type Token<Value> = [Value] extends [object] // Avoids distributive union behavior
   ? Type<Value> | Constructor<Value & object>
   : Type<Value>;
 
 /**
  * Describes a {@link Token} array with at least one element.
  */
-export type Tokens<Value = any> = [Token<Value>, ...Token<Value>[]];
+export type Tokens<Value> = [Token<Value>, ...Token<Value>[]];
 
 /**
  * Creates a type token.

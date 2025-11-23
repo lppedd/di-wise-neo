@@ -13,7 +13,7 @@ export interface ConstructorProvider<Instance extends object> {
 }
 
 // @internal
-export type RegistrationProvider<Value = any> =
+export type RegistrationProvider<Value> =
   | ConstructorProvider<Value & object>
   | FactoryProvider<Value>
   | ValueProvider<Value>
@@ -38,7 +38,7 @@ export interface MethodDependency {
   readonly index: number;
 
   appliedBy?: InjectDecorator;
-  tokenRef?: TokenRef;
+  tokenRef?: TokenRef<any>;
   name?: string;
 }
 
@@ -49,7 +49,7 @@ export interface Dependencies {
 }
 
 // @internal
-export interface Registration<T = any> {
+export interface Registration<T> {
   readonly name?: string;
   readonly provider: RegistrationProvider<T>;
   readonly options?: RegistrationOptions;
@@ -61,7 +61,7 @@ export interface Registration<T = any> {
 // @internal
 export class TokenRegistry {
   private readonly myParent?: TokenRegistry;
-  private readonly myRegistrations = new Map<Token, Registration[]>();
+  private readonly myRegistrations = new Map<Token<any>, Registration<any>[]>();
 
   constructor(parent?: TokenRegistry) {
     this.myParent = parent;
@@ -125,7 +125,7 @@ export class TokenRegistry {
     return registrations;
   }
 
-  deleteAll(): [Token[], Registration[]] {
+  deleteAll(): [Token<any>[], Registration<any>[]] {
     const tokens = Array.from(this.myRegistrations.keys());
     const registrations = Array.from(this.myRegistrations.values()).flat();
     this.myRegistrations.clear();
@@ -167,7 +167,7 @@ export class TokenRegistry {
 }
 
 // @internal
-export function isBuilder(provider: Provider): boolean {
+export function isBuilder(provider: Provider<any>): boolean {
   return builders.has(provider);
 }
 
@@ -211,5 +211,5 @@ export function build<Value>(factory: (...args: []) => Value, name?: string): Ty
   return token;
 }
 
-const internals = new WeakMap<Token, Registration>();
-const builders = new WeakSet<Provider>();
+const internals = new WeakMap<Token<any>, Registration<any>>();
+const builders = new WeakSet<Provider<any>>();

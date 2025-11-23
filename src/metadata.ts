@@ -11,7 +11,7 @@ export interface ScopeMetadata {
 }
 
 // @internal
-export class Metadata<This extends object = any> {
+export class Metadata<This extends object> {
   readonly provider: Writable<ConstructorProvider<This>>;
   readonly dependencies: Dependencies = {
     ctor: [],
@@ -125,4 +125,4 @@ export function setClassIdentityMapping<T extends object>(transformedClass: Cons
 }
 
 const classIdentityMap = new WeakMap<Constructor<object>, Constructor<object>>();
-const metadataMap = new WeakMap<Constructor<object>, Metadata>();
+const metadataMap = new WeakMap<Constructor<object>, Metadata<any>>();

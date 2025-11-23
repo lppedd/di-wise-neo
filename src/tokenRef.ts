@@ -5,11 +5,11 @@ export interface ClassRef<Instance extends object> {
   readonly getRefClass: () => Constructor<Instance>;
 }
 
-export interface TokensRef<Value = any> {
+export interface TokensRef<Value> {
   readonly getRefTokens: () => Set<Token<Value>>;
 }
 
-export interface TokenRef<Value = any> {
+export interface TokenRef<Value> {
   readonly getRefToken: () => Token<Value>;
 }
 

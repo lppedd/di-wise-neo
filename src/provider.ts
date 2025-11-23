@@ -131,7 +131,7 @@ export interface ExistingProvider<Value> {
 /**
  * A token provider.
  */
-export type Provider<Value = any> =
+export type Provider<Value> =
   | ClassProvider<Value & object>
   | FactoryProvider<Value>
   | ValueProvider<Value>
