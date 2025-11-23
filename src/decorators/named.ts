@@ -26,7 +26,7 @@ export function Named(name: string): ClassDecorator & ParameterDecorator {
   return function (target: object, propertyKey?: string | symbol, parameterIndex?: number): void {
     if (parameterIndex === undefined) {
       // The decorator has been applied to the class
-      const ctor = target as any as Constructor<any>;
+      const ctor = target as any as Constructor<object>;
       const metadata = getMetadata(ctor);
       const className = getTokenName(ctor);
       check(metadata.name === undefined, `multiple @Named decorators on class ${className}, but only one is allowed`);

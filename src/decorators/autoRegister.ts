@@ -18,7 +18,7 @@ import type { Constructor } from "../token";
  */
 export function AutoRegister(): ClassDecorator {
   return function (Class): void {
-    const metadata = getMetadata(Class as any as Constructor<any>);
+    const metadata = getMetadata(Class as any as Constructor<object>);
     metadata.autoRegister = true;
   };
 }

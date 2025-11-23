@@ -39,7 +39,7 @@ export function throwResolutionError(tokenInfo: TokenInfo, aliases: TokenInfo[],
 
 // @internal
 export function throwParameterResolutionError(
-  ctor: Constructor<any>,
+  ctor: Constructor<object>,
   methodKey: string | symbol | undefined,
   dependency: MethodDependency,
   cause: any,
@@ -51,7 +51,7 @@ export function throwParameterResolutionError(
 }
 
 // @internal
-export function getLocation(ctor: Constructor<any>, methodKey?: string | symbol): string {
+export function getLocation(ctor: Constructor<object>, methodKey?: string | symbol): string {
   const ctorName = ctor.name || "<unnamed>";
   return methodKey ? `${ctorName}.${String(methodKey)}` : ctorName;
 }

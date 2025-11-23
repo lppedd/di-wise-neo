@@ -18,12 +18,12 @@ export function updateParameterMetadata(
 
   if (methodKey === undefined) {
     // Constructor
-    const metadata = getMetadata(target as Constructor<any>);
+    const metadata = getMetadata(target as Constructor<object>);
     const dependency = metadata.getCtorDependency(parameterIndex);
     updateFn(dependency);
   } else {
     // Instance method
-    const metadata = getMetadata(target.constructor as Constructor<any>);
+    const metadata = getMetadata(target.constructor as Constructor<object>);
     const dependency = metadata.getMethodDependency(methodKey, parameterIndex);
     updateFn(dependency);
   }
@@ -69,8 +69,8 @@ export function checkNamedDecorator(
 // @internal
 export function describeParam(target: object, methodKey: string | symbol | undefined, parameterIndex: number): string {
   const location =
-    methodKey === undefined
-      ? (target as Constructor<any>).name
-      : `${(target.constructor as Constructor<any>).name}.${String(methodKey)}`;
+    methodKey === undefined //
+      ? (target as Constructor<object>).name
+      : `${target.constructor.name}.${String(methodKey)}`;
   return `${location}(parameter #${parameterIndex})`;
 }

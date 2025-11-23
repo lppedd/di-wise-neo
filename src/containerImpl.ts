@@ -544,7 +544,7 @@ export class ContainerImpl implements Container {
   }
 
   // Call context: decorator-based injection
-  private resolveArgs(deps: MethodDependency[], ctor: Constructor<any>, instance?: any, methodKey?: string | symbol): any[] {
+  private resolveArgs(deps: MethodDependency[], ctor: Constructor<object>, instance?: any, methodKey?: string | symbol): any[] {
     const sortedDeps = deps.sort((a, b) => a.index - b.index);
     const args: any[] = [];
 
