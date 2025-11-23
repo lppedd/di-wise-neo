@@ -5,7 +5,7 @@
     "strict": true,
 
     // Modules
-    "module": "ESNext",
+    "module": "ES2022",
     "moduleResolution": "Bundler",
 
     // Emit
