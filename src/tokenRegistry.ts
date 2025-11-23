@@ -80,8 +80,8 @@ export class TokenRegistry {
     return (internal && [internal]) || this.getAllFromParent(token, name);
   }
 
-  put<T extends object>(token: Type<T> | Constructor<T>, registration: Registration<T>): void;
   put<T>(token: Token<T>, registration: Registration<T>): void;
+  put<T extends object>(token: Type<T> | Constructor<T>, registration: Registration<T>): void;
   put<T>(token: Token<T>, registration: Registration<T>): void {
     check(!internals.has(token), `cannot register reserved token ${token.name}`);
     let registrations = this.myRegistrations.get(token);
