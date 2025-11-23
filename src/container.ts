@@ -36,22 +36,26 @@ export interface ChildContainerOptions extends ContainerOptions {
 }
 
 /**
- * A hook into the lifecycle of a container-managed value.
+ * A hook into the lifecycle of a {@link Container}.
  */
 export interface ContainerHook {
   /**
    * Called when the container provides a value for a {@link Token}.
-   * - For _container_ scoped tokens, it is called only once when the token is first resolved and cached.
-   * - For _resolution_ scoped tokens, it is called once per token resolution graph.
-   * - For _transient_ scoped tokens, it is called each time the token is resolved,
+   * - For **Container** scoped tokens, it is called only once when the token is first resolved and cached.
+   * - For **Resolution** scoped tokens, it is called once per token resolution graph.
+   * - For **Transient** scoped tokens, it is called each time the token is resolved,
    *   which might mean multiple times per resolution graph.
+   *
+   * @param value The provided value.
    */
-  readonly onProvide: (value: unknown) => void;
+  readonly onProvide?: (value: unknown) => void;
 
   /**
-   * Called when a _container_ scoped value is about to be disposed.
+   * Called after the container has been disposed.
+   *
+   * @param values The values that were cached by the container.
    */
-  readonly onDispose: (value: unknown) => void;
+  readonly onDispose?: (values: unknown[]) => void;
 }
 
 /**

@@ -207,28 +207,26 @@ export class ContainerImpl implements Container {
       child.dispose();
     }
 
-    this.myChildren.clear();
-
-    // Remove ourselves from our parent container
-    this.myParent?.myChildren?.delete(this);
     this.myDisposed = true;
+    this.myChildren.clear();
+    this.myParent?.myChildren?.delete(this);
 
     const [, registrations] = this.myTokenRegistry.deleteAll();
-    const disposedRefs = new Set<any>();
+    const values = new Set<unknown>();
 
-    // Dispose all resolved (aka instantiated) tokens that implement the Disposable interface
     for (const registration of registrations) {
-      const value = registration.value?.current;
+      // Only container-scoped registrations use 'registration.value'
+      if (registration.value) {
+        const value = registration.value.current;
 
-      if (isDisposable(value) && !disposedRefs.has(value)) {
-        this.notifyDisposeHooks(value);
-        disposedRefs.add(value);
-        value.dispose();
+        // Dispose all cached values that implement the Disposable interface
+        if (!values.has(value) && values.add(value) && isDisposable(value)) {
+          value.dispose();
+        }
       }
     }
 
-    // Allow values to be GCed
-    disposedRefs.clear();
+    this.notifyDisposeHooks(Array.from(values));
     this.myHooks.clear();
   }
 
@@ -582,13 +580,13 @@ export class ContainerImpl implements Container {
 
   private notifyProvideHooks(value: unknown): void {
     for (const hook of this.myHooks) {
-      hook.onProvide(value);
+      hook.onProvide?.(value);
     }
   }
 
-  private notifyDisposeHooks(value: unknown): void {
+  private notifyDisposeHooks(values: unknown[]): void {
     for (const hook of this.myHooks) {
-      hook.onDispose(value);
+      hook.onDispose?.(values);
     }
   }
 

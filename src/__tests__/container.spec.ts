@@ -1205,7 +1205,11 @@ describe("Container", () => {
   it("should notify container hooks with container-scoped tokens", () => {
     @Scoped(Scope.Container)
     class Wand {
-      dispose(): void {}
+      isDisposed?: boolean;
+
+      dispose(): void {
+        this.isDisposed = true;
+      }
     }
 
     const onProvide = vi.fn(() => {});
@@ -1242,8 +1246,9 @@ describe("Container", () => {
     // Add back the hook and verify onDispose is called when we dispose the container
     hookContainer.addHook(hook);
     hookContainer.dispose();
+    expect(wandInstance.isDisposed).toBeTruthy();
     expect(onProvide).not.toHaveBeenCalled();
-    expect(onDispose).toHaveBeenCalledExactlyOnceWith(wandInstance);
+    expect(onDispose).toHaveBeenCalledExactlyOnceWith([wandInstance]);
   });
 
   it("should notify container hooks with transient-scoped tokens", () => {
@@ -1278,7 +1283,7 @@ describe("Container", () => {
 
     hookContainer.dispose();
     expect(onProvide).not.toHaveBeenCalled();
-    expect(onDispose).not.toHaveBeenCalled();
+    expect(onDispose).toHaveBeenCalledExactlyOnceWith([]);
   });
 
   it("should dispose itself and its registrations", () => {
