@@ -21,7 +21,6 @@ import {
   optional,
   OptionalAll,
   optionalAll,
-  Scope,
   Scoped,
   tokenRef
 } from "..";
@@ -36,24 +35,24 @@ describe("Container", () => {
 
   it("should create container with default options", () => {
     expect(container.options.autoRegister).toBe(false);
-    expect(container.options.defaultScope).toBe(Scope.Transient);
+    expect(container.options.defaultScope).toBe("Transient");
   });
 
   it("should create child container with different options", () => {
     const child = container.createChild({
-      defaultScope: Scope.Container,
+      defaultScope: "Container",
       autoRegister: true,
     });
 
     expect(child.options.autoRegister).toBe(true);
-    expect(child.options.defaultScope).toBe(Scope.Container);
+    expect(child.options.defaultScope).toBe("Container");
 
     const childOfChild = child.createChild({
-      defaultScope: Scope.Resolution,
+      defaultScope: "Resolution",
     });
 
     expect(childOfChild.options.autoRegister).toBe(true);
-    expect(childOfChild.options.defaultScope).toBe(Scope.Resolution);
+    expect(childOfChild.options.defaultScope).toBe("Resolution");
 
     childOfChild.dispose();
     child.dispose();
@@ -61,7 +60,7 @@ describe("Container", () => {
 
   it("should handle hierarchical injection", () => {
     const parent = createContainer({
-      defaultScope: Scope.Container,
+      defaultScope: "Container",
     });
 
     const Env = createType<string>("Env");
@@ -88,7 +87,7 @@ describe("Container", () => {
   });
 
   it("should get the cached values but keep the registrations", () => {
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wizard {}
 
     // Purposedly register two Wizard(s)
@@ -130,10 +129,10 @@ describe("Container", () => {
     const Null = createType<null>("Null");
     const Undefined = createType<undefined>("Undefined");
 
-    container.register(Env, { useFactory: () => "" }, { scope: Scope.Container });
-    container.register(Port, { useFactory: () => 0 }, { scope: Scope.Container });
-    container.register(Null, { useFactory: () => null }, { scope: Scope.Container });
-    container.register(Undefined, { useFactory: () => undefined }, { scope: Scope.Container });
+    container.register(Env, { useFactory: () => "" }, { scope: "Container" });
+    container.register(Port, { useFactory: () => 0 }, { scope: "Container" });
+    container.register(Null, { useFactory: () => null }, { scope: "Container" });
+    container.register(Undefined, { useFactory: () => undefined }, { scope: "Container" });
 
     expect(container.resolve(Env)).toBe("");
     expect(container.resolve(Port)).toBe(0);
@@ -153,7 +152,7 @@ describe("Container", () => {
 
   it("should reset registry", () => {
     const container = createContainer({
-      defaultScope: Scope.Container,
+      defaultScope: "Container",
       autoRegister: true,
     });
 
@@ -172,7 +171,7 @@ describe("Container", () => {
     const Dumbledore = createType<{}>("Dumbledore");
 
     @Injectable(Character, Dumbledore)
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wizard {}
 
     container.register(Wizard);
@@ -242,7 +241,7 @@ describe("Container", () => {
   });
 
   it("should perform constructor injection using optional and optionalAll", () => {
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Castle {}
 
     @AutoRegister()
@@ -268,7 +267,7 @@ describe("Container", () => {
   it("should perform constructor injection with @Inject and @InjectAll", () => {
     const Spell = createType<string>("Spell");
 
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wizard {
       constructor(
         @Inject(Spell) readonly spell: string,
@@ -296,7 +295,7 @@ describe("Container", () => {
   it("should perform constructor injection with @Optional and @OptionalAll", () => {
     const Spell = createType<string>("Spell");
 
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wizard {
       constructor(
         @Optional(Spell) readonly spell: string | undefined,
@@ -320,7 +319,7 @@ describe("Container", () => {
   it("should perform method injection with @Inject and @InjectAll", () => {
     class Castle {}
 
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wizard {
       castle!: Castle;
       wand!: Wand;
@@ -366,7 +365,7 @@ describe("Container", () => {
   it("should perform method injection with @Optional and @OptionalAll", () => {
     class Castle {}
 
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wizard {
       castle?: Castle;
       wands?: Wand[];
@@ -604,30 +603,30 @@ describe("Container", () => {
   });
 
   it("should get the options from the class", () => {
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     @AutoRegister()
     class Wizard {}
 
     container.resolve(Wizard);
     const registration = container.registry.get(Wizard)!;
-    expect(registration.options?.scope).toBe(Scope.Container);
+    expect(registration.options?.scope).toBe("Container");
   });
 
   it("should override the options on re-register", () => {
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wizard {}
 
     container.register(Wizard, { useClass: Wizard });
-    container.register(Wizard, { useClass: Wizard }, { scope: Scope.Transient });
+    container.register(Wizard, { useClass: Wizard }, { scope: "Transient" });
 
     const registration = container.registry.get(Wizard)!;
-    expect(registration.options?.scope).toBe(Scope.Transient);
+    expect(registration.options?.scope).toBe("Transient");
   });
 
   it("should unregister tokens", () => {
     const Env = createType<string>("Env");
 
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Product {
       env = inject(Env);
     }
@@ -692,7 +691,7 @@ describe("Container", () => {
 
     @Named("Potter")
     @AutoRegister()
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wand {}
 
     expect(() => container.resolve(Wand, "Weasley")).toThrowErrorMatchingInlineSnapshot(
@@ -759,7 +758,7 @@ describe("Container", () => {
     let isInstantiated = false;
 
     @EagerInstantiate()
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wand {
       constructor() {
         isInstantiated = true;
@@ -777,47 +776,47 @@ describe("Container", () => {
 
   it("should throw when conflicting class scopes are set by decorators", () => {
     expect(() => {
-      @Scoped(Scope.Transient)
-      @Scoped(Scope.Container) // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      @Scoped("Transient")
+      @Scoped("Container") // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {}
     }).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] class Wizard: Scope.Container was already set by another @Scoped decorator,
-        but @Scoped is trying to set a conflicting Scope.Transient.
+      [Error: [di-wise-neo] class Wizard: scope Container was already set by another @Scoped decorator,
+        but @Scoped is trying to set a conflicting scope Transient.
         Only one decorator should set the class scope, or all must agree on the same value.]
       `,
     );
 
     expect(() => {
       @EagerInstantiate()
-      @Scoped(Scope.Transient) // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      @Scoped("Transient") // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {}
     }).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] class Wizard: Scope.Transient was already set by @Scoped,
-        but @EagerInstantiate is trying to set a conflicting Scope.Container.
+      [Error: [di-wise-neo] class Wizard: scope Transient was already set by @Scoped,
+        but @EagerInstantiate is trying to set a conflicting scope Container.
         Only one decorator should set the class scope, or all must agree on the same value.]
       `,
     );
 
     expect(() => {
-      @Scoped(Scope.Transient)
+      @Scoped("Transient")
       @EagerInstantiate() // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {}
     }).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] class Wizard: Scope.Container was already set by @EagerInstantiate,
-        but @Scoped is trying to set a conflicting Scope.Transient.
+      [Error: [di-wise-neo] class Wizard: scope Container was already set by @EagerInstantiate,
+        but @Scoped is trying to set a conflicting scope Transient.
         Only one decorator should set the class scope, or all must agree on the same value.]
       `,
     );
   });
 
   it("should not throw error if multiple decorators set the same scope", () => {
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     @EagerInstantiate()
-    @Scoped(Scope.Container)
-    @Scoped(Scope.Container) // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    @Scoped("Container")
+    @Scoped("Container") // eslint-disable-next-line @typescript-eslint/no-unused-vars
     class Wizard {}
   });
 
@@ -825,7 +824,7 @@ describe("Container", () => {
     const Castle = createType<string>("Castle");
 
     @EagerInstantiate()
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wizard {
       constructor(@Inject(Castle) @Named("Hogwarts") _castle: string) {}
     }
@@ -840,7 +839,7 @@ describe("Container", () => {
 
   it("should resolve auto-registered classes", () => {
     const container = createContainer({
-      defaultScope: Scope.Container,
+      defaultScope: "Container",
       autoRegister: true,
     });
 
@@ -850,13 +849,13 @@ describe("Container", () => {
   });
 
   it("should return empty array if resolution is optional", () => {
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Character {}
     expect(container.tryResolveAll(Character)).toEqual([]);
   });
 
   it("should resolve existing providers", () => {
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class WizardImpl {}
     const Wizard = createType<WizardImpl>("Wizard");
 
@@ -888,7 +887,7 @@ describe("Container", () => {
   });
 
   it("should resolve named class provider", () => {
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     @Named("Dumbledore")
     class Wizard {}
 
@@ -897,10 +896,10 @@ describe("Container", () => {
   });
 
   it("should inject named token", () => {
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wand {}
 
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wizard {
       superWand?: Wand;
 
@@ -995,7 +994,7 @@ describe("Container", () => {
   });
 
   it("should throw when the same name is registered", () => {
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     @Named("Dumbledore")
     class Wizard {}
 
@@ -1084,13 +1083,13 @@ describe("Container", () => {
     const IWizard = createType<Wizard>("Wizard");
 
     @Injectable(IWand)
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wand {
       dep = inject(IWizard);
     }
 
     @Injectable(IWizard)
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wizard {
       dep = inject(IWand);
     }
@@ -1182,7 +1181,7 @@ describe("Container", () => {
   });
 
   it("should resolve resolution scoped providers", () => {
-    @Scoped(Scope.Resolution)
+    @Scoped("Resolution")
     class Decoration {}
 
     class Wand {
@@ -1203,7 +1202,7 @@ describe("Container", () => {
   });
 
   it("should notify container hooks with container-scoped tokens", () => {
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wand {
       isDisposed?: boolean;
 
@@ -1227,7 +1226,7 @@ describe("Container", () => {
     // Verify onProvide is called when we resolve Wand, and onDispose is not called
     let wandInstance = hookContainer.resolve(Wand);
     expect(wandInstance).toBeInstanceOf(Wand);
-    expect(onProvide).toHaveBeenCalledExactlyOnceWith(wandInstance, Scope.Container);
+    expect(onProvide).toHaveBeenCalledExactlyOnceWith(wandInstance, "Container");
     expect(onDispose).not.toHaveBeenCalled();
 
     onProvide.mockClear();
@@ -1266,7 +1265,7 @@ describe("Container", () => {
 
     let env = hookContainer.resolve(Env);
     expect(env).toBe("Production");
-    expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production", Scope.Transient);
+    expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production", "Transient");
     expect(onDispose).not.toHaveBeenCalled();
 
     onProvide.mockClear();
@@ -1275,7 +1274,7 @@ describe("Container", () => {
     // Verify we get notified on every resolution
     env = hookContainer.resolve(Env);
     expect(env).toBe("Production");
-    expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production", Scope.Transient);
+    expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production", "Transient");
     expect(onDispose).not.toHaveBeenCalled();
 
     onProvide.mockClear();
@@ -1287,7 +1286,7 @@ describe("Container", () => {
   });
 
   it("should dispose itself and its registrations", () => {
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wand {
       calls = 0;
 
@@ -1296,7 +1295,7 @@ describe("Container", () => {
       }
     }
 
-    @Scoped(Scope.Container)
+    @Scoped("Container")
     class Wizard {
       calls = 0;
       wand = inject(Wand);
@@ -1308,7 +1307,7 @@ describe("Container", () => {
 
     const container = createContainer();
     const wizardToken = createType<Wizard>("SecondaryWizard");
-    container.register(wizardToken, { useFactory: () => inject(Wizard) }, { scope: Scope.Container });
+    container.register(wizardToken, { useFactory: () => inject(Wizard) }, { scope: "Container" });
     container.register(Wizard);
     container.register(Wand);
 

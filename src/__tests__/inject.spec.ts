@@ -16,7 +16,6 @@ import {
   Optional,
   optional,
   optionalBy,
-  Scope,
   Scoped
 } from "..";
 import { useInjectionContext } from "../injectionContext";
@@ -208,16 +207,16 @@ describe("inject", () => {
         autoRegister: true,
       });
 
-      @Scoped(Scope.Resolution)
+      @Scoped("Resolution")
       class Realm {}
 
-      @Scoped(Scope.Container)
+      @Scoped("Container")
       class Wand {
         realm = inject(Realm);
         owner = inject(Wizard);
       }
 
-      @Scoped(Scope.Container)
+      @Scoped("Container")
       class Wizard {
         realm = inject(Realm);
         injector = injectBy(this, Injector);
@@ -234,7 +233,7 @@ describe("inject", () => {
 
     it("should support runInContext", () => {
       @AutoRegister()
-      @Scoped(Scope.Container)
+      @Scoped("Container")
       class Wizard {}
 
       const injector = container.resolve(Injector);
@@ -252,7 +251,7 @@ describe("inject", () => {
         }
       }
 
-      @Scoped(Scope.Container)
+      @Scoped("Container")
       class Wand {
         wizard = inject(Wizard);
       }

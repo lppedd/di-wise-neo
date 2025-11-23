@@ -10,7 +10,7 @@ import type { Constructor } from "../token";
  *
  * @example
  * ```ts
- * @Scoped(Scope.Container)
+ * @Scoped("Container")
  * class Wizard {}
  *
  * container.register(Wizard);
@@ -19,7 +19,7 @@ import type { Constructor } from "../token";
  * container.register(
  *   Wizard,
  *   { useClass: Wizard },
- *   { scope: Scope.Container },
+ *   { scope: "Container" },
  * );
  * ```
  *
@@ -36,8 +36,8 @@ export function Scoped(scope: Scope): ClassDecorator {
       const by = appliedBy === "Scoped" ? `another @${appliedBy} decorator` : `@${appliedBy}`;
       const className = getTokenName(ctor);
       return (
-        `class ${className}: Scope.${value} was already set by ${by},\n  ` +
-        `but @Scoped is trying to set a conflicting Scope.${scope}.\n  ` +
+        `class ${className}: scope ${value} was already set by ${by},\n  ` +
+        `but @Scoped is trying to set a conflicting scope ${scope}.\n  ` +
         `Only one decorator should set the class scope, or all must agree on the same value.`
       );
     });

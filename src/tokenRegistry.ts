@@ -1,6 +1,6 @@
 import { check, getTokenName } from "./errors";
 import type { ExistingProvider, FactoryProvider, Provider, ValueProvider } from "./provider";
-import { Scope } from "./scope";
+import type { Scope } from "./scope";
 import { type Constructor, createType, type Token, type Type } from "./token";
 import type { TokenRef } from "./tokenRef";
 import { getTypeName } from "./utils/typeName";
@@ -203,7 +203,7 @@ export function build<Value>(factory: (...args: []) => Value, name?: string): Ty
   internals.set(token, {
     provider: provider,
     options: {
-      scope: Scope.Transient,
+      scope: "Transient",
     },
   });
 

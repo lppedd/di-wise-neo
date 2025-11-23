@@ -153,9 +153,9 @@ export class ContributionRegistrar {
 
 // Create a new DI container
 const container = createContainer({
-  // Optionally override the default "transient" registration scope.
-  // I prefer to use "container" (a.k.a. singleton) scope, but "transient" is the better default.
-  defaultScope: Scope.Container,
+  // Optionally override the default "Transient" registration scope.
+  // I prefer to use "Container" (a.k.a. Singleton) scope, but "Transient" is the better default.
+  defaultScope: "Container",
 });
 
 // Register our managed dependencies in the container
@@ -212,7 +212,7 @@ An explicit **scope** can be specified using the third argument, when applicable
 If omitted, the default scope is **Transient**.
 
 ```ts
-container.register(token, provider, { scope: Scope.Resolution });
+container.register(token, provider, { scope: "Resolution" });
 ```
 
 ### ClassProvider
@@ -456,13 +456,13 @@ These decorators attach metadata to the class type, which is then interpreted by
 Specifies a default scope for the decorated class:
 
 ```ts
-@Scoped(Scope.Container)
+@Scoped("Container")
 export class ExtensionContext {
   /* ... */
 }
 ```
 
-Applying `@Scoped(Scope.Container)` to the `ExtensionContext` class instructs the DI container
+Applying `@Scoped("Container")` to the `ExtensionContext` class instructs the DI container
 to register it with the **Container** scope by default.
 
 This default can be overridden by explicitly providing registration options:
@@ -471,7 +471,7 @@ This default can be overridden by explicitly providing registration options:
 container.register(
   ExtensionContext,
   { useClass: ExtensionContext },
-  { scope: Scope.Resolution },
+  { scope: "Resolution" },
 );
 ```
 
@@ -484,7 +484,7 @@ to distinguish between multiple implementations of the same type.
 
 ```ts
 @Named("persistent")
-@Scoped(Scope.Container)
+@Scoped("Container")
 export class PersistentSecretStorage implements SecretStorage {
   /* ... */
 }

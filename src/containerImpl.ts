@@ -25,7 +25,7 @@ import {
   isValueProvider,
   type Provider,
 } from "./provider";
-import { Scope } from "./scope";
+import type { Scope } from "./scope";
 import { type Constructor, isConstructor, type ProviderType, type Token } from "./token";
 import { isBuilder, type MethodDependency, type Registration, type RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 import { isDisposable } from "./utils/disposable";
@@ -45,7 +45,7 @@ export class ContainerImpl implements Container {
     this.myParent = parent;
     this.myHooks = hooks ?? new Set();
     this.myOptions = {
-      defaultScope: options?.defaultScope ?? Scope.Transient,
+      defaultScope: options?.defaultScope ?? "Transient",
       autoRegister: options?.autoRegister ?? false,
     };
 
@@ -260,7 +260,7 @@ export class ContainerImpl implements Container {
     // Eager-instantiate only if the class is container-scoped.
     // Note that we are comparing the scope using the registration configured just above,
     // which takes into account both the metadata and the container option as a fallback.
-    if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
+    if (metadata.eagerInstantiate && registration.options?.scope === "Container") {
       this.resolveProviderValue(Class, registration);
     }
   }
@@ -288,7 +288,7 @@ export class ContainerImpl implements Container {
       // Eager-instantiate only if the provided class is container-scoped.
       // Note that we are comparing the scope using the registration configured just above,
       // which takes into account both the metadata and the container option as a fallback.
-      if (metadata.eagerInstantiate && registration.options?.scope === Scope.Container) {
+      if (metadata.eagerInstantiate && registration.options?.scope === "Container") {
         this.resolveProviderValue(token, registration);
       }
     } else {
@@ -453,7 +453,7 @@ export class ContainerImpl implements Container {
 
     try {
       switch (scope) {
-        case Scope.Container: {
+        case "Container": {
           const valueRef = registration.value;
 
           if (valueRef) {
@@ -466,7 +466,7 @@ export class ContainerImpl implements Container {
           this.notifyProvideHooks(value, scope);
           return value;
         }
-        case Scope.Resolution: {
+        case "Resolution": {
           const valueRef = resolution.values.get(provider);
 
           if (valueRef) {
@@ -479,7 +479,7 @@ export class ContainerImpl implements Container {
           this.notifyProvideHooks(value, scope);
           return value;
         }
-        case Scope.Transient: {
+        case "Transient": {
           const args = this.resolveCtorDependencies(registration);
           const value = this.injectMethodDependencies(registration, factory(args));
           this.notifyProvideHooks(value, scope);

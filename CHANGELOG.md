@@ -179,7 +179,7 @@ Breaking changes may still occur, but only:
   as long as they were not in **Container** scope. For example:
 
   ```ts
-  @Scoped(Scope.Transient)
+  @Scoped("Transient")
   class UnregisteredClass {
     /* ... */ 
   }

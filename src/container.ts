@@ -11,7 +11,7 @@ export interface ContainerOptions {
   /**
    * The default scope for registrations.
    *
-   * @defaultValue Scope.Transient
+   * @defaultValue Transient
    */
   readonly defaultScope: Scope;
 
