@@ -1227,7 +1227,7 @@ describe("Container", () => {
     // Verify onProvide is called when we resolve Wand, and onDispose is not called
     let wandInstance = hookContainer.resolve(Wand);
     expect(wandInstance).toBeInstanceOf(Wand);
-    expect(onProvide).toHaveBeenCalledExactlyOnceWith(wandInstance);
+    expect(onProvide).toHaveBeenCalledExactlyOnceWith(wandInstance, Scope.Container);
     expect(onDispose).not.toHaveBeenCalled();
 
     onProvide.mockClear();
@@ -1266,7 +1266,7 @@ describe("Container", () => {
 
     let env = hookContainer.resolve(Env);
     expect(env).toBe("Production");
-    expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production");
+    expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production", Scope.Transient);
     expect(onDispose).not.toHaveBeenCalled();
 
     onProvide.mockClear();
@@ -1275,7 +1275,7 @@ describe("Container", () => {
     // Verify we get notified on every resolution
     env = hookContainer.resolve(Env);
     expect(env).toBe("Production");
-    expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production");
+    expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production", Scope.Transient);
     expect(onDispose).not.toHaveBeenCalled();
 
     onProvide.mockClear();

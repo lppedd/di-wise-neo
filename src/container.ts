@@ -48,7 +48,7 @@ export interface ContainerHook {
    *
    * @param value The provided value.
    */
-  readonly onProvide?: (value: unknown) => void;
+  readonly onProvide?: (value: unknown, scope: Scope) => void;
 
   /**
    * Called after the container has been disposed.

@@ -463,7 +463,7 @@ export class ContainerImpl implements Container {
           const args = this.resolveCtorDependencies(registration);
           const value = this.injectMethodDependencies(registration, factory(args));
           registration.value = { current: value };
-          this.notifyProvideHooks(value);
+          this.notifyProvideHooks(value, scope);
           return value;
         }
         case Scope.Resolution: {
@@ -476,13 +476,13 @@ export class ContainerImpl implements Container {
           const args = this.resolveCtorDependencies(registration);
           const value = this.injectMethodDependencies(registration, factory(args));
           resolution.values.set(provider, { current: value });
-          this.notifyProvideHooks(value);
+          this.notifyProvideHooks(value, scope);
           return value;
         }
         case Scope.Transient: {
           const args = this.resolveCtorDependencies(registration);
           const value = this.injectMethodDependencies(registration, factory(args));
-          this.notifyProvideHooks(value);
+          this.notifyProvideHooks(value, scope);
           return value;
         }
       }
@@ -578,9 +578,9 @@ export class ContainerImpl implements Container {
     }
   }
 
-  private notifyProvideHooks(value: unknown): void {
+  private notifyProvideHooks(value: unknown, scope: Scope): void {
     for (const hook of this.myHooks) {
-      hook.onProvide?.(value);
+      hook.onProvide?.(value, scope);
     }
   }
 
