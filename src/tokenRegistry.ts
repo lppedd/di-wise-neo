@@ -61,9 +61,9 @@ export interface Registration<T = any> {
 // @internal
 export class TokenRegistry {
   private readonly myParent?: TokenRegistry;
-  private readonly myMap = new Map<Token, Registration[]>();
+  private readonly myRegistrations = new Map<Token, Registration[]>();
 
-  constructor(parent: TokenRegistry | undefined) {
+  constructor(parent?: TokenRegistry) {
     this.myParent = parent;
   }
 
@@ -80,11 +80,11 @@ export class TokenRegistry {
     return (internal && [internal]) || this.getAllFromParent(token, name);
   }
 
-  set<T extends object>(token: Type<T> | Constructor<T>, registration: Registration<T>): void;
-  set<T>(token: Token<T>, registration: Registration<T>): void;
-  set<T>(token: Token<T>, registration: Registration<T>): void {
+  put<T extends object>(token: Type<T> | Constructor<T>, registration: Registration<T>): void;
+  put<T>(token: Token<T>, registration: Registration<T>): void;
+  put<T>(token: Token<T>, registration: Registration<T>): void {
     check(!internals.has(token), `cannot register reserved token ${token.name}`);
-    let registrations = this.myMap.get(token);
+    let registrations = this.myRegistrations.get(token);
 
     if (registrations) {
       const name = registration.name;
@@ -94,14 +94,14 @@ export class TokenRegistry {
         check(existing.length === 0, `token ${getTokenName(token)} with name '${name}' is already registered`);
       }
     } else {
-      this.myMap.set(token, (registrations = []));
+      this.myRegistrations.set(token, (registrations = []));
     }
 
     registrations.push(registration);
   }
 
   delete<T>(token: Token<T>, name?: string): Registration<T>[] {
-    const registrations = this.myMap.get(token);
+    const registrations = this.myRegistrations.get(token);
 
     if (!registrations) {
       return [];
@@ -116,26 +116,26 @@ export class TokenRegistry {
       }
 
       if (removed.length > 0) {
-        this.myMap.set(token, updated);
+        this.myRegistrations.set(token, updated);
         return removed;
       }
     }
 
-    this.myMap.delete(token);
+    this.myRegistrations.delete(token);
     return registrations;
   }
 
   deleteAll(): [Token[], Registration[]] {
-    const tokens = Array.from(this.myMap.keys());
-    const registrations = Array.from(this.myMap.values()).flat();
-    this.myMap.clear();
+    const tokens = Array.from(this.myRegistrations.keys());
+    const registrations = Array.from(this.myRegistrations.values()).flat();
+    this.myRegistrations.clear();
     return [tokens, registrations];
   }
 
-  clearRegistrations(): unknown[] {
+  clearCache(): unknown[] {
     const values = new Set<unknown>();
 
-    for (const registrations of this.myMap.values()) {
+    for (const registrations of this.myRegistrations.values()) {
       for (let i = 0; i < registrations.length; i++) {
         const registration = registrations[i]!;
         const value = registration.value;
@@ -155,7 +155,7 @@ export class TokenRegistry {
   }
 
   private getAllFromParent<T>(token: Token<T>, name?: string): Registration<T>[] {
-    let registrations = this.myMap.get(token) || this.myParent?.getAllFromParent(token, name);
+    let registrations = this.myRegistrations.get(token) || this.myParent?.getAllFromParent(token, name);
 
     if (registrations && name !== undefined) {
       registrations = registrations.filter((r) => r.name === name);

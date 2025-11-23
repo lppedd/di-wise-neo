@@ -85,7 +85,7 @@ export class ContainerImpl implements Container {
 
   clearCache(): unknown[] {
     this.checkDisposed();
-    return this.myTokenRegistry.clearRegistrations();
+    return this.myTokenRegistry.clearCache();
   }
 
   getCached<T>(token: Token<T>): T | undefined {
@@ -246,12 +246,12 @@ export class ContainerImpl implements Container {
     };
 
     // Register the class itself
-    this.myTokenRegistry.set(Class, registration);
+    this.myTokenRegistry.put(Class, registration);
 
     // Register the additional tokens specified via class decorators.
     // These tokens will point to the original Class token and will have the same scope.
     for (const token of metadata.tokensRef.getRefTokens()) {
-      this.myTokenRegistry.set(token, {
+      this.myTokenRegistry.put(token, {
         name: name,
         provider: {
           useExisting: [Class, name],
@@ -285,7 +285,7 @@ export class ContainerImpl implements Container {
         dependencies: metadata.dependencies,
       };
 
-      this.myTokenRegistry.set(token, registration);
+      this.myTokenRegistry.put(token, registration);
 
       // Eager-instantiate only if the provided class is container-scoped.
       // Note that we are comparing the scope using the registration configured just above,
@@ -299,7 +299,7 @@ export class ContainerImpl implements Container {
         check(token !== targetToken, `token ${getTokenName(token)} cannot alias itself via useExisting`);
       }
 
-      this.myTokenRegistry.set(token, {
+      this.myTokenRegistry.put(token, {
         name: name,
         provider: provider,
         options: options,
