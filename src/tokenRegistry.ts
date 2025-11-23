@@ -108,8 +108,8 @@ export class TokenRegistry {
     }
 
     if (name !== undefined) {
-      const removed: Registration[] = [];
-      const updated: Registration[] = [];
+      const removed: Registration<T>[] = [];
+      const updated: Registration<T>[] = [];
 
       for (const registration of registrations) {
         (registration.name === name ? removed : updated).push(registration);
