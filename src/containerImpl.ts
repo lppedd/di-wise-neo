@@ -16,8 +16,8 @@ import { injectAll } from "./injectAll";
 import { injectBy } from "./injectBy";
 import { createResolution, provideInjectionContext, useInjectionContext } from "./injectionContext";
 import { getMetadata } from "./metadata";
-import { optionalBy } from "./optional";
 import { optionalAll } from "./optionalAll";
+import { optionalBy } from "./optionalBy";
 import {
   type ExistingProvider,
   isClassProvider,
