@@ -47,6 +47,7 @@ export interface ContainerHook {
    *   which might mean multiple times per resolution graph.
    *
    * @param value The provided value.
+   * @param scope The {@link Scope} of the provided value.
    */
   readonly onProvide?: (value: unknown, scope: Scope) => void;
 
