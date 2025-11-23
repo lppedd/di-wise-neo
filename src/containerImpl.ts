@@ -232,7 +232,7 @@ export class ContainerImpl implements Container {
   private registerClass<T extends object>(Class: Constructor<T>): void {
     const metadata = getMetadata(Class);
     const name = metadata.name;
-    const registration: Registration = {
+    const registration: Registration<T> = {
       name: name,
       // The provider is of type ClassProvider, initialized by getMetadata
       provider: metadata.provider,
@@ -270,7 +270,7 @@ export class ContainerImpl implements Container {
 
     if (isClassProvider(provider)) {
       const metadata = getMetadata(provider.useClass);
-      const registration: Registration = {
+      const registration: Registration<T> = {
         // An explicit provider name overrides what is specified via @Named
         name: metadata.name ?? name,
         provider: metadata.provider,
@@ -400,6 +400,8 @@ export class ContainerImpl implements Container {
     return undefined;
   }
 
+  private resolveProviderValue<T>(token: Token<T>, registration: Registration<T>): T;
+  private resolveProviderValue<T extends object>(token: Constructor<T>, registration: Registration<T>): T;
   private resolveProviderValue<T>(token: Token<T>, registration: Registration<T>): T {
     const provider = registration.provider;
 
