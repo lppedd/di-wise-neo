@@ -12,8 +12,8 @@ import {
   type TokenInfo,
 } from "./errors";
 import { HookRegistry } from "./hookRegistry";
-import { injectBy } from "./inject";
 import { injectAll } from "./injectAll";
+import { injectBy } from "./injectBy";
 import { createResolution, provideInjectionContext, useInjectionContext } from "./injectionContext";
 import { getMetadata } from "./metadata";
 import { optionalBy } from "./optional";

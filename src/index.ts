@@ -11,8 +11,9 @@ export {
   OptionalAll,
   Scoped,
 } from "./decorators";
-export { inject, injectBy } from "./inject";
+export { inject } from "./inject";
 export { injectAll } from "./injectAll";
+export { injectBy } from "./injectBy";
 export { assertInjectionContext } from "./injectionContext";
 export { Injector } from "./injector";
 export { setClassIdentityMapping } from "./metadata";
