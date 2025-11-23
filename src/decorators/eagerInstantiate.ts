@@ -26,7 +26,6 @@ export function EagerInstantiate(): ClassDecorator {
     const ctor = Class as any as Constructor<object>;
     const metadata = getMetadata(ctor);
     const currentScope = metadata.scope;
-
     check(!currentScope || currentScope.value === "Container", () => {
       const { value, appliedBy } = currentScope!;
       const className = getTokenName(ctor);

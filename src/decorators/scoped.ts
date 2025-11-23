@@ -30,7 +30,6 @@ export function Scoped(scope: Scope): ClassDecorator {
     const ctor = Class as any as Constructor<object>;
     const metadata = getMetadata(ctor);
     const currentScope = metadata.scope;
-
     check(!currentScope || currentScope.value === scope, () => {
       const { value, appliedBy } = currentScope!;
       const by = appliedBy === "Scoped" ? `another @${appliedBy} decorator` : `@${appliedBy}`;
