@@ -1214,17 +1214,17 @@ describe("Container", () => {
     const onProvide = vi.fn(() => {});
     const onDispose = vi.fn(() => {});
 
-    const hookContainer = createContainer();
+    const container = createContainer();
     const hook: ContainerHook = {
       onProvide: onProvide,
       onDispose: onDispose,
     };
 
-    hookContainer.addHook(hook);
-    hookContainer.register(Wand);
+    container.addHook(hook);
+    container.register(Wand);
 
     // Verify onProvide is called when we resolve Wand, and onDispose is not called
-    let wandInstance = hookContainer.resolve(Wand);
+    let wandInstance = container.resolve(Wand);
     expect(wandInstance).toBeInstanceOf(Wand);
     expect(onProvide).toHaveBeenCalledExactlyOnceWith(wandInstance, "Container");
     expect(onDispose).not.toHaveBeenCalled();
@@ -1233,8 +1233,8 @@ describe("Container", () => {
     onDispose.mockClear();
 
     // Verify the hook is actually removed and not called anymore
-    hookContainer.removeHook(hook);
-    wandInstance = hookContainer.resolve(Wand);
+    container.removeHook(hook);
+    wandInstance = container.resolve(Wand);
     expect(wandInstance).toBeInstanceOf(Wand);
     expect(onProvide).not.toHaveBeenCalled();
     expect(onDispose).not.toHaveBeenCalled();
@@ -1243,8 +1243,8 @@ describe("Container", () => {
     onDispose.mockClear();
 
     // Add back the hook and verify onDispose is called when we dispose the container
-    hookContainer.addHook(hook);
-    hookContainer.dispose();
+    container.addHook(hook);
+    container.dispose();
     expect(wandInstance.isDisposed).toBeTruthy();
     expect(onProvide).not.toHaveBeenCalled();
     expect(onDispose).toHaveBeenCalledExactlyOnceWith([wandInstance]);
@@ -1254,17 +1254,16 @@ describe("Container", () => {
     const onProvide = vi.fn(() => {});
     const onDispose = vi.fn(() => {});
 
-    const hookContainer = createContainer();
-    hookContainer.addHook({
+    const container = createContainer();
+    container.addHook({
       onProvide: onProvide,
       onDispose: onDispose,
     });
 
     const Env = createType<string>("Env");
-    hookContainer.register(Env, { useFactory: () => "Production" });
+    container.register(Env, { useFactory: () => "Production" });
 
-    let env = hookContainer.resolve(Env);
-    expect(env).toBe("Production");
+    expect(container.resolve(Env)).toBe("Production");
     expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production", "Transient");
     expect(onDispose).not.toHaveBeenCalled();
 
@@ -1272,15 +1271,14 @@ describe("Container", () => {
     onDispose.mockClear();
 
     // Verify we get notified on every resolution
-    env = hookContainer.resolve(Env);
-    expect(env).toBe("Production");
+    expect(container.resolve(Env)).toBe("Production");
     expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production", "Transient");
     expect(onDispose).not.toHaveBeenCalled();
 
     onProvide.mockClear();
     onDispose.mockClear();
 
-    hookContainer.dispose();
+    container.dispose();
     expect(onProvide).not.toHaveBeenCalled();
     expect(onDispose).toHaveBeenCalledExactlyOnceWith([]);
   });
@@ -1289,29 +1287,31 @@ describe("Container", () => {
     const onProvide = vi.fn(() => {});
     const onDispose = vi.fn(() => {});
 
-    const hookContainer = createContainer();
-    hookContainer.addHook({
+    const container = createContainer();
+    container.addHook({
       onProvide: onProvide,
       onDispose: onDispose,
     });
 
     const Env = createType<string>("Env");
-    hookContainer.register(Env, { useFactory: () => "Production" });
+    container.register(Env, { useFactory: () => "Production" });
 
-    expect(hookContainer.resolve(Env)).toBe("Production");
+    expect(container.resolve(Env)).toBe("Production");
     expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production", "Transient");
+
     onProvide.mockClear();
 
-    const childHookContainer = hookContainer.createChild();
-    expect(childHookContainer.resolve(Env)).toBe("Production");
+    const childContainer = container.createChild();
+    expect(childContainer.resolve(Env)).toBe("Production");
     expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production", "Transient");
+
     onProvide.mockClear();
 
-    const childHookContainerNoHooks = hookContainer.createChild({ copyHooks: false });
-    expect(childHookContainerNoHooks.resolve(Env)).toBe("Production");
+    const childContainerNoHooks = container.createChild({ copyHooks: false });
+    expect(childContainerNoHooks.resolve(Env)).toBe("Production");
     expect(onProvide).not.toHaveBeenCalled();
 
-    hookContainer.dispose();
+    container.dispose();
     expect(onDispose).toHaveBeenCalledTimes(2);
   });
 
