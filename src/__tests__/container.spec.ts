@@ -1335,13 +1335,13 @@ describe("Container", () => {
       }
     }
 
-    const container = createContainer();
+    let container = createContainer();
     const wizardToken = createType<Wizard>("SecondaryWizard");
     container.register(wizardToken, { useFactory: () => inject(Wizard) }, { scope: "Container" });
     container.register(Wizard);
     container.register(Wand);
 
-    const value = new Wand();
+    let value = new Wand();
     const valueToken = createType<Wand>("ValueWand");
     container.register(valueToken, { useValue: value });
 
@@ -1363,9 +1363,16 @@ describe("Container", () => {
     expect(wizardInstance.calls).toBe(1);
     expect(wizardInstance.wand.calls).toBe(1);
 
-    // Values provided via ValueProvider are not disposed by the container
-    // and must manage their own lifecycle
+    // Values provided via ValueProvider are not disposed by the container by default.
+    // We must set ContainerOptions.disposeUnmanaged to true for this to take effect.
     expect(value.calls).toBe(0);
+
+    value = new Wand();
+    container = createContainer({ disposeUnmanaged: true });
+    container.register(valueToken, { useValue: value });
+    container.dispose();
+
+    expect(value.calls).toBe(1);
 
     // We can call dispose as many times as we want
     container.dispose();

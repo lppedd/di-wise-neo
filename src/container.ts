@@ -21,6 +21,14 @@ export interface ContainerOptions {
    * @defaultValue false
    */
   readonly autoRegister: boolean;
+
+  /**
+   * Whether to also dispose values provided via {@link ValueProvider}, which are not
+   * created or managed by the container, when the container itself is disposed.
+   *
+   * @defaultValue false
+   */
+  readonly disposeUnmanaged: boolean;
 }
 
 /**

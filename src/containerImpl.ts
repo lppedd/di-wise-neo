@@ -47,6 +47,7 @@ export class ContainerImpl implements Container {
     this.myOptions = {
       defaultScope: options?.defaultScope ?? "Transient",
       autoRegister: options?.autoRegister ?? false,
+      disposeUnmanaged: options?.disposeUnmanaged ?? false,
     };
 
     const copyHooks = options?.copyHooks ?? true;
@@ -77,6 +78,7 @@ export class ContainerImpl implements Container {
     const container = new ContainerImpl(this, {
       defaultScope: options?.defaultScope ?? this.myOptions.defaultScope,
       autoRegister: options?.autoRegister ?? this.myOptions.autoRegister,
+      disposeUnmanaged: options?.disposeUnmanaged ?? this.myOptions.disposeUnmanaged,
       copyHooks: options?.copyHooks,
     });
 
@@ -207,21 +209,26 @@ export class ContainerImpl implements Container {
     this.myParent?.myChildren?.delete(this);
 
     const [, registrations] = this.myTokenRegistry.deleteAll();
-    const values = new Set<unknown>();
+    const disposeUnmanaged = this.myOptions.disposeUnmanaged;
+    const cacheValues = new Set<unknown>();
+    const allValues = new Set<unknown>();
 
-    for (const { value: valueRef } of registrations) {
-      // Only container-scoped registrations use 'registration.value'
-      if (valueRef) {
-        const value = valueRef.current;
-
-        // Dispose all cached values that implement the Disposable interface
-        if (!values.has(value) && values.add(value) && isDisposable(value)) {
-          value.dispose();
-        }
+    for (const { provider, value } of registrations) {
+      if (value) {
+        cacheValues.add(value.current);
+        allValues.add(value.current);
+      } else if (disposeUnmanaged && isValueProvider(provider)) {
+        allValues.add(provider.useValue);
       }
     }
 
-    this.notifyDisposeHooks(Array.from(values));
+    for (const value of allValues) {
+      if (isDisposable(value)) {
+        value.dispose();
+      }
+    }
+
+    this.notifyDisposeHooks(Array.from(cacheValues));
     this.myHookRegistry.clear();
   }
 
