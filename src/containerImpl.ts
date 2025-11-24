@@ -94,7 +94,7 @@ export class ContainerImpl implements Container {
   getCached<T>(token: Token<T>): T | undefined {
     this.checkDisposed();
     const registration = this.myTokenRegistry.get(token);
-    return registration?.value?.current;
+    return registration?.valueRef?.current;
   }
 
   getAllCached<T>(token: Token<T>): T[] {
@@ -102,9 +102,9 @@ export class ContainerImpl implements Container {
     const registrations = this.myTokenRegistry.getAll(token);
     const values = new Set<T>();
 
-    for (const { value } of registrations) {
-      if (value) {
-        values.add(value.current);
+    for (const { valueRef } of registrations) {
+      if (valueRef) {
+        values.add(valueRef.current);
       }
     }
 
@@ -116,9 +116,9 @@ export class ContainerImpl implements Container {
     const [, registrations] = this.myTokenRegistry.deleteAll();
     const values = new Set<unknown>();
 
-    for (const { value } of registrations) {
-      if (value) {
-        values.add(value.current);
+    for (const { valueRef } of registrations) {
+      if (valueRef) {
+        values.add(valueRef.current);
       }
     }
 
@@ -157,9 +157,9 @@ export class ContainerImpl implements Container {
     const registrations = this.myTokenRegistry.delete(token, name);
     const values = new Set<T>();
 
-    for (const { value } of registrations) {
-      if (value) {
-        values.add(value.current);
+    for (const { valueRef } of registrations) {
+      if (valueRef) {
+        values.add(valueRef.current);
       }
     }
 
@@ -213,10 +213,10 @@ export class ContainerImpl implements Container {
     const cacheValues = new Set<unknown>();
     const allValues = new Set<unknown>();
 
-    for (const { provider, value } of registrations) {
-      if (value) {
-        cacheValues.add(value.current);
-        allValues.add(value.current);
+    for (const { provider, valueRef } of registrations) {
+      if (valueRef) {
+        cacheValues.add(valueRef.current);
+        allValues.add(valueRef.current);
       } else if (disposeUnmanaged && isValueProvider(provider)) {
         allValues.add(provider.useValue);
       }
@@ -458,7 +458,7 @@ export class ContainerImpl implements Container {
     try {
       switch (scope) {
         case "Container": {
-          const valueRef = registration.value;
+          const valueRef = registration.valueRef;
 
           if (valueRef) {
             return valueRef.current;
@@ -466,7 +466,7 @@ export class ContainerImpl implements Container {
 
           const args = this.resolveCtorDependencies(registration);
           const value = this.injectMethodDependencies(registration, factory(args));
-          registration.value = { current: value };
+          registration.valueRef = { current: value };
           this.notifyProvideHooks(value, scope);
           return value;
         }

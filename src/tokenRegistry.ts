@@ -55,7 +55,7 @@ export interface Registration<T> {
   readonly options?: RegistrationOptions;
   readonly dependencies?: Dependencies;
 
-  value?: ValueRef<T>;
+  valueRef?: ValueRef<T>;
 }
 
 // @internal
@@ -138,15 +138,15 @@ export class TokenRegistry {
     for (const registrations of this.myRegistrations.values()) {
       for (let i = 0; i < registrations.length; i++) {
         const registration = registrations[i]!;
-        const value = registration.value;
+        const valueRef = registration.valueRef;
 
-        if (value) {
-          values.add(value.current);
+        if (valueRef) {
+          values.add(valueRef.current);
         }
 
         registrations[i] = {
           ...registration,
-          value: undefined,
+          valueRef: undefined,
         };
       }
     }
