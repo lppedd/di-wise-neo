@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.18.0
+
+- Fixed the handling of `ChildContainerOptions.copyHooks`.  
+  The option is now applied correctly when creating child containers.
+- Added optional disposal of values provided via `ValueProvider`.  
+  The lifecycle of these values is normally managed outside the scope of the container,
+  but you can now delegate their disposal to the container, when it is disposed itself.
+  Enable this behavior with `ContainerOptions.disposeUnmanaged`:
+
+  ```ts
+  const container = createContainer({
+    disposeUnmanaged: true,
+  });
+  ```
+
 ## 0.17.0
 
 Overall, **di-wise-neo** has reached significant maturity by this point.  
