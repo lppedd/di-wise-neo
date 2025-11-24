@@ -136,18 +136,14 @@ export class TokenRegistry {
     const values = new Set<unknown>();
 
     for (const registrations of this.myRegistrations.values()) {
-      for (let i = 0; i < registrations.length; i++) {
-        const registration = registrations[i]!;
+      for (const registration of registrations) {
         const valueRef = registration.valueRef;
 
         if (valueRef) {
           values.add(valueRef.current);
         }
 
-        registrations[i] = {
-          ...registration,
-          valueRef: undefined,
-        };
+        registration.valueRef = undefined;
       }
     }
 
