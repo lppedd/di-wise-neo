@@ -1285,6 +1285,36 @@ describe("Container", () => {
     expect(onDispose).toHaveBeenCalledExactlyOnceWith([]);
   });
 
+  it("should copy container hooks from parent container", () => {
+    const onProvide = vi.fn(() => {});
+    const onDispose = vi.fn(() => {});
+
+    const hookContainer = createContainer();
+    hookContainer.addHook({
+      onProvide: onProvide,
+      onDispose: onDispose,
+    });
+
+    const Env = createType<string>("Env");
+    hookContainer.register(Env, { useFactory: () => "Production" });
+
+    expect(hookContainer.resolve(Env)).toBe("Production");
+    expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production", "Transient");
+    onProvide.mockClear();
+
+    const childHookContainer = hookContainer.createChild();
+    expect(childHookContainer.resolve(Env)).toBe("Production");
+    expect(onProvide).toHaveBeenCalledExactlyOnceWith("Production", "Transient");
+    onProvide.mockClear();
+
+    const childHookContainerNoHooks = hookContainer.createChild({ copyHooks: false });
+    expect(childHookContainerNoHooks.resolve(Env)).toBe("Production");
+    expect(onProvide).not.toHaveBeenCalled();
+
+    hookContainer.dispose();
+    expect(onDispose).toHaveBeenCalledTimes(2);
+  });
+
   it("should dispose itself and its registrations", () => {
     @Scoped("Container")
     class Wand {
