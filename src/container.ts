@@ -41,9 +41,9 @@ export interface ChildContainerOptions extends ContainerOptions {
 export interface ContainerHook {
   /**
    * Called when the container provides a value for a {@link Token}.
-   * - For **Container** scoped tokens, it is called only once when the token is first resolved and cached.
-   * - For **Resolution** scoped tokens, it is called once per token resolution graph.
-   * - For **Transient** scoped tokens, it is called each time the token is resolved,
+   * - For **Container**-scoped tokens, it is called only once when the token is first resolved and cached.
+   * - For **Resolution**-scoped tokens, it is called once per token resolution graph.
+   * - For **Transient**-scoped tokens, it is called each time the token is resolved,
    *   which might mean multiple times per resolution graph.
    *
    * @param value The provided value.
