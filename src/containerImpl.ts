@@ -42,14 +42,15 @@ export class ContainerImpl implements Container {
   private readonly myTokenRegistry: TokenRegistry;
   private myDisposed: boolean = false;
 
-  constructor(parent: ContainerImpl | undefined, options?: Partial<ContainerOptions>) {
+  constructor(parent?: ContainerImpl, options?: Partial<ChildContainerOptions>) {
     this.myParent = parent;
     this.myOptions = {
       defaultScope: options?.defaultScope ?? "Transient",
       autoRegister: options?.autoRegister ?? false,
     };
 
-    this.myHookRegistry = new HookRegistry(parent?.myHookRegistry);
+    const copyHooks = options?.copyHooks ?? true;
+    this.myHookRegistry = new HookRegistry(copyHooks ? parent?.myHookRegistry : undefined);
     this.myTokenRegistry = new TokenRegistry(parent?.myTokenRegistry);
   }
 
@@ -76,6 +77,7 @@ export class ContainerImpl implements Container {
     const container = new ContainerImpl(this, {
       defaultScope: options?.defaultScope ?? this.myOptions.defaultScope,
       autoRegister: options?.autoRegister ?? this.myOptions.autoRegister,
+      copyHooks: options?.copyHooks,
     });
 
     this.myChildren.add(container);
