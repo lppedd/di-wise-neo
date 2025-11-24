@@ -62,7 +62,7 @@ export interface ContainerHook {
   /**
    * Called after the container has been disposed.
    *
-   * @param values All values that were cached by the container.
+   * @param values All distinct values that were cached by the disposed container.
    *   Currently, only **Container**-scoped token values are cached.
    */
   readonly onDispose?: (values: unknown[]) => void;
@@ -100,10 +100,10 @@ export interface Container {
   createChild(options?: Partial<ChildContainerOptions>): Container;
 
   /**
-   * Clears and returns all distinct cached values from this container's internal registry.
+   * Clears and returns all distinct values that were cached by this container.
    * Values from {@link ValueProvider} registrations are not included, as they are never cached.
    *
-   * Note that only this container is affected. Parent containers, if any, remain unchanged.
+   * Note that only this container is affected. Parent or child containers, if any, remain unchanged.
    */
   clearCache(): unknown[];
 
@@ -136,10 +136,11 @@ export interface Container {
   /**
    * Removes all registrations from this container's internal registry.
    *
-   * Returns an array of distinct cached values that were stored within the removed registrations.
-   * Values from {@link ValueProvider} registrations are not included, as they are not cached.
+   * Returns an array of the distinct values that were cached by this container for the
+   * removed registrations. Values from {@link ValueProvider} registrations are not included,
+   * as they are not cached.
    *
-   * Note that only this container is affected. Parent containers, if any, remain unchanged.
+   * Note that only this container is affected. Parent or child containers, if any, remain unchanged.
    */
   resetRegistry(): unknown[];
 
@@ -204,10 +205,11 @@ export interface Container {
   /**
    * Removes all registrations for the given token from the container's internal registry.
    *
-   * Returns an array of distinct cached values that were stored within the removed registrations.
-   * Values from {@link ValueProvider} registrations are not included, as they are not cached.
+   * Returns an array of the distinct values that were cached by this container for the
+   * removed registrations. Values from {@link ValueProvider} registrations are not included,
+   * as they are not cached.
    *
-   * Note that only this container is affected. Parent containers, if any, remain unchanged.
+   * Note that only this container is affected. Parent or child containers, if any, remain unchanged.
    */
   unregister<Value>(token: Token<Value>, name?: string): Value[];
 
