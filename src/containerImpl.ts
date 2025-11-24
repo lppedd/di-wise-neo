@@ -100,9 +100,7 @@ export class ContainerImpl implements Container {
     const registrations = this.myTokenRegistry.getAll(token);
     const values = new Set<T>();
 
-    for (const registration of registrations) {
-      const value = registration.value;
-
+    for (const { value } of registrations) {
       if (value) {
         values.add(value.current);
       }
@@ -116,9 +114,7 @@ export class ContainerImpl implements Container {
     const [, registrations] = this.myTokenRegistry.deleteAll();
     const values = new Set<unknown>();
 
-    for (const registration of registrations) {
-      const value = registration.value;
-
+    for (const { value } of registrations) {
       if (value) {
         values.add(value.current);
       }
@@ -159,9 +155,7 @@ export class ContainerImpl implements Container {
     const registrations = this.myTokenRegistry.delete(token, name);
     const values = new Set<T>();
 
-    for (const registration of registrations) {
-      const value = registration.value;
-
+    for (const { value } of registrations) {
       if (value) {
         values.add(value.current);
       }
@@ -215,10 +209,10 @@ export class ContainerImpl implements Container {
     const [, registrations] = this.myTokenRegistry.deleteAll();
     const values = new Set<unknown>();
 
-    for (const registration of registrations) {
+    for (const { value: valueRef } of registrations) {
       // Only container-scoped registrations use 'registration.value'
-      if (registration.value) {
-        const value = registration.value.current;
+      if (valueRef) {
+        const value = valueRef.current;
 
         // Dispose all cached values that implement the Disposable interface
         if (!values.has(value) && values.add(value) && isDisposable(value)) {
