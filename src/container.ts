@@ -54,7 +54,8 @@ export interface ContainerHook {
   /**
    * Called after the container has been disposed.
    *
-   * @param values The values that were cached by the container.
+   * @param values All values that were cached by the container.
+   *   Currently, only **Container**-scoped token values are cached.
    */
   readonly onDispose?: (values: unknown[]) => void;
 }
