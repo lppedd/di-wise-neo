@@ -51,7 +51,7 @@ export function ensureInjectionContext(name: string): InjectionContext {
  * Asserts that the current stack frame is within an injection context,
  * meaning it has access to injection functions (`inject`, `optional`, etc.).
  *
- * @param fn The function performing the assertion, or a string name used in the error message.
+ * @param fn - The function performing the assertion, or a string name used in the error message.
  * @throws {Error} If the current stack frame is not within an injection context.
  */
 export function assertInjectionContext(fn: Function | string): void {

@@ -54,15 +54,15 @@ export interface ContainerHook {
    * - For **Transient**-scoped tokens, it is called each time the token is resolved,
    *   which might mean multiple times per resolution graph.
    *
-   * @param value The provided value.
-   * @param scope The {@link Scope} of the provided value.
+   * @param value - The provided value.
+   * @param scope - The {@link Scope} of the provided value.
    */
   readonly onProvide?: (value: unknown, scope: Scope) => void;
 
   /**
    * Called after the container has been disposed.
    *
-   * @param values All distinct values that were cached by the disposed container.
+   * @param values - All distinct values that were cached by the disposed container.
    *   Currently, only **Container**-scoped token values are cached.
    */
   readonly onDispose?: (values: unknown[]) => void;
