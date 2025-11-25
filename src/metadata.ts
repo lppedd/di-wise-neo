@@ -1,6 +1,6 @@
 import type { Scope } from "./scope";
 import type { Constructor } from "./token";
-import { type ClassRef, isClassRef, type TokensRef } from "./tokenRef";
+import { type ClassRef, isClassRef, type TokenRef } from "./tokenRef";
 import type { ConstructorProvider, Dependencies, MethodDependency } from "./tokenRegistry";
 import type { Writable } from "./utils/writable";
 
@@ -21,7 +21,7 @@ export class Metadata<This extends object> {
   eagerInstantiate?: boolean;
   autoRegister?: boolean;
   scope?: ScopeMetadata;
-  tokensRef: TokensRef<This> = {
+  tokenRef: TokenRef<This> = {
     getRefTokens: () => new Set(),
   };
 

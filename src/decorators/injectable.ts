@@ -1,6 +1,6 @@
 import { getMetadata } from "../metadata";
 import type { Token, Tokens } from "../token";
-import { isTokensRef, type TokenRef, tokenRef, type TokensRef } from "../tokenRef";
+import { isTokenRef, type TokenRef, tokenRef } from "../tokenRef";
 import type { ClassDecorator } from "./decorators";
 
 /**
@@ -72,24 +72,20 @@ export function Injectable<This extends object>(...tokens: Tokens<unknown>): Cla
  * class Weapon {}
  * ```
  */
-export function Injectable<Value, This extends Value & object>(
-  tokens: TokenRef<Value> | TokensRef<Value>, //
-): ClassDecorator<This>;
+export function Injectable<Value, This extends Value & object>(tokens: TokenRef<Value>): ClassDecorator<This>;
 
 // @__NO_SIDE_EFFECTS__
-export function Injectable<This extends object>(
-  ...args: [...Tokens<This>] | [TokenRef<This> | TokensRef<This>]
-): ClassDecorator<This> {
+export function Injectable<This extends object>(...args: [...Tokens<This>] | [TokenRef<This>]): ClassDecorator<This> {
   return function (Class): void {
     const metadata = getMetadata(Class);
     const arg0 = args[0];
-    const tokensRef = isTokensRef(arg0) ? arg0 : tokenRef(() => args as Tokens<This>);
-    const existingTokensRef = metadata.tokensRef;
-    metadata.tokensRef = {
+    const ref = isTokenRef(arg0) ? arg0 : tokenRef(() => args as Tokens<This>);
+    const existingTokensRef = metadata.tokenRef;
+    metadata.tokenRef = {
       getRefTokens: () => {
         const existingTokens = existingTokensRef.getRefTokens();
 
-        for (const token of tokensRef.getRefTokens()) {
+        for (const token of ref.getRefTokens()) {
           existingTokens.add(token);
         }
 

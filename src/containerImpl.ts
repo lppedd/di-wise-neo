@@ -250,7 +250,7 @@ export class ContainerImpl implements Container {
 
     // Register the additional tokens specified via class decorators.
     // These tokens will point to the original Class token and will have the same scope.
-    for (const token of metadata.tokensRef.getRefTokens()) {
+    for (const token of metadata.tokenRef.getRefTokens()) {
       this.myTokenRegistry.put(token, {
         name: name,
         provider: {
@@ -566,7 +566,7 @@ export class ContainerImpl implements Container {
 
   // Call context: decorator-based injection
   private resolveDependency(dependency: MethodDependency, instance?: any): any {
-    const token = dependency.tokenRef?.getRefToken();
+    const [token] = dependency.tokenRef!.getRefTokens();
     check(token, `token passed to @${dependency.appliedBy} was undefined (possible circular imports)`);
 
     const name = dependency.name;
