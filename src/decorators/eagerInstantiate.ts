@@ -1,6 +1,6 @@
 import { check, getTokenName } from "../errors";
 import { getMetadata } from "../metadata";
-import type { Constructor } from "../token";
+import type { ClassDecorator } from "./decorators";
 
 /**
  * Class decorator that sets the class scope to **Container** and enables
@@ -21,14 +21,13 @@ import type { Constructor } from "../token";
  *
  * @__NO_SIDE_EFFECTS__
  */
-export function EagerInstantiate(): ClassDecorator {
+export function EagerInstantiate<This extends object>(): ClassDecorator<This> {
   return function (Class): void {
-    const ctor = Class as any as Constructor<object>;
-    const metadata = getMetadata(ctor);
+    const metadata = getMetadata(Class);
     const currentScope = metadata.scope;
     check(!currentScope || currentScope.value === "Container", () => {
       const { value, appliedBy } = currentScope!;
-      const className = getTokenName(ctor);
+      const className = getTokenName(Class);
       return (
         `class ${className}: scope ${value} was already set by @${appliedBy},\n  ` +
         `but @EagerInstantiate is trying to set a conflicting scope Container.\n  ` +

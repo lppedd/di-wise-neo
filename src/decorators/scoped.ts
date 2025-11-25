@@ -1,7 +1,7 @@
 import { check, getTokenName } from "../errors";
 import { getMetadata } from "../metadata";
 import type { Scope } from "../scope";
-import type { Constructor } from "../token";
+import type { ClassDecorator } from "./decorators";
 
 /**
  * Class decorator for setting the scope of the decorated type when registering it.
@@ -25,15 +25,14 @@ import type { Constructor } from "../token";
  *
  * @__NO_SIDE_EFFECTS__
  */
-export function Scoped(scope: Scope): ClassDecorator {
+export function Scoped<This extends object>(scope: Scope): ClassDecorator<This> {
   return function (Class): void {
-    const ctor = Class as any as Constructor<object>;
-    const metadata = getMetadata(ctor);
+    const metadata = getMetadata(Class);
     const currentScope = metadata.scope;
     check(!currentScope || currentScope.value === scope, () => {
       const { value, appliedBy } = currentScope!;
       const by = appliedBy === "Scoped" ? `another @${appliedBy} decorator` : `@${appliedBy}`;
-      const className = getTokenName(ctor);
+      const className = getTokenName(Class);
       return (
         `class ${className}: scope ${value} was already set by ${by},\n  ` +
         `but @Scoped is trying to set a conflicting scope ${scope}.\n  ` +

@@ -1,5 +1,5 @@
 import { getMetadata } from "../metadata";
-import type { Constructor } from "../token";
+import type { ClassDecorator } from "./decorators";
 
 /**
  * Class decorator that enables auto-registration of an unregistered class
@@ -16,9 +16,9 @@ import type { Constructor } from "../token";
  *
  * @__NO_SIDE_EFFECTS__
  */
-export function AutoRegister(): ClassDecorator {
+export function AutoRegister<This extends object>(): ClassDecorator<This> {
   return function (Class): void {
-    const metadata = getMetadata(Class as any as Constructor<object>);
+    const metadata = getMetadata(Class);
     metadata.autoRegister = true;
   };
 }

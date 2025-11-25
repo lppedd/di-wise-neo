@@ -1,6 +1,7 @@
 import { getMetadata } from "../metadata";
-import type { Constructor, Tokens } from "../token";
+import type { Token, Tokens } from "../token";
 import { isTokensRef, type TokenRef, tokenRef, type TokensRef } from "../tokenRef";
+import type { ClassDecorator } from "./decorators";
 
 /**
  * Class decorator that registers additional aliasing tokens for the decorated type
@@ -14,7 +15,45 @@ import { isTokensRef, type TokenRef, tokenRef, type TokensRef } from "../tokenRe
  * class Wand {}
  * ```
  */
-export function Injectable<This extends object, Value extends This>(...tokens: Tokens<Value>): ClassDecorator;
+export function Injectable<Value, This extends Value & object>(
+  token: Token<Value>, //
+): ClassDecorator<This>;
+export function Injectable<VA, VB, This extends VA & VB & object>(
+  tokenA: Token<VA>, //
+  tokenB: Token<VB>,
+): ClassDecorator<This>;
+export function Injectable<VA, VB, VC, This extends VA & VB & VC & object>(
+  tokenA: Token<VA>,
+  tokenB: Token<VB>,
+  tokenC: Token<VC>,
+): ClassDecorator<This>;
+export function Injectable<VA, VB, VC, VD, This extends VA & VB & VC & VD & object>(
+  tokenA: Token<VA>,
+  tokenB: Token<VB>,
+  tokenC: Token<VC>,
+  tokenD: Token<VD>,
+): ClassDecorator<This>;
+export function Injectable<VA, VB, VC, VD, VE, This extends VA & VB & VC & VD & VE & object>(
+  tokenA: Token<VA>,
+  tokenB: Token<VB>,
+  tokenC: Token<VC>,
+  tokenD: Token<VD>,
+  tokenE: Token<VE>,
+): ClassDecorator<This>;
+export function Injectable<VA, VB, VC, VD, VE, VF, This extends VA & VB & VC & VD & VE & VF & object>(
+  tokenA: Token<VA>,
+  tokenB: Token<VB>,
+  tokenC: Token<VC>,
+  tokenD: Token<VD>,
+  tokenE: Token<VE>,
+  tokenF: Token<VF>,
+): ClassDecorator<This>;
+
+//
+// Use 'unknown' to allow inputting more tokens at the expense of type correctness.
+//
+
+export function Injectable<This extends object>(...tokens: Tokens<unknown>): ClassDecorator<This>;
 
 /**
  * Class decorator that registers additional aliasing tokens for the decorated type
@@ -33,16 +72,18 @@ export function Injectable<This extends object, Value extends This>(...tokens: T
  * class Weapon {}
  * ```
  */
-export function Injectable<This extends object, Value extends This>(tokens: TokenRef<Value> | TokensRef<Value>): ClassDecorator;
+export function Injectable<Value, This extends Value & object>(
+  tokens: TokenRef<Value> | TokensRef<Value>, //
+): ClassDecorator<This>;
 
 // @__NO_SIDE_EFFECTS__
-export function Injectable<This extends object, Value extends This>(
-  ...args: [...Tokens<Value>] | [TokenRef<Value> | TokensRef<Value>]
-): ClassDecorator {
+export function Injectable<This extends object>(
+  ...args: [...Tokens<This>] | [TokenRef<This> | TokensRef<This>]
+): ClassDecorator<This> {
   return function (Class): void {
-    const metadata = getMetadata(Class as any as Constructor<This>);
+    const metadata = getMetadata(Class);
     const arg0 = args[0];
-    const tokensRef = isTokensRef(arg0) ? arg0 : tokenRef(() => args as Tokens<Value>);
+    const tokensRef = isTokensRef(arg0) ? arg0 : tokenRef(() => args as Tokens<This>);
     const existingTokensRef = metadata.tokensRef;
     metadata.tokensRef = {
       getRefTokens: () => {

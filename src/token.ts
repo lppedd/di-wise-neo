@@ -1,3 +1,4 @@
+import type { ParameterDecorator } from "./decorators/decorators";
 import { checkSingleDecorator, updateParameterMetadata } from "./decorators/utils";
 import type { Provider } from "./provider";
 import { tokenRef } from "./tokenRef";
