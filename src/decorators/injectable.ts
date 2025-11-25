@@ -15,13 +15,8 @@ import type { ClassDecorator } from "./decorators";
  * class Wand {}
  * ```
  */
-export function Injectable<Value, This extends Value & object>(
-  token: Token<Value>, //
-): ClassDecorator<This>;
-export function Injectable<VA, VB, This extends VA & VB & object>(
-  tokenA: Token<VA>, //
-  tokenB: Token<VB>,
-): ClassDecorator<This>;
+export function Injectable<Value, This extends Value & object>(token: Token<Value>): ClassDecorator<This>;
+export function Injectable<VA, VB, This extends VA & VB & object>(tokenA: Token<VA>, tokenB: Token<VB>): ClassDecorator<This>;
 export function Injectable<VA, VB, VC, This extends VA & VB & VC & object>(
   tokenA: Token<VA>,
   tokenB: Token<VB>,
