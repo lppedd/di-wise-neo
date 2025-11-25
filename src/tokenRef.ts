@@ -21,11 +21,15 @@ export function classRef<Instance extends object>(Class: () => Constructor<Insta
 }
 
 /**
- * Allows referencing one or multiple tokens declared later in the file by wrapping them
+ * Allows referencing a token declared later in the file by wrapping it
  * into a lazily evaluated function.
- *
- * @__NO_SIDE_EFFECTS__
  */
+export function tokenRef<Value>(token: () => Token<Value>): TokenRef<Value>;
+
+// @internal
+export function tokenRef<Value>(token: () => Tokens<Value>): TokenRef<Value>;
+
+// @__NO_SIDE_EFFECTS__
 export function tokenRef<Value>(token: () => Token<Value> | Tokens<Value>): TokenRef<Value> {
   return {
     getRefTokens: () => {

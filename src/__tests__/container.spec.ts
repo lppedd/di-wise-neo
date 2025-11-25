@@ -716,7 +716,7 @@ describe("Container", () => {
 
     // Injectable decorators can be stacked
     @Injectable(tokenRef(() => Person))
-    @Injectable(tokenRef(() => [Character]))
+    @Injectable(tokenRef(() => Character))
     class Witch {
       name = "Witch";
     }
