@@ -566,7 +566,7 @@ export class ContainerImpl implements Container {
 
   // Call context: decorator-based injection
   private resolveDependency(dependency: MethodDependency, instance?: any): any {
-    const [token] = dependency.tokenRef!.getRefTokens();
+    const token = dependency.tokenRef!.getRefToken();
     check(token, `token passed to @${dependency.appliedBy} was undefined (possible circular imports)`);
 
     const name = dependency.name;

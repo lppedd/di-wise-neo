@@ -1,3 +1,4 @@
+import { check } from "./errors";
 import type { Constructor, Token, Tokens } from "./token";
 
 export interface ClassRef<Instance extends object> {
@@ -5,6 +6,11 @@ export interface ClassRef<Instance extends object> {
 }
 
 export interface TokenRef<Value> {
+  readonly getRefToken: () => Token<Value>;
+
+  /**
+   * @internal
+   */
   readonly getRefTokens: () => Set<Token<Value>>;
 }
 
@@ -32,6 +38,11 @@ export function tokenRef<Value>(token: () => Tokens<Value>): TokenRef<Value>;
 // @__NO_SIDE_EFFECTS__
 export function tokenRef<Value>(token: () => Token<Value> | Tokens<Value>): TokenRef<Value> {
   return {
+    getRefToken: () => {
+      const tokenOrTokens = token();
+      check(!Array.isArray(tokenOrTokens), "internal error: single token expected");
+      return tokenOrTokens;
+    },
     getRefTokens: () => {
       // Normalize the single token here so that we don't have to do it at every getRefTokens call site
       const tokenOrTokens = token();
@@ -48,5 +59,5 @@ export function isClassRef<T extends object>(value: any): value is ClassRef<T> {
 
 // @internal
 export function isTokenRef<T>(value: any): value is TokenRef<T> {
-  return value != null && typeof value === "object" && typeof value.getRefTokens === "function";
+  return value != null && typeof value === "object" && typeof value.getRefToken === "function";
 }

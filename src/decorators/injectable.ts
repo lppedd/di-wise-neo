@@ -76,6 +76,7 @@ export function Injectable<This extends object>(...args: [...Tokens<This>] | [To
     const ref = isTokenRef(arg0) ? arg0 : tokenRef(() => args as Tokens<This>);
     const currentRef = metadata.tokenRef;
     metadata.tokenRef = {
+      getRefToken: () => currentRef.getRefToken(),
       getRefTokens: () => {
         const existingTokens = currentRef.getRefTokens();
 

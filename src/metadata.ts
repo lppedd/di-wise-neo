@@ -1,3 +1,4 @@
+import { check } from "./errors";
 import type { Scope } from "./scope";
 import type { Constructor } from "./token";
 import { type ClassRef, isClassRef, type TokenRef } from "./tokenRef";
@@ -22,6 +23,8 @@ export class Metadata<This extends object> {
   autoRegister?: boolean;
   scope?: ScopeMetadata;
   tokenRef: TokenRef<This> = {
+    // prettier-ignore
+    getRefToken: () => { check(false, "internal error: unexpected call") },
     getRefTokens: () => new Set(),
   };
 

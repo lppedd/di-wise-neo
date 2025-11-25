@@ -45,8 +45,7 @@ export function throwParameterResolutionError(
   cause: any,
 ): never {
   const location = getLocation(ctor, methodKey);
-  const [token] = dependency.tokenRef!.getRefTokens();
-  const tokenName = getFullTokenName([token, dependency.name]);
+  const tokenName = getFullTokenName([dependency.tokenRef!.getRefToken(), dependency.name]);
   const msg = tag(`failed to resolve dependency for ${location}(parameter #${dependency.index}: ${tokenName})`);
   throw new Error(msg + getCause(cause), { cause });
 }
