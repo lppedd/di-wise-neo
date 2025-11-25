@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.19.0
+
+- ❗ Restricted the `@Injectable(Tokens)` decorator to a maximum of six tokens per call.
+- ❗ Restricted the `tokenRef()` function to return a single `Token`, removing support for `Token[]`.
+
 ## 0.18.1
 
 - Improved type checking for the `@Injectable` decorator to ensure the decorated class
