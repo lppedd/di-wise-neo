@@ -49,12 +49,6 @@ export function Injectable<VA, VB, VC, VD, VE, VF, This extends VA & VB & VC & V
   tokenF: Token<VF>,
 ): ClassDecorator<This>;
 
-//
-// Use 'unknown' to allow inputting more tokens at the expense of type correctness.
-//
-
-export function Injectable<This extends object>(...tokens: Tokens<unknown>): ClassDecorator<This>;
-
 /**
  * Class decorator that registers additional aliasing tokens for the decorated type
  * when the type is first registered in the container.
