@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.18.1
+
+- Improved type checking for the `@Injectable` decorator to ensure the decorated class
+  is compatible with the given alias tokens.
+- Cleaned up JSDocs and internal code.
+
 ## 0.18.0
 
 - Fixed the handling of `ChildContainerOptions.copyHooks`.  
