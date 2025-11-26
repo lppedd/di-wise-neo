@@ -19,9 +19,8 @@ import { checkNamedDecorator, describeParam, updateParameterMetadata } from "./u
  * container.register(IWizard, { useClass: Dumbledore });
  * const dumbledore = container.resolve(IWizard, "dumbledore");
  * ```
- *
- * @__NO_SIDE_EFFECTS__
  */
+// @__NO_SIDE_EFFECTS__
 export function Named<This extends object>(name: string): ClassDecorator<This> & ParameterDecorator {
   check(name.trim(), "@Named qualifier must not be empty");
   return function (target: object, propertyKey?: string | symbol, parameterIndex?: number): void {

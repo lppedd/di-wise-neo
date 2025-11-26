@@ -17,9 +17,8 @@ export interface TokenRef<Value> {
 /**
  * Allows referencing a class declared later in the file by wrapping it
  * into a lazily evaluated function.
- *
- * @__NO_SIDE_EFFECTS__
  */
+// @__NO_SIDE_EFFECTS__
 export function classRef<Instance extends object>(Class: () => Constructor<Instance>): ClassRef<Instance> {
   return {
     getRefClass: () => Class(),

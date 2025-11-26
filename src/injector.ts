@@ -112,7 +112,7 @@ export interface Injector {
  * }
  * ```
  */
-export const Injector: Type<Injector> = /*@__PURE__*/ build<Injector>(() => {
+export const Injector: Type<Injector> = /* @__PURE__ */ build<Injector>(() => {
   const context = ensureInjectionContext("Injector factory");
   const runInContext = <R>(fn: () => R): R => {
     if (useInjectionContext()) {

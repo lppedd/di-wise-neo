@@ -18,9 +18,8 @@ import type { ClassDecorator } from "./decorators";
  * // is immediately created and cached by the container
  * container.register(Wizard);
  * ```
- *
- * @__NO_SIDE_EFFECTS__
  */
+// @__NO_SIDE_EFFECTS__
 export function EagerInstantiate<This extends object>(): ClassDecorator<This> {
   return function (Class): void {
     const metadata = getMetadata(Class);

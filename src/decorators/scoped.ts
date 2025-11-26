@@ -22,9 +22,8 @@ import type { ClassDecorator } from "./decorators";
  *   { scope: "Container" },
  * );
  * ```
- *
- * @__NO_SIDE_EFFECTS__
  */
+// @__NO_SIDE_EFFECTS__
 export function Scoped<This extends object>(scope: Scope): ClassDecorator<This> {
   return function (Class): void {
     const metadata = getMetadata(Class);
