@@ -26,15 +26,15 @@ export function Inject<Value>(token: Token<Value>): ParameterDecorator;
 /**
  * Parameter decorator that injects the value associated with the given token.
  *
- * Allows referencing a token declared later in the file by using the
- * {@link tokenRef} helper function.
+ * This overload allows referencing a token declared later in the file by using
+ * the {@link tokenRef} helper function.
  *
  * Throws an error if:
  * - The token is not registered in the container.
  * - A circular dependency is detected. Use function injection with {@link injectBy}
  *   if resolving circular dependencies is necessary.
  *
- * @example
+ * Example:
  * ```ts
  * class Wizard {
  *   constructor(@Inject(tokenRef(() => Wand)) readonly wand: Wand) {}

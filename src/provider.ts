@@ -16,7 +16,7 @@ export interface ClassProvider<Instance extends object> {
    *
    * Equivalent to decorating the class with `@Named(...)`.
    *
-   * @example
+   * Example:
    * ```ts
    * export class ExtensionContext {
    *   // Decorator-based injection
@@ -46,7 +46,7 @@ export interface FactoryProvider<Value> {
    * An optional name to qualify this provider.
    * If specified, the token must be resolved using the same name.
    *
-   * @example
+   * Example:
    * ```ts
    * export class ExtensionContext {
    *   // Decorator-based injection
@@ -73,7 +73,7 @@ export interface ValueProvider<Value> {
    * An optional name to qualify this provider.
    * If specified, the token must be resolved using the same name.
    *
-   * @example
+   * Example:
    * ```ts
    * export class ExtensionContext {
    *   // Decorator-based injection
@@ -96,7 +96,7 @@ export interface ExistingProvider<Value> {
   /**
    * The existing token to alias, with an optional name qualifier.
    *
-   * @example
+   * Example:
    * ```ts
    * container.register(ISecretStorage, {
    *   useExisting: PersistentSecretStorage,
@@ -114,7 +114,7 @@ export interface ExistingProvider<Value> {
    * An optional name to qualify this provider.
    * If specified, the token must be resolved using the same name.
    *
-   * @example
+   * Example:
    * ```ts
    * export class ExtensionContext {
    *   // Decorator-based injection

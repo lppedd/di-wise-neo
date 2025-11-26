@@ -9,7 +9,7 @@ import { build } from "./tokenRegistry";
 /**
  * Allows performing injections outside the normal injection context window.
  *
- * @example
+ * Example:
  * ```ts
  * class Wizard {
  *   private injector = inject(Injector);
@@ -95,7 +95,7 @@ export interface Injector {
 /**
  * Allows performing injections outside the normal injection context window.
  *
- * @example
+ * Example:
  * ```ts
  * class Wizard {
  *   private injector = inject(Injector);

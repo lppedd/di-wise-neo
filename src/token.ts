@@ -67,7 +67,7 @@ export type Tokens<Value> = [Token<Value>, ...Token<Value>[]];
 /**
  * Creates a type token.
  *
- * @example
+ * Example:
  * ```ts
  * const ISpell = createType<Spell>("Spell");
  * container.register(ISpell, {
@@ -80,7 +80,7 @@ export function createType<T>(typeName: string): Type<T>;
 /**
  * Creates a type token with a default {@link Provider} and optional default registration options.
  *
- * @example
+ * Example:
  * ```ts
  * // Notice how we pass in a Provider directly at type creation site
  * const ISpell = createType<Spell>("Spell", {

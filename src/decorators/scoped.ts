@@ -8,7 +8,7 @@ import type { ClassDecorator } from "./decorators";
  *
  * The scope set by this decorator can be overridden by explicit registration options, if provided.
  *
- * @example
+ * Example:
  * ```ts
  * @Scoped("Container")
  * class Wizard {}

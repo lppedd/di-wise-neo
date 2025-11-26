@@ -26,12 +26,12 @@ export function OptionalAll<Value>(token: Token<Value>): ParameterDecorator;
  * associated with the given token or an empty array if the token is not registered
  * in the container.
  *
- * Allows referencing a token declared later in the file by using the
- * {@link tokenRef} helper function.
+ * This overload allows referencing a token declared later in the file by using
+ * the {@link tokenRef} helper function.
  *
  * Throws an error if a circular dependency is detected.
  *
- * @example
+ * Example:
  * ```ts
  * class Wizard {
  *   constructor(@OptionalAll(tokenRef(() => Wand)) readonly wands: Wand[]) {}

@@ -5,7 +5,7 @@ import type { ClassDecorator } from "./decorators";
  * Class decorator that enables auto-registration of an unregistered class
  * when the class is first resolved from the container.
  *
- * @example
+ * Example:
  * ```ts
  * @AutoRegister()
  * class Wizard {}

@@ -170,7 +170,7 @@ export function isBuilder(provider: Provider<any>): boolean {
 /**
  * Create a one-off type token from a factory function.
  *
- * @example
+ * Example:
  * ```ts
  * class Wizard {
  *   wand = inject(

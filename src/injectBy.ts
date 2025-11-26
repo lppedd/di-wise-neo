@@ -10,7 +10,7 @@ import type { Constructor, Token } from "./token";
  * Compared to {@link inject}, `injectBy` accepts a `thisArg` argument
  * (e.g., the containing class instance) which is used to resolve circular dependencies.
  *
- * @example
+ * Example:
  * ```ts
  * class Wand {
  *   owner = inject(Wizard);
@@ -35,7 +35,7 @@ export function injectBy<Instance extends object>(thisArg: any, Class: Construct
  * Compared to {@link inject}, `injectBy` accepts a `thisArg` argument
  * (e.g., the containing class instance) which is used to resolve circular dependencies.
  *
- * @example
+ * Example:
  * ```ts
  * class Wand {
  *   owner = inject(Wizard);

@@ -9,7 +9,7 @@ import type { ClassDecorator } from "./decorators";
  * The aliases are added using {@link ExistingProvider}(s) when the class is first
  * registered in the container.
  *
- * @example
+ * Example:
  * ```ts
  * @Injectable(Weapon)
  * class Rifle {}
@@ -17,7 +17,7 @@ import type { ClassDecorator } from "./decorators";
  *
  * Note that `@Injectable` decorators can be stacked to add multiple aliases.
  *
- * @example
+ * Example:
  * ```ts
  * @Injectable(Weapon)
  * @Injectable(Gun) // Or just @Injectable(Weapon, Gun)
@@ -62,7 +62,7 @@ export function Injectable<VA, VB, VC, VD, VE, VF, This extends VA & VB & VC & V
  * This overload allows referencing tokens that are declared later in the file
  * by using the {@link tokenRef} helper function.
  *
- * @example
+ * Example:
  * ```ts
  * @Injectable(tokenRef(() => Weapon)) // Weapon is declared after Rifle
  * class Rifle {}
@@ -72,7 +72,7 @@ export function Injectable<VA, VB, VC, VD, VE, VF, This extends VA & VB & VC & V
  *
  * Note that `@Injectable` decorators can be stacked to add multiple aliases.
  *
- * @example
+ * Example:
  * ```ts
  * @Injectable(tokenRef(() => Weapon))
  * @Injectable(Gun)

@@ -10,7 +10,7 @@ import { checkNamedDecorator, describeParam, updateParameterMetadata } from "./u
  * This allows the container to distinguish between multiple implementations
  * of the same interface or type during registration and injection.
  *
- * @example
+ * Example:
  * ```ts
  * @Named("dumbledore")
  * class Dumbledore implements Wizard {}

@@ -9,7 +9,7 @@ import type { ClassDecorator } from "./decorators";
  * This causes the container to immediately create and cache the instance of the class,
  * instead of deferring instantiation until the first resolution.
  *
- * @example
+ * Example:
  * ```ts
  * @EagerInstantiate()
  * class Wizard {}
