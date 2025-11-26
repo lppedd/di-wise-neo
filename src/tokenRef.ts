@@ -16,7 +16,7 @@ export interface TokenRef<Value> {
 
 /**
  * Allows referencing a class declared later in the file by wrapping it
- * in a lazily evaluated function.
+ * into a lazily evaluated function.
  *
  * @__NO_SIDE_EFFECTS__
  */

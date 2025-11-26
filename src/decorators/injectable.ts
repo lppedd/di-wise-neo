@@ -4,15 +4,24 @@ import { isTokenRef, type TokenRef, tokenRef } from "../tokenRef";
 import type { ClassDecorator } from "./decorators";
 
 /**
- * Class decorator that registers additional aliasing tokens for the decorated type
- * when the type is first registered in the container.
+ * Class decorator that registers additional aliasing tokens for the decorated type.
  *
- * The container uses {@link ExistingProvider} under the hood.
+ * The aliases are added using {@link ExistingProvider}(s) when the class is first
+ * registered in the container.
  *
  * @example
  * ```ts
  * @Injectable(Weapon)
- * class Wand {}
+ * class Rifle {}
+ * ```
+ *
+ * Note that `@Injectable` decorators can be stacked to add multiple aliases.
+ *
+ * @example
+ * ```ts
+ * @Injectable(Weapon)
+ * @Injectable(Gun) // Or just @Injectable(Weapon, Gun)
+ * class Rifle {}
  * ```
  */
 export function Injectable<Value, This extends Value & object>(token: Token<Value>): ClassDecorator<This>;
@@ -45,20 +54,29 @@ export function Injectable<VA, VB, VC, VD, VE, VF, This extends VA & VB & VC & V
 ): ClassDecorator<This>;
 
 /**
- * Class decorator that registers additional aliasing tokens for the decorated type
- * when the type is first registered in the container.
+ * Class decorator that registers an additional aliasing token for the decorated type.
  *
- * The container uses {@link ExistingProvider} under the hood.
+ * The alias is added using an {@link ExistingProvider} when the class is first
+ * registered in the container.
  *
- * Allows referencing tokens that are declared later in the file by using
- * the {@link tokenRef} helper function.
+ * This overload allows referencing tokens that are declared later in the file
+ * by using the {@link tokenRef} helper function.
  *
  * @example
  * ```ts
- * @Injectable(tokenRef() => Weapon) // Weapon is declared after Wand
- * class Wizard {}
+ * @Injectable(tokenRef(() => Weapon)) // Weapon is declared after Rifle
+ * class Rifle {}
  * // Other code...
- * class Weapon {}
+ * const Weapon = createType("Weapon");
+ * ```
+ *
+ * Note that `@Injectable` decorators can be stacked to add multiple aliases.
+ *
+ * @example
+ * ```ts
+ * @Injectable(tokenRef(() => Weapon))
+ * @Injectable(Gun)
+ * class Rifle {}
  * ```
  */
 export function Injectable<Value, This extends Value & object>(tokens: TokenRef<Value>): ClassDecorator<This>;
