@@ -100,7 +100,7 @@ export interface Container {
   createChild(options?: Partial<ChildContainerOptions>): Container;
 
   /**
-   * Clears and returns all distinct values that were cached by this container.
+   * Clears and returns all distinct values cached by this container.
    * Values from {@link ValueProvider} registrations are not included, as they are never cached.
    *
    * Note that only this container is affected. Parent or child containers, if any, remain unchanged.

@@ -19,7 +19,7 @@ import { build } from "./tokenRegistry";
  *
  *   getWand(): Wand {
  *     // An injection context does not exist here, but the
- *     // Injector instance retains and reuse the context
+ *     // Injector instance retains and reuses the context
  *     // that was present at the time of its injection
  *     return (this.wand ??= this.injector.inject(Wand));
  *   }
@@ -105,7 +105,7 @@ export interface Injector {
  *
  *   getWand(): Wand {
  *     // An injection context does not exist here, but the
- *     // Injector instance retains and reuse the context
+ *     // Injector instance retains and reuses the context
  *     // that was present at the time of its injection
  *     return (this.wand ??= this.injector.inject(Wand));
  *   }
