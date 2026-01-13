@@ -1315,13 +1315,22 @@ describe("Container", () => {
     expect(onDispose).toHaveBeenCalledTimes(2);
   });
 
-  it("should support static properties in annotated classes", () => {
-    @Scoped("Container") // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  it("should support static properties in decorated classes", () => {
+    const Name = createType<string>("Name", { useValue: "Dumbledore" });
+
+    @Scoped("Container")
     class Wizard {
       static readonly tag = "Wizard";
 
-      constructor(readonly name: string) {}
+      constructor(readonly name: string = inject(Name)) {}
     }
+
+    container.register(Name);
+    container.register(Wizard);
+
+    const wizard = container.resolve(Wizard);
+    expect(wizard.name).toBe("Dumbledore");
+    expect(Wizard.tag).toBe("Wizard");
   });
 
   it("should dispose itself and its registrations", () => {
