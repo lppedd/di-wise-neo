@@ -1315,6 +1315,15 @@ describe("Container", () => {
     expect(onDispose).toHaveBeenCalledTimes(2);
   });
 
+  it("should support static properties in annotated classes", () => {
+    @Scoped("Container") // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    class Wizard {
+      static readonly tag = "Wizard";
+
+      constructor(readonly name: string) {}
+    }
+  });
+
   it("should dispose itself and its registrations", () => {
     @Scoped("Container")
     class Wand {
