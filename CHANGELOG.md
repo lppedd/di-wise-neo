@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.20.0
+
+- Fixed an issue where classes using decorators could not declare static properties due to
+  an overly restrictive decorator type.
+- Improved JSDoc comments for better IDE readability.
+
 ## 0.19.0
 
 - ❗ Restricted the `@Injectable(Tokens)` decorator to a maximum of six tokens per call.
