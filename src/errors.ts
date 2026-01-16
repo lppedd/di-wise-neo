@@ -68,7 +68,7 @@ export function getTokenName(token: Token<any>): string {
 
 function getFullTokenName([token, name]: TokenInfo): string {
   const tokenName = token ? token.name || "<unnamed>" : "<undefined token>";
-  return name ? `${tokenName}["${name}"]` : tokenName;
+  return name !== undefined ? `${tokenName}["${name}"]` : tokenName;
 }
 
 function getCause(error: any): string {
