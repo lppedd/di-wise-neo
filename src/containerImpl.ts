@@ -225,7 +225,11 @@ export class ContainerImpl implements Container {
 
     for (const value of allValues) {
       if (isDisposable(value)) {
-        value.dispose();
+        try {
+          value.dispose();
+        } catch {
+          // Ignored
+        }
       }
     }
 
