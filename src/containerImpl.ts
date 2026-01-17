@@ -194,16 +194,17 @@ export class ContainerImpl implements Container {
     this.myHookRegistry.delete(hook);
   }
 
-  dispose(): void {
+  dispose(): Promise<unknown>[] {
     if (this.myDisposed) {
-      return;
+      return [];
     }
 
     this.myDisposed = true;
+    const promises: Promise<unknown>[] = [];
 
     // Dispose children containers first
     for (const child of this.myChildren) {
-      child.dispose();
+      promises.push(...child.dispose());
     }
 
     this.myChildren.clear();
@@ -226,15 +227,16 @@ export class ContainerImpl implements Container {
     for (const value of allValues) {
       if (isDisposable(value)) {
         try {
-          value.dispose();
-        } catch {
-          // Ignored
+          promises.push(Promise.resolve(value.dispose()));
+        } catch (e) {
+          promises.push(Promise.reject(e));
         }
       }
     }
 
     this.notifyDisposeHooks([...cacheValues]);
     this.myHookRegistry.clear();
+    return promises;
   }
 
   private registerClass<T extends object>(Class: Constructor<T>): void {

@@ -409,11 +409,13 @@ export interface Container {
    * Disposes this container and all its cached values.
    *
    * Token values implementing a `Disposable` interface (e.g., objects with a `dispose()` function)
-   * are automatically disposed during this process.
+   * are also disposed. All disposals, whether synchronous or asynchronous, are returned as promises
+   * in an array. Callers may await these promises (e.g., using `Promise.allSettled()`) if they want
+   * to ensure that all async work has completed.
    *
    * Note that children containers are disposed first, in creation order.
    */
-  dispose(): void;
+  dispose(): Promise<unknown>[];
 }
 
 /**

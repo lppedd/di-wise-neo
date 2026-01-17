@@ -54,8 +54,8 @@ describe("Container", () => {
     expect(childOfChild.options.autoRegister).toBe(true);
     expect(childOfChild.options.defaultScope).toBe("Resolution");
 
-    childOfChild.dispose();
-    child.dispose();
+    void childOfChild.dispose();
+    void child.dispose();
   });
 
   it("should handle hierarchical injection", () => {
@@ -1244,7 +1244,7 @@ describe("Container", () => {
 
     // Add back the hook and verify onDispose is called when we dispose the container
     container.addHook(hook);
-    container.dispose();
+    void container.dispose();
     expect(wandInstance.isDisposed).toBeTruthy();
     expect(onProvide).not.toHaveBeenCalled();
     expect(onDispose).toHaveBeenCalledExactlyOnceWith([wandInstance]);
@@ -1278,7 +1278,7 @@ describe("Container", () => {
     onProvide.mockClear();
     onDispose.mockClear();
 
-    container.dispose();
+    void container.dispose();
     expect(onProvide).not.toHaveBeenCalled();
     expect(onDispose).toHaveBeenCalledExactlyOnceWith([]);
   });
@@ -1311,7 +1311,7 @@ describe("Container", () => {
     expect(childContainerNoHooks.resolve(Env)).toBe("Production");
     expect(onProvide).not.toHaveBeenCalled();
 
-    container.dispose();
+    void container.dispose();
     expect(onDispose).toHaveBeenCalledTimes(2);
   });
 
@@ -1371,7 +1371,7 @@ describe("Container", () => {
     const child = container.createChild();
     child.register(Wand);
 
-    container.dispose();
+    void container.dispose();
 
     expect(container.isDisposed).toBe(true);
     expect(child.isDisposed).toBe(true);
@@ -1388,12 +1388,12 @@ describe("Container", () => {
     value = new Wand();
     container = createContainer({ disposeUnmanaged: true });
     container.register(valueToken, { useValue: value });
-    container.dispose();
+    void container.dispose();
 
     expect(value.calls).toBe(1);
 
     // We can call dispose as many times as we want
-    container.dispose();
-    container.dispose();
+    void container.dispose();
+    void container.dispose();
   });
 });
