@@ -108,7 +108,7 @@ export class ContainerImpl implements Container {
       }
     }
 
-    return Array.from(values);
+    return [...values];
   }
 
   resetRegistry(): unknown[] {
@@ -122,7 +122,7 @@ export class ContainerImpl implements Container {
       }
     }
 
-    return Array.from(values);
+    return [...values];
   }
 
   isRegistered<T>(token: Token<T>, name?: string): boolean {
@@ -163,7 +163,7 @@ export class ContainerImpl implements Container {
       }
     }
 
-    return Array.from(values);
+    return [...values];
   }
 
   resolve<T>(token: Token<T>, name?: string): T {
@@ -228,7 +228,7 @@ export class ContainerImpl implements Container {
       }
     }
 
-    this.notifyDisposeHooks(Array.from(cacheValues));
+    this.notifyDisposeHooks([...cacheValues]);
     this.myHookRegistry.clear();
   }
 

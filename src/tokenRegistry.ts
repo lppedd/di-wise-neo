@@ -126,8 +126,8 @@ export class TokenRegistry {
   }
 
   deleteAll(): [Token<any>[], Registration<any>[]] {
-    const tokens = Array.from(this.myRegistrations.keys());
-    const registrations = Array.from(this.myRegistrations.values()).flat();
+    const tokens = [...this.myRegistrations.keys()];
+    const registrations = [...this.myRegistrations.values()].flat();
     this.myRegistrations.clear();
     return [tokens, registrations];
   }
@@ -147,7 +147,7 @@ export class TokenRegistry {
       }
     }
 
-    return Array.from(values);
+    return [...values];
   }
 
   private getAllFromParent<T>(token: Token<T>, name?: string): Registration<T>[] {
