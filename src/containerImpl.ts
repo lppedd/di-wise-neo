@@ -588,6 +588,8 @@ export class ContainerImpl implements Container {
         return instance ? optionalBy(instance, token, name) : this.tryResolve(token, name);
       case "OptionalAll":
         return instance ? optionalAll(token) : this.tryResolveAll(token);
+      case undefined:
+        check(false, "internal error: unexpected undefined appliedBy");
     }
   }
 

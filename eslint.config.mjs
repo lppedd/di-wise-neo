@@ -89,6 +89,7 @@ export default tseslint.config(
           ignoreRestSiblings: true,
         },
       ],
+      "@typescript-eslint/switch-exhaustiveness-check": "error",
       "@typescript-eslint/prefer-promise-reject-errors": "off",
       "@typescript-eslint/no-empty-object-type": "off",
       "@typescript-eslint/no-explicit-any": "off",

@@ -1,5 +1,6 @@
 // @internal
 export function getTypeName(value: unknown): string {
+  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (typeof value) {
     case "string":
       return `"${value}"`;
