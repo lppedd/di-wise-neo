@@ -3,7 +3,7 @@
 ## 0.21.0
 
 - Extended `Container.dispose` to return an array of promises representing the disposal
-  results of all stored token values, synchronous or asynchronous.  
+  results, synchronous or asynchronous, of all managed token values.  
   This allows callers to await the complete disposal process when needed.
 - Further cleaned up internal code.
 
