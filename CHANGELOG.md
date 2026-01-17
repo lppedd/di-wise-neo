@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.21.0
+
+- Extended `Container.dispose` to return an array of promises representing the disposal
+  results of all stored token values, synchronous or asynchronous.  
+  This allows callers to await the complete disposal process when needed.
+- Further cleaned up internal code.
+
 ## 0.20.0
 
 - Fixed an issue where classes using decorators could not declare static properties due to
