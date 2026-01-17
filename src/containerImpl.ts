@@ -187,10 +187,12 @@ export class ContainerImpl implements Container {
   }
 
   addHook(hook: ContainerHook): void {
+    this.checkDisposed();
     this.myHookRegistry.add(hook);
   }
 
   removeHook(hook: ContainerHook): void {
+    this.checkDisposed();
     this.myHookRegistry.delete(hook);
   }
 
