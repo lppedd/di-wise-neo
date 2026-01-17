@@ -199,12 +199,13 @@ export class ContainerImpl implements Container {
       return;
     }
 
+    this.myDisposed = true;
+
     // Dispose children containers first
     for (const child of this.myChildren) {
       child.dispose();
     }
 
-    this.myDisposed = true;
     this.myChildren.clear();
     this.myParent?.myChildren?.delete(this);
 
