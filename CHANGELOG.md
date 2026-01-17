@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.21.1
+
+- Added missing dispose checks in `Container.addHook` and `Container.removeHook`.
+- Improved internal error messages.
+
 ## 0.21.0
 
 - Extended `Container.dispose` to return an array of promises representing the disposal
