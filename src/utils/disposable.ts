@@ -1,6 +1,6 @@
 // @internal
 export interface Disposable {
-  dispose(): void;
+  dispose(): void | PromiseLike<void>;
 }
 
 // @internal
