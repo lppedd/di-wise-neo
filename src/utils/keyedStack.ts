@@ -14,7 +14,7 @@ export class KeyedStack<K extends object, V> {
   }
 
   push(key: K, value: V): () => void {
-    check(!this.has(key), "invariant violation");
+    check(!this.has(key), "internal: invariant violation");
     this.myKeys.add(key);
     this.myEntries.push({ key, value });
     return () => {

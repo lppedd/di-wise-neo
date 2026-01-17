@@ -83,7 +83,7 @@ export class TokenRegistry {
   put<T>(token: Token<T>, registration: Registration<T>): void;
   put<T extends object>(token: Type<T> | Constructor<T>, registration: Registration<T>): void;
   put<T>(token: Token<T>, registration: Registration<T>): void {
-    check(!internals.has(token), `cannot register reserved token ${token.name}`);
+    check(!internals.has(token), `internal: cannot register reserved token ${token.name}`);
     let registrations = this.myRegistrations.get(token);
 
     if (registrations) {
@@ -155,7 +155,7 @@ export class TokenRegistry {
 
     if (registrations && name !== undefined) {
       registrations = registrations.filter((r) => r.name === name);
-      check(registrations.length < 2, `internal error: more than one registration named '${name}'`);
+      check(registrations.length < 2, `internal: multiple registrations with name '${name}'`);
     }
 
     return registrations ?? [];

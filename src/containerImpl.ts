@@ -431,7 +431,7 @@ export class ContainerImpl implements Container {
       return provider.useValue;
     }
 
-    check(false, "internal error: unexpected ExistingProvider");
+    check(false, "internal: unexpected ExistingProvider");
   }
 
   private resolveScopedValue<T>(token: Token<T>, registration: Registration<T>, factory: (...args: any[]) => T): T {
@@ -508,7 +508,7 @@ export class ContainerImpl implements Container {
     const dependencies = registration.dependencies;
 
     if (dependencies) {
-      check(isClassProvider(registration.provider), `internal error: not a ClassProvider`);
+      check(isClassProvider(registration.provider), `internal: expected a ClassProvider`);
       const ctorDeps = dependencies.ctor.filter((d) => d.appliedBy);
 
       if (ctorDeps.length > 0) {
@@ -532,7 +532,7 @@ export class ContainerImpl implements Container {
     const dependencies = registration.dependencies;
 
     if (dependencies) {
-      check(isClassProvider(registration.provider), `internal error: not a ClassProvider`);
+      check(isClassProvider(registration.provider), `internal: expected a ClassProvider`);
       const ctor = registration.provider.useClass;
 
       // Perform method injection
@@ -589,7 +589,7 @@ export class ContainerImpl implements Container {
       case "OptionalAll":
         return instance ? optionalAll(token) : this.tryResolveAll(token);
       case undefined:
-        check(false, "internal error: unexpected undefined appliedBy");
+        check(false, "internal: unexpected undefined appliedBy");
     }
   }
 

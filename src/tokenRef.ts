@@ -39,7 +39,7 @@ export function tokenRef<Value>(token: () => Token<Value> | Tokens<Value>): Toke
   return {
     getRefToken: () => {
       const tokenOrTokens = token();
-      check(!Array.isArray(tokenOrTokens), "internal error: single token expected");
+      check(!Array.isArray(tokenOrTokens), "internal: unexpected array of tokens");
       return tokenOrTokens;
     },
     getRefTokens: () => {
