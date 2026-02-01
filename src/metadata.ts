@@ -19,12 +19,11 @@ export class Metadata<This extends object> {
     methods: new Map(),
   };
 
-  eagerInstantiate?: boolean;
-  autoRegister?: boolean;
+  eagerInstantiate?: boolean | undefined;
+  autoRegister?: boolean | undefined;
   scope?: ScopeMetadata;
   tokenRef: TokenRef<This> = {
-    // prettier-ignore
-    getRefToken: () => { check(false, "internal: unexpected getRefToken call"); },
+    getRefToken: () => check(false, "internal: unexpected getRefToken call"),
     getRefTokens: () => new Set(),
   };
 

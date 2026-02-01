@@ -26,7 +26,7 @@ export interface RegistrationOptions {
   /**
    * The scope of the registration.
    */
-  readonly scope?: Scope;
+  readonly scope?: Scope | undefined;
 }
 
 // @internal
@@ -50,17 +50,17 @@ export interface Dependencies {
 
 // @internal
 export interface Registration<T> {
-  readonly name?: string;
   readonly provider: RegistrationProvider<T>;
-  readonly options?: RegistrationOptions;
+  readonly name?: string | undefined;
+  readonly options?: RegistrationOptions | undefined;
   readonly dependencies?: Dependencies;
 
-  valueRef?: ValueRef<T>;
+  valueRef?: ValueRef<T> | undefined;
 }
 
 // @internal
 export class TokenRegistry {
-  private readonly myParent?: TokenRegistry;
+  private readonly myParent: TokenRegistry | undefined;
   private readonly myRegistrations = new Map<Token<any>, Registration<any>[]>();
 
   constructor(parent?: TokenRegistry) {

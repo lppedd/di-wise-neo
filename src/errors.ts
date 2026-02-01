@@ -2,9 +2,11 @@ import type { Constructor, Token } from "./token";
 import type { MethodDependency } from "./tokenRegistry";
 
 // @internal
-export type TokenInfo = [Token<any>?, string?];
+export type TokenInfo = [Token<any>?, (string | undefined)?];
 
 // @internal
+export function check(condition: false, message: string): never;
+export function check(condition: unknown, message: string | (() => string)): asserts condition;
 export function check(condition: unknown, message: string | (() => string)): asserts condition {
   if (!condition) {
     throw new Error(tag(typeof message === "string" ? message : message()));

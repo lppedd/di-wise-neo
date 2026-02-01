@@ -3,6 +3,7 @@ import type { ClassProvider, ExistingProvider, FactoryProvider, Provider, ValueP
 import type { Scope } from "./scope";
 import type { Constructor, ProviderType, Token } from "./token";
 import type { RegistrationOptions, TokenRegistry } from "./tokenRegistry";
+import type { RequiredNonNullable } from "./utils/requiredNonNullable";
 
 type ProviderFor<V> = V extends object ? Provider<V> : Exclude<Provider<V>, ClassProvider<any>>;
 type RegistrationOptionsFor<P> = P extends ValueProvider<any> ? never : RegistrationOptions;
@@ -16,14 +17,14 @@ export interface ContainerOptions {
    *
    * @defaultValue Transient
    */
-  readonly defaultScope: Scope;
+  readonly defaultScope?: Scope | undefined;
 
   /**
    * Whether to automatically register an unregistered class when resolving it as a token.
    *
    * @defaultValue false
    */
-  readonly autoRegister: boolean;
+  readonly autoRegister?: boolean | undefined;
 
   /**
    * Whether to also dispose values provided via {@link ValueProvider}, which are not
@@ -31,7 +32,7 @@ export interface ContainerOptions {
    *
    * @defaultValue false
    */
-  readonly disposeUnmanaged: boolean;
+  readonly disposeUnmanaged?: boolean | undefined;
 }
 
 /**
@@ -43,7 +44,7 @@ export interface ChildContainerOptions extends ContainerOptions {
    *
    * @defaultValue true
    */
-  readonly copyHooks: boolean;
+  readonly copyHooks?: boolean | undefined;
 }
 
 /**
@@ -60,7 +61,7 @@ export interface ContainerHook {
    * @param value - The provided value.
    * @param scope - The {@link Scope} of the provided value.
    */
-  readonly onProvide?: (value: unknown, scope: Scope) => void;
+  readonly onProvide?: ((value: unknown, scope: Scope) => void) | undefined;
 
   /**
    * Called after the container has been disposed.
@@ -68,7 +69,7 @@ export interface ContainerHook {
    * @param values - All distinct values that were cached by the disposed container.
    *   Currently, only **Container**-scoped token values are cached.
    */
-  readonly onDispose?: (values: unknown[]) => void;
+  readonly onDispose?: ((values: unknown[]) => void) | undefined;
 }
 
 /**
@@ -83,7 +84,7 @@ export interface Container {
   /**
    * The options used to create this container.
    */
-  readonly options: ContainerOptions;
+  readonly options: RequiredNonNullable<ContainerOptions>;
 
   /**
    * The parent container, or `undefined` if this is the root container.
@@ -100,7 +101,7 @@ export interface Container {
    *
    * You can pass specific options to override the inherited ones.
    */
-  createChild(options?: Partial<ChildContainerOptions>): Container;
+  createChild(options?: ChildContainerOptions): Container;
 
   /**
    * Clears and returns all distinct values cached by this container.
@@ -446,6 +447,6 @@ export interface Container {
 /**
  * Creates a new container.
  */
-export function createContainer(options?: Partial<ContainerOptions>): Container {
+export function createContainer(options?: ContainerOptions): Container {
   return new ContainerImpl(undefined, options);
 }

@@ -107,7 +107,7 @@ describe("inject", () => {
 
     class Wizard {
       wand1 = optionalBy(this, Wand);
-      wand2?: Wand;
+      wand2: Wand | undefined;
 
       setWand(@Optional(Wand) wand?: Wand): void {
         this.wand2 = wand;
