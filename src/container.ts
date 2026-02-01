@@ -13,14 +13,14 @@ export interface ContainerOptions {
    *
    * @defaultValue Transient
    */
-  readonly defaultScope: Scope;
+  readonly defaultScope?: Scope;
 
   /**
    * Whether to automatically register an unregistered class when resolving it as a token.
    *
    * @defaultValue false
    */
-  readonly autoRegister: boolean;
+  readonly autoRegister?: boolean;
 
   /**
    * Whether to also dispose values provided via {@link ValueProvider}, which are not
@@ -28,7 +28,7 @@ export interface ContainerOptions {
    *
    * @defaultValue false
    */
-  readonly disposeUnmanaged: boolean;
+  readonly disposeUnmanaged?: boolean;
 }
 
 /**
@@ -40,7 +40,7 @@ export interface ChildContainerOptions extends ContainerOptions {
    *
    * @defaultValue true
    */
-  readonly copyHooks: boolean;
+  readonly copyHooks?: boolean;
 }
 
 /**
@@ -80,7 +80,7 @@ export interface Container {
   /**
    * The options used to create this container.
    */
-  readonly options: ContainerOptions;
+  readonly options: Required<ContainerOptions>;
 
   /**
    * The parent container, or `undefined` if this is the root container.
@@ -97,7 +97,7 @@ export interface Container {
    *
    * You can pass specific options to override the inherited ones.
    */
-  createChild(options?: Partial<ChildContainerOptions>): Container;
+  createChild(options?: ChildContainerOptions): Container;
 
   /**
    * Clears and returns all distinct values cached by this container.
@@ -421,6 +421,6 @@ export interface Container {
 /**
  * Creates a new container.
  */
-export function createContainer(options?: Partial<ContainerOptions>): Container {
+export function createContainer(options?: ContainerOptions): Container {
   return new ContainerImpl(undefined, options);
 }

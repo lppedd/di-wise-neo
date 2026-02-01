@@ -37,12 +37,12 @@ import { isDisposable } from "./utils/disposable";
 export class ContainerImpl implements Container {
   private readonly myParent?: ContainerImpl;
   private readonly myChildren: Set<ContainerImpl> = new Set();
-  private readonly myOptions: ContainerOptions;
+  private readonly myOptions: Required<ContainerOptions>;
   private readonly myHookRegistry: HookRegistry;
   private readonly myTokenRegistry: TokenRegistry;
   private myDisposed: boolean = false;
 
-  constructor(parent?: ContainerImpl, options?: Partial<ChildContainerOptions>) {
+  constructor(parent?: ContainerImpl, options?: ChildContainerOptions) {
     this.myParent = parent;
     this.myOptions = {
       defaultScope: options?.defaultScope ?? "Transient",
@@ -59,7 +59,7 @@ export class ContainerImpl implements Container {
     return this.myTokenRegistry;
   }
 
-  get options(): ContainerOptions {
+  get options(): Required<ContainerOptions> {
     return {
       ...this.myOptions,
     };
