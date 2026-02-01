@@ -50,8 +50,8 @@ export interface Dependencies {
 
 // @internal
 export interface Registration<T> {
-  readonly name?: string | undefined;
   readonly provider: RegistrationProvider<T>;
+  readonly name?: string | undefined;
   readonly options?: RegistrationOptions | undefined;
   readonly dependencies?: Dependencies;
 
