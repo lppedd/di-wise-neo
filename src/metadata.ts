@@ -23,8 +23,7 @@ export class Metadata<This extends object> {
   autoRegister?: boolean;
   scope?: ScopeMetadata;
   tokenRef: TokenRef<This> = {
-    // prettier-ignore
-    getRefToken: () => { check(false, "internal: unexpected getRefToken call"); },
+    getRefToken: () => check(false, "internal: unexpected getRefToken call"),
     getRefTokens: () => new Set(),
   };
 
