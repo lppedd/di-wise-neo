@@ -577,8 +577,8 @@ export class ContainerImpl implements Container {
   private resolveDependency(dependency: MethodDependency, instance?: any): any {
     const token = dependency.tokenRef!.getRefToken();
     check(token, `token passed to @${dependency.appliedBy} was undefined (possible circular imports)`);
-
     const name = dependency.name;
+
     switch (dependency.appliedBy) {
       case "Inject":
         return instance ? injectBy(instance, token, name) : this.resolve(token, name);
