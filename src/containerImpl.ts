@@ -30,14 +30,15 @@ import type { Scope } from "./scope";
 import { type Constructor, isConstructor, type ProviderType, type Token } from "./token";
 import { isBuilder, type MethodDependency, type Registration, type RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 import { isDisposable } from "./utils/disposable";
+import type { RequiredNonNullable } from "./utils/requiredNonNullable";
 
 /**
  * The default implementation of a di-wise-neo {@link Container}.
  */
 export class ContainerImpl implements Container {
-  private readonly myParent?: ContainerImpl;
+  private readonly myParent: ContainerImpl | undefined;
   private readonly myChildren: Set<ContainerImpl> = new Set();
-  private readonly myOptions: Required<ContainerOptions>;
+  private readonly myOptions: RequiredNonNullable<ContainerOptions>;
   private readonly myHookRegistry: HookRegistry;
   private readonly myTokenRegistry: TokenRegistry;
   private myDisposed: boolean = false;
@@ -59,7 +60,7 @@ export class ContainerImpl implements Container {
     return this.myTokenRegistry;
   }
 
-  get options(): Required<ContainerOptions> {
+  get options(): RequiredNonNullable<ContainerOptions> {
     return {
       ...this.myOptions,
     };
@@ -79,7 +80,7 @@ export class ContainerImpl implements Container {
       defaultScope: options?.defaultScope ?? this.myOptions.defaultScope,
       autoRegister: options?.autoRegister ?? this.myOptions.autoRegister,
       disposeUnmanaged: options?.disposeUnmanaged ?? this.myOptions.disposeUnmanaged,
-      copyHooks: options?.copyHooks,
+      copyHooks: options?.copyHooks ?? true,
     });
 
     this.myChildren.add(container);
@@ -133,7 +134,7 @@ export class ContainerImpl implements Container {
   register<T>(
     ...args:
       | [Constructor<T & object> | ProviderType<T>] //
-      | [Token<T>, Provider<T>, RegistrationOptions?]
+      | [Token<T>, Provider<T>, (RegistrationOptions | undefined)?]
   ): Container {
     this.checkDisposed();
 
@@ -386,7 +387,7 @@ export class ContainerImpl implements Container {
     }
   }
 
-  private getTargetToken<T>(provider: ExistingProvider<T>): [Token<T>, string?] {
+  private getTargetToken<T>(provider: ExistingProvider<T>): [Token<T>, (string | undefined)?] {
     const token = provider.useExisting;
     return Array.isArray(token) ? token : [token];
   }

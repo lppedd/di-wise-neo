@@ -367,8 +367,8 @@ describe("Container", () => {
 
     @Scoped("Container")
     class Wizard {
-      castle?: Castle;
-      wands?: Wand[];
+      castle: Castle | undefined;
+      wands: Wand[] | undefined;
 
       setCastle(@Optional(Castle) castle?: Castle): void {
         this.castle = castle;

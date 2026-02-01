@@ -27,7 +27,7 @@ export interface ClassProvider<Instance extends object> {
    * }
    * ```
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 }
 
 /**
@@ -57,7 +57,7 @@ export interface FactoryProvider<Value> {
    * }
    * ```
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 }
 
 /**
@@ -84,7 +84,7 @@ export interface ValueProvider<Value> {
    * }
    * ```
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 }
 
 /**
@@ -108,7 +108,7 @@ export interface ExistingProvider<Value> {
    * });
    * ```
    */
-  readonly useExisting: Token<Value> | [Token<Value>, string?];
+  readonly useExisting: Token<Value> | [Token<Value>, (string | undefined)?];
 
   /**
    * An optional name to qualify this provider.
@@ -125,7 +125,7 @@ export interface ExistingProvider<Value> {
    * }
    * ```
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 }
 
 /**

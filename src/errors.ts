@@ -2,7 +2,7 @@ import type { Constructor, Token } from "./token";
 import type { MethodDependency } from "./tokenRegistry";
 
 // @internal
-export type TokenInfo = [Token<any>?, string?];
+export type TokenInfo = [Token<any>?, (string | undefined)?];
 
 // @internal
 export function check(condition: false, message: string): never;

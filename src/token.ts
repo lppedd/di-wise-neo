@@ -41,7 +41,7 @@ export interface ProviderType<T> extends Type<T> {
   /**
    * The type's default registration options.
    */
-  readonly options?: RegistrationOptions;
+  readonly options?: RegistrationOptions | undefined;
 }
 
 /**

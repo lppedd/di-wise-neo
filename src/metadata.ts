@@ -19,8 +19,8 @@ export class Metadata<This extends object> {
     methods: new Map(),
   };
 
-  eagerInstantiate?: boolean;
-  autoRegister?: boolean;
+  eagerInstantiate?: boolean | undefined;
+  autoRegister?: boolean | undefined;
   scope?: ScopeMetadata;
   tokenRef: TokenRef<This> = {
     getRefToken: () => check(false, "internal: unexpected getRefToken call"),
