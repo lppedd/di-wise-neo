@@ -1,9 +1,12 @@
 import { ContainerImpl } from "./containerImpl";
-import type { ClassProvider, ExistingProvider, FactoryProvider, ValueProvider } from "./provider";
+import type { ClassProvider, ExistingProvider, FactoryProvider, Provider, ValueProvider } from "./provider";
 import type { Scope } from "./scope";
 import type { Constructor, ProviderType, Token } from "./token";
 import type { RegistrationOptions, TokenRegistry } from "./tokenRegistry";
 import type { RequiredNonNullable } from "./utils/requiredNonNullable";
+
+type ProviderFor<V> = V extends object ? Provider<V> : Exclude<Provider<V>, ClassProvider<any>>;
+type RegistrationOptionsFor<P> = P extends ValueProvider<any> ? never : RegistrationOptions;
 
 /**
  * Container creation options.
@@ -165,6 +168,28 @@ export interface Container {
    * Registers a token type with a default {@link Provider} and optional default registration options.
    */
   register<Value>(token: ProviderType<Value>): Container;
+
+  /**
+   * Registers a {@link Provider} with a token or class.
+   *
+   * The provider must be one of:
+   * - {@link ClassProvider} via `useClass`
+   * - {@link FactoryProvider} via `useFactory`
+   * - {@link ValueProvider} via `useValue`
+   * - {@link ExistingProvider} via `useExisting`
+   *
+   * For {@link ClassProvider} registrations, the default scope is determined by the {@link Scoped}
+   * decorator applied to the provided class - if present - or by the {@link ContainerOptions.defaultScope}
+   * value, but it can be overridden by passing explicit registration options.
+   *
+   * For {@link ValueProvider} registrations, the provided value is returned as-is and never cached,
+   * and registration options do not apply.
+   */
+  register<Value, ProviderValue extends Value, Provider extends ProviderFor<ProviderValue>>(
+    token: Token<Value>,
+    provider: ProviderFor<ProviderValue> & Provider,
+    options?: RegistrationOptionsFor<Provider>,
+  ): Container;
 
   /**
    * Registers a {@link ClassProvider} with a token.
