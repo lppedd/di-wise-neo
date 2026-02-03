@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.22.0
+
+- Improved editor code completion for `Container.register` calls.  
+  TS Server-based completion (e.g., in VS Code) now suggests all available provider types
+  (`useClass`, `useFactory`, `useValue`, `useExisting`) instead of just `useClass`.
+- Enabled TypeScript's `exactOptionalPropertyTypes` compiler option.  
+  This provides more accurate type support for stricter TypeScript consumers.
+
 ## 0.21.1
 
 - Added missing dispose checks in `Container.addHook` and `Container.removeHook`.
