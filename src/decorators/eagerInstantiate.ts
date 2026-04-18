@@ -6,8 +6,10 @@ import type { ClassDecorator } from "./decorators";
  * Class decorator that sets the class scope to **Container** and enables
  * eager instantiation when the class is registered in the container.
  *
- * This causes the container to immediately create and cache the instance of the class,
- * instead of deferring instantiation until the first resolution.
+ * This causes the container to create and cache the instance of the class
+ * immediately, instead of deferring it until the first resolution.
+ *
+ * If the class cannot be resolved at registration time, registration fails.
  *
  * Example:
  * ```ts
@@ -15,7 +17,7 @@ import type { ClassDecorator } from "./decorators";
  * class Wizard {}
  *
  * // Wizard is registered with Container scope, and an instance
- * // is immediately created and cached by the container
+ * // is created and cached immediately by the container
  * container.register(Wizard);
  * ```
  */

@@ -6,7 +6,7 @@ import type { Constructor, Token } from "./token";
  * or `undefined` if the class is not registered in the container.
  *
  * Throws an error if a circular dependency is detected.
- * Use {@link optionalBy} if resolving circular dependencies is necessary.
+ * Use {@link optionalBy} when you need to resolve circular dependencies.
  */
 export function optional<Instance extends object>(Class: Constructor<Instance>, name?: string): Instance | undefined;
 
@@ -15,7 +15,7 @@ export function optional<Instance extends object>(Class: Constructor<Instance>, 
  * or `undefined` if the token is not registered in the container.
  *
  * Throws an error if a circular dependency is detected.
- * Use {@link optionalBy} if resolving circular dependencies is necessary.
+ * Use {@link optionalBy} when you need to resolve circular dependencies.
  */
 export function optional<Value>(token: Token<Value>, name?: string): Value | undefined;
 

@@ -5,17 +5,18 @@ import type { ClassDecorator, ParameterDecorator } from "./decorators";
 import { checkNamedDecorator, describeParam, updateParameterMetadata } from "./utils";
 
 /**
- * Qualifies a class or an injected parameter with a unique name.
+ * Qualifies a class or an injected parameter with a name.
  *
- * This allows the container to distinguish between multiple implementations
- * of the same interface or type during registration and injection.
+ * On a class, the name is used when registering that class with the container.
+ * On a parameter, the name selects a named registration or alias during injection.
+ *
+ * This is useful when multiple registrations exist for the same token.
  *
  * Example:
  * ```ts
  * @Named("dumbledore")
  * class Dumbledore implements Wizard {}
  *
- * // Register Dumbledore with Type<Wizard>
  * container.register(IWizard, { useClass: Dumbledore });
  * const dumbledore = container.resolve(IWizard, "dumbledore");
  * ```

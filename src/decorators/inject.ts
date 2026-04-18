@@ -8,8 +8,9 @@ import { checkSingleDecorator, updateParameterMetadata } from "./utils";
  *
  * Throws an error if:
  * - The class is not registered in the container.
- * - A circular dependency is detected. Use function injection with {@link injectBy}
- *   if resolving circular dependencies is necessary.
+ * - A circular dependency is detected.
+ *
+ * Use {@link injectBy} when you need to resolve circular dependencies.
  */
 export function Inject<Instance extends object>(Class: Constructor<Instance>): ParameterDecorator;
 
@@ -18,8 +19,9 @@ export function Inject<Instance extends object>(Class: Constructor<Instance>): P
  *
  * Throws an error if:
  * - The token is not registered in the container.
- * - A circular dependency is detected. Use function injection with {@link injectBy}
- *   if resolving circular dependencies is necessary.
+ * - A circular dependency is detected.
+ *
+ * Use {@link injectBy} when you need to resolve circular dependencies.
  */
 export function Inject<Value>(token: Token<Value>): ParameterDecorator;
 
@@ -31,8 +33,9 @@ export function Inject<Value>(token: Token<Value>): ParameterDecorator;
  *
  * Throws an error if:
  * - The token is not registered in the container.
- * - A circular dependency is detected. Use function injection with {@link injectBy}
- *   if resolving circular dependencies is necessary.
+ * - A circular dependency is detected.
+ *
+ * Use function injection with {@link injectBy} when you need to resolve circular dependencies.
  *
  * Example:
  * ```ts
