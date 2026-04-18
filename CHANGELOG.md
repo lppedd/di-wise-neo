@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.23.0
+
+- Added dedicated class decorators per registration scope:
+  - `@ContainerScoped()`
+  - `@ResolutionScoped()`
+  - `@TransientScoped()`
+
+  These decorators make scoped registration more readable. For example:
+  ```ts
+  // Before
+  @Scoped("Container")
+  class Wizard {
+    // ...
+  }
+
+  // After
+  @ContainerScoped()
+  class Wizard {
+    // ...
+  }
+  ```
+
+- Improved the error message shown when multiple scope decorators conflict on the same class.
+- Improved a couple of JSDoc comments for better readability.
+
 ## 0.22.0
 
 - Improved editor code completion for `Container.register` calls.  
@@ -77,21 +102,20 @@ features are in place for `1.0.0`.
   Since `@Inject` is both frequently used and relatively verbose, this change improves
   DevEx by reducing repetitive boilerplate code.
 
-  Before:
   ```ts
+  // Before
   class Extension {
     constructor(@Inject(ILogOutputChannel) readonly log: vscode.LogOutputChannel) {}
     /* ... */
   }
-  ```
 
-  After:
-  ```ts
+  // After
   class Extension {
     constructor(@ILogOutputChannel readonly log: vscode.LogOutputChannel) {}
     /* ... */
   }
   ```
+
 - Refactored internals to ensure better type correctness and long-term maintainability.
 
 ## 0.16.0
@@ -156,7 +180,7 @@ features are in place for `1.0.0`.
 ## 0.13.0
 
 - Removed the `Type.inter` and `Type.union` utility functions.  
-  They were untested, and revealed to be practically unnecessary in real-world usages.
+  They were untested and revealed to be practically unnecessary in real-world usages.
 
 ## 0.12.1
 
@@ -170,16 +194,12 @@ features are in place for `1.0.0`.
 
   This change simplifies the container API and reduces long-term maintenance effort.
 
-  #### Before
-
   ```ts
+  // Before
   container.resolve(token, true /* optional */);
   container.resolveAll(token, true /* optional */);
-  ```
 
-  #### After
-
-  ```ts
+  // After
   container.tryResolve(token);
   container.tryResolveAll(token);
   ```
