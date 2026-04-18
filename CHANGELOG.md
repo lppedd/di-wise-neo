@@ -7,7 +7,7 @@
   - `@ResolutionScoped()`
   - `@TransientScoped()`
 
-  These decorators make scoped registration more readable. For example:
+  These decorators make scoped registration more readable and less error-prone. For example:
   ```ts
   // Before
   @Scoped("Container")
