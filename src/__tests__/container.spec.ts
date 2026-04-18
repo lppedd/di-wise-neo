@@ -784,9 +784,9 @@ describe("Container", () => {
       class Wizard {}
     }).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] class Wizard: scope Container was already set by another @ContainerScoped decorator,
+      [Error: [di-wise-neo] class Wizard: scope Container was already set by @ContainerScoped,
         but @TransientScoped is trying to set a conflicting scope Transient.
-        Only one decorator should set the class scope, or all must agree on the same value.]
+        Only one decorator should set the class scope, or all must use the same value.]
       `,
     );
 
@@ -798,7 +798,7 @@ describe("Container", () => {
       `
       [Error: [di-wise-neo] class Wizard: scope Transient was already set by @TransientScoped,
         but @EagerInstantiate is trying to set a conflicting scope Container.
-        Only one decorator should set the class scope, or all must agree on the same value.]
+        Only one decorator should set the class scope, or all must use the same value.]
       `,
     );
 
@@ -810,7 +810,7 @@ describe("Container", () => {
       `
       [Error: [di-wise-neo] class Wizard: scope Container was already set by @EagerInstantiate,
         but @Scoped is trying to set a conflicting scope Transient.
-        Only one decorator should set the class scope, or all must agree on the same value.]
+        Only one decorator should set the class scope, or all must use the same value.]
       `,
     );
   });

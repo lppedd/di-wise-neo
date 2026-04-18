@@ -90,12 +90,12 @@ function scoped<This extends object>(scope: Scope, decorator: ScopeDecorator): C
     const currentScope = metadata.scope;
     check(!currentScope || currentScope.value === scope, () => {
       const { value, appliedBy } = currentScope!;
-      const by = appliedBy === "EagerInstantiate" ? `@${appliedBy}` : `another @${appliedBy} decorator`;
+      const by = appliedBy === "Scoped" ? `${appliedBy}(${value})` : appliedBy;
       const className = getTokenName(Class);
       return (
-        `class ${className}: scope ${value} was already set by ${by},\n  ` +
+        `class ${className}: scope ${value} was already set by @${by},\n  ` +
         `but @${decorator} is trying to set a conflicting scope ${scope}.\n  ` +
-        `Only one decorator should set the class scope, or all must agree on the same value.`
+        `Only one decorator should set the class scope, or all must use the same value.`
       );
     });
 

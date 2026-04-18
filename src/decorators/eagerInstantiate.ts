@@ -28,11 +28,12 @@ export function EagerInstantiate<This extends object>(): ClassDecorator<This> {
     const currentScope = metadata.scope;
     check(!currentScope || currentScope.value === "Container", () => {
       const { value, appliedBy } = currentScope!;
+      const by = appliedBy === "Scoped" ? `${appliedBy}(${value})` : appliedBy;
       const className = getTokenName(Class);
       return (
-        `class ${className}: scope ${value} was already set by @${appliedBy},\n  ` +
+        `class ${className}: scope ${value} was already set by @${by},\n  ` +
         `but @EagerInstantiate is trying to set a conflicting scope Container.\n  ` +
-        `Only one decorator should set the class scope, or all must agree on the same value.`
+        `Only one decorator should set the class scope, or all must use the same value.`
       );
     });
 
