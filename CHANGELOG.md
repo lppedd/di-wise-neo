@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.23.1
+
+- Changed `injectBy` and `optionalBy` to use `object` instead of `any` for `thisArg`, for better type safety.
+
 ## 0.23.0
 
 - Added dedicated class decorators per registration scope:
