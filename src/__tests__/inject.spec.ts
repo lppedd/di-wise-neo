@@ -47,7 +47,7 @@ describe("inject", () => {
     expect(() => {
       class Wizard {
         constructor() {
-          setTimeout(() => injectBy(Wand, Wand));
+          setTimeout(() => injectBy(this, Wand));
         }
       }
 

@@ -25,7 +25,7 @@ import type { Constructor, Token } from "./token";
  * @param Class - The class to resolve.
  * @param name - The name qualifier of the class to resolve.
  */
-export function injectBy<Instance extends object>(thisArg: any, Class: Constructor<Instance>, name?: string): Instance;
+export function injectBy<Instance extends object>(thisArg: object, Class: Constructor<Instance>, name?: string): Instance;
 
 /**
  * Injects the value associated with the given token.
@@ -50,9 +50,9 @@ export function injectBy<Instance extends object>(thisArg: any, Class: Construct
  * @param token - The token to resolve.
  * @param name - The name qualifier of the token to resolve.
  */
-export function injectBy<Value>(thisArg: any, token: Token<Value>, name?: string): Value;
+export function injectBy<Value>(thisArg: object, token: Token<Value>, name?: string): Value;
 
-export function injectBy<T>(thisArg: any, token: Token<T>, name?: string): T {
+export function injectBy<T>(thisArg: object, token: Token<T>, name?: string): T {
   const context = ensureInjectionContext("injectBy()");
   const resolution = context.resolution;
   const currentFrame = resolution.stack.peek();

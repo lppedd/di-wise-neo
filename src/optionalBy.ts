@@ -14,7 +14,7 @@ import type { Constructor, Token } from "./token";
  * @param name - The name qualifier of the class to resolve.
  */
 export function optionalBy<Instance extends object>(
-  thisArg: any,
+  thisArg: object,
   Class: Constructor<Instance>,
   name?: string,
 ): Instance | undefined;
@@ -30,9 +30,9 @@ export function optionalBy<Instance extends object>(
  * @param token - The token to resolve.
  * @param name - The name qualifier of the token to resolve.
  */
-export function optionalBy<Value>(thisArg: any, token: Token<Value>, name?: string): Value | undefined;
+export function optionalBy<Value>(thisArg: object, token: Token<Value>, name?: string): Value | undefined;
 
-export function optionalBy<T>(thisArg: any, token: Token<T>, name?: string): T | undefined {
+export function optionalBy<T>(thisArg: object, token: Token<T>, name?: string): T | undefined {
   const context = ensureInjectionContext("optionalBy()");
   const resolution = context.resolution;
   const currentFrame = resolution.stack.peek();
