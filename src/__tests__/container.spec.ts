@@ -426,6 +426,7 @@ describe("Container", () => {
 
   it("should throw when @Inject is applied to static methods", () => {
     expect(() => {
+      // eslint-disable-next-line no-useless-assignment
       const Wand = createType<string>("Wand");
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -437,6 +438,7 @@ describe("Container", () => {
 
   it("should throw when @Optional is applied to static methods", () => {
     expect(() => {
+      // eslint-disable-next-line no-useless-assignment
       const Wand = createType<string>("Wand");
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -448,6 +450,7 @@ describe("Container", () => {
 
   it("should throw when @InjectAll is applied to static methods", () => {
     expect(() => {
+      // eslint-disable-next-line no-useless-assignment
       const Wand = createType<string>("Wand");
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -459,6 +462,7 @@ describe("Container", () => {
 
   it("should throw when @OptionalAll is applied to static methods", () => {
     expect(() => {
+      // eslint-disable-next-line no-useless-assignment
       const Wand = createType<string>("Wand");
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
