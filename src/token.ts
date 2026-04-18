@@ -99,15 +99,14 @@ export function createType<T>(
   options?: RegistrationOptions,
 ): Type<T> | ProviderType<T> {
   const name = `Type<${typeName}>`;
-  const decorator: ParameterDecorator = (target, propertyKey, parameterIndex) => {
+  const type = ((target, propertyKey, parameterIndex): void => {
     updateParameterMetadata(name, target, propertyKey, parameterIndex, (dependency) => {
       checkSingleDecorator(dependency, target, propertyKey, parameterIndex);
       dependency.appliedBy = "Inject";
-      dependency.tokenRef = tokenRef(() => decorator as Type<T>);
+      dependency.tokenRef = tokenRef(() => type as Type<T>);
     });
-  };
+  }) as ParameterDecorator & Writable<ProviderType<T>>;
 
-  const type = decorator as ParameterDecorator & Writable<ProviderType<T>>;
   Object.defineProperty(type, "name", { value: name });
 
   if (provider) {
