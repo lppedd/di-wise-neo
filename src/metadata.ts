@@ -6,9 +6,12 @@ import type { ConstructorProvider, Dependencies, MethodDependency } from "./toke
 import type { Writable } from "./utils/writable";
 
 // @internal
+export type ScopeDecorator = "Scoped" | "TransientScoped" | "ResolutionScoped" | "ContainerScoped";
+
+// @internal
 export interface ScopeMetadata {
   readonly value: Scope;
-  readonly appliedBy: "Scoped" | "EagerInstantiate";
+  readonly appliedBy: ScopeDecorator | "EagerInstantiate";
 }
 
 // @internal

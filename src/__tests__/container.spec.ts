@@ -8,6 +8,7 @@ import {
   build,
   classRef,
   type ContainerHook,
+  ContainerScoped,
   createContainer,
   createType,
   EagerInstantiate,
@@ -21,8 +22,10 @@ import {
   optional,
   OptionalAll,
   optionalAll,
+  ResolutionScoped,
   Scoped,
-  tokenRef
+  tokenRef,
+  TransientScoped,
 } from "..";
 import { useInjectionContext } from "../injectionContext";
 
@@ -776,24 +779,24 @@ describe("Container", () => {
 
   it("should throw when conflicting class scopes are set by decorators", () => {
     expect(() => {
-      @Scoped("Transient")
-      @Scoped("Container") // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      @TransientScoped()
+      @ContainerScoped() // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {}
     }).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] class Wizard: scope Container was already set by another @Scoped decorator,
-        but @Scoped is trying to set a conflicting scope Transient.
+      [Error: [di-wise-neo] class Wizard: scope Container was already set by another @ContainerScoped decorator,
+        but @TransientScoped is trying to set a conflicting scope Transient.
         Only one decorator should set the class scope, or all must agree on the same value.]
       `,
     );
 
     expect(() => {
       @EagerInstantiate()
-      @Scoped("Transient") // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      @TransientScoped() // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {}
     }).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] class Wizard: scope Transient was already set by @Scoped,
+      [Error: [di-wise-neo] class Wizard: scope Transient was already set by @TransientScoped,
         but @EagerInstantiate is trying to set a conflicting scope Container.
         Only one decorator should set the class scope, or all must agree on the same value.]
       `,
@@ -1181,7 +1184,7 @@ describe("Container", () => {
   });
 
   it("should resolve resolution scoped providers", () => {
-    @Scoped("Resolution")
+    @ResolutionScoped()
     class Decoration {}
 
     class Wand {

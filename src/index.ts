@@ -2,6 +2,7 @@ export type { ChildContainerOptions, Container, ContainerHook, ContainerOptions 
 export { createContainer } from "./container";
 export {
   AutoRegister,
+  ContainerScoped,
   EagerInstantiate,
   Inject,
   Injectable,
@@ -9,7 +10,9 @@ export {
   Named,
   Optional,
   OptionalAll,
+  ResolutionScoped,
   Scoped,
+  TransientScoped,
 } from "./decorators";
 export { inject } from "./inject";
 export { injectAll } from "./injectAll";
