@@ -23,7 +23,7 @@ import { checkNamedDecorator, describeParam, updateParameterMetadata } from "./u
 // @__NO_SIDE_EFFECTS__
 export function Named<This extends object>(name: string): ClassDecorator<This> & ParameterDecorator {
   check(name.trim(), "@Named qualifier must not be empty");
-  return function (target: object, propertyKey?: string | symbol, parameterIndex?: number): void {
+  return (target: object, propertyKey?: string | symbol, parameterIndex?: number): void => {
     if (parameterIndex === undefined) {
       // The decorator has been applied to the class
       const Class = target as Constructor<This>;

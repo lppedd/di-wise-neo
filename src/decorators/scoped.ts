@@ -85,7 +85,7 @@ export function Scoped<This extends object>(scope: Scope): ClassDecorator<This> 
 }
 
 function scoped<This extends object>(scope: Scope, decorator: ScopeDecorator): ClassDecorator<This> {
-  return function (Class): void {
+  return (Class): void => {
     const metadata = getMetadata(Class);
     const currentScope = metadata.scope;
     check(!currentScope || currentScope.value === scope, () => {

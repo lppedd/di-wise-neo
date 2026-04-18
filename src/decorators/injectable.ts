@@ -83,7 +83,7 @@ export function Injectable<Value, This extends Value & object>(tokens: TokenRef<
 
 // @__NO_SIDE_EFFECTS__
 export function Injectable<This extends object>(...args: [...Tokens<This>] | [TokenRef<This>]): ClassDecorator<This> {
-  return function (Class): void {
+  return (Class): void => {
     const metadata = getMetadata(Class);
     const arg0 = args[0];
     const ref = isTokenRef(arg0) ? arg0 : tokenRef(() => args as Tokens<This>);

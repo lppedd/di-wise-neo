@@ -21,7 +21,7 @@ import type { ClassDecorator } from "./decorators";
  */
 // @__NO_SIDE_EFFECTS__
 export function EagerInstantiate<This extends object>(): ClassDecorator<This> {
-  return function (Class): void {
+  return (Class): void => {
     const metadata = getMetadata(Class);
     const currentScope = metadata.scope;
     check(!currentScope || currentScope.value === "Container", () => {

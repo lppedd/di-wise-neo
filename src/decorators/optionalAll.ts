@@ -44,7 +44,7 @@ export function OptionalAll<Value>(tokens: TokenRef<Value>): ParameterDecorator;
 
 // @__NO_SIDE_EFFECTS__
 export function OptionalAll<T>(token: Token<T> | TokenRef<T>): ParameterDecorator {
-  return function (target, propertyKey, parameterIndex): void {
+  return (target, propertyKey, parameterIndex): void => {
     updateParameterMetadata("OptionalAll", target, propertyKey, parameterIndex, (dependency) => {
       checkSingleDecorator(dependency, target, propertyKey, parameterIndex);
       dependency.appliedBy = "OptionalAll";
