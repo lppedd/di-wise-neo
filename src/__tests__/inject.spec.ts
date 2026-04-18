@@ -7,6 +7,7 @@ import {
   assertInjectionContext,
   AutoRegister,
   build,
+  ContainerScoped,
   createContainer,
   Inject,
   inject,
@@ -240,6 +241,24 @@ describe("inject", () => {
       const wizard = injector.runInContext(() => optional(Wizard));
       expect(wizard).not.toBeUndefined();
       expect(wizard).toBe(container.resolve(Wizard));
+    });
+
+    it("should not throw on optional resolution", () => {
+      @ContainerScoped()
+      class Wand {}
+
+      const injector = container.resolve(Injector);
+      expect(() => injector.inject(Wand)).toThrow();
+      expect(() => injector.injectAll(Wand)).toThrow();
+
+      expect(injector.optional(Wand)).toBeUndefined();
+      expect(injector.optionalAll(Wand)).toEqual([]);
+
+      container.register(Wand);
+
+      const wand = injector.optional(Wand);
+      expect(wand).toBeInstanceOf(Wand);
+      expect(injector.optionalAll(Wand)).toStrictEqual([wand]);
     });
 
     it("should not throw a circular dependency error", () => {
