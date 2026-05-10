@@ -187,11 +187,11 @@ export function isBuilder(provider: Provider<any>): boolean {
 export function build<Value>(factory: (...args: []) => Value): Type<Value>;
 
 // @internal
-export function build<Value>(factory: (...args: []) => Value, name: string): Type<Value>;
+export function build<Value>(factory: (...args: []) => Value, debugName: string): Type<Value>;
 
 // @__NO_SIDE_EFFECTS__
-export function build<Value>(factory: (...args: []) => Value, name?: string): Type<Value> {
-  const token = createType<Value>(name ?? `Build<${getTypeName(factory)}>`);
+export function build<Value>(factory: (...args: []) => Value, debugName?: string): Type<Value> {
+  const token = createType<Value>(debugName ?? `Build<${getTypeName(factory)}>`);
   const provider: FactoryProvider<Value> = {
     useFactory: factory,
   };
