@@ -674,7 +674,7 @@ describe("Container", () => {
     );
 
     expect(() => container.resolve(Env, "Node")).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] unregistered token Type<Env>["Node"]]`,
+      `[Error: [di-wise-neo] unregistered token Type<Env>['Node']]`,
     );
 
     expect(() => container.resolveAll(Env)).toThrowErrorMatchingInlineSnapshot(
@@ -689,7 +689,7 @@ describe("Container", () => {
     );
 
     expect(() => container.resolve(Wizard, "Voldemort")).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] unregistered token Wizard["Voldemort"]]`,
+      `[Error: [di-wise-neo] unregistered token Wizard['Voldemort']]`,
     );
 
     expect(() => container.resolveAll(Wizard)).toThrowErrorMatchingInlineSnapshot(
@@ -702,7 +702,7 @@ describe("Container", () => {
     class Wand {}
 
     expect(() => container.resolve(Wand, "Weasley")).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] unregistered token Wand["Weasley"]]`,
+      `[Error: [di-wise-neo] unregistered token Wand['Weasley']]`,
     );
 
     expect(container.resolve(Wand)).toBe(container.resolve(Wand, "Potter"));
@@ -838,8 +838,8 @@ describe("Container", () => {
 
     expect(() => container.register(Wizard)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] failed to resolve dependency for Wizard(parameter #0: Type<Castle>["Hogwarts"])
-        [cause] unregistered token Type<Castle>["Hogwarts"]]
+      [Error: [di-wise-neo] failed to resolve dependency for Wizard(parameter #0: Type<Castle>['Hogwarts'])
+        [cause] unregistered token Type<Castle>['Hogwarts']]
       `,
     );
   });
@@ -1007,7 +1007,7 @@ describe("Container", () => {
 
     container.register(Wizard);
     expect(() => container.register(Wizard)).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] token Wizard with name 'Dumbledore' is already registered]`,
+      `[Error: [di-wise-neo] token Wizard['Dumbledore'] is already registered]`,
     );
   });
 
@@ -1025,7 +1025,7 @@ describe("Container", () => {
     );
 
     expect(() => container.resolve(Registered, "Unregistered")).toThrowErrorMatchingInlineSnapshot(
-      `[Error: [di-wise-neo] unregistered token Registered["Unregistered"]]`,
+      `[Error: [di-wise-neo] unregistered token Registered['Unregistered']]`,
     );
 
     expect(container.tryResolveAll(Registered)).toEqual([]);
@@ -1055,8 +1055,8 @@ describe("Container", () => {
 
     expect(() => container.resolve(Alias3)).toThrowErrorMatchingInlineSnapshot(
       `
-      [Error: [di-wise-neo] failed to resolve token Alias3 (alias for Alias2 → Alias1 → Target["Difficult"])
-        [cause] useExisting points to unregistered token Target["Difficult"]]
+      [Error: [di-wise-neo] failed to resolve token Alias3 (alias for Alias2 → Alias1 → Target['Difficult'])
+        [cause] useExisting points to unregistered token Target['Difficult']]
       `,
     );
 

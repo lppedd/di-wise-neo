@@ -1,4 +1,4 @@
-import { check, getTokenName } from "./errors";
+import { check, getFullTokenName } from "./errors";
 import type { ExistingProvider, FactoryProvider, Provider, ValueProvider } from "./provider";
 import type { Scope } from "./scope";
 import { type Constructor, createType, type Token, type Type } from "./token";
@@ -91,7 +91,7 @@ export class TokenRegistry {
 
       if (name !== undefined) {
         const existing = registrations.filter((r) => r.name === name);
-        check(existing.length === 0, `token ${getTokenName(token)} with name '${name}' is already registered`);
+        check(existing.length === 0, `token ${getFullTokenName([token, name])} is already registered`);
       }
     } else {
       this.myRegistrations.set(token, (registrations = []));
