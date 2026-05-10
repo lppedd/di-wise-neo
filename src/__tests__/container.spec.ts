@@ -25,7 +25,7 @@ import {
   ResolutionScoped,
   Scoped,
   tokenRef,
-  TransientScoped,
+  TransientScoped
 } from "..";
 import { useInjectionContext } from "../injectionContext";
 
@@ -425,15 +425,21 @@ describe("Container", () => {
   });
 
   it("should throw when @Inject is applied to static methods", () => {
-    expect(() => {
-      // eslint-disable-next-line no-useless-assignment
-      const Wand = createType<string>("Wand");
+    const Wand = createType<string>("Wand");
 
+    expect(() => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {
         static setWand(@Inject(Wand) _wand: string): void {}
       }
     }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] @Inject cannot be used on static method Wizard.setWand]`);
+
+    expect(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      class Wizard {
+        static setWand(@Wand _wand: string): void {}
+      }
+    }).toThrowErrorMatchingInlineSnapshot(`[Error: [di-wise-neo] @Wand cannot be used on static method Wizard.setWand]`);
   });
 
   it("should throw when @Optional is applied to static methods", () => {

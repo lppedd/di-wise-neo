@@ -10,9 +10,14 @@ import type { Writable } from "./utils/writable";
  */
 export interface Type<T> extends ParameterDecorator {
   /**
-   * The name of the type.
+   * The type's presentable name, in the `Type<debugName>` format.
    */
   readonly name: string;
+
+  /**
+   * The type's debug name, as passed to {@link createType}.
+   */
+  readonly debugName: string;
 
   /**
    * Ensures that different `Type<T>` types are not structurally compatible.
@@ -22,11 +27,6 @@ export interface Type<T> extends ParameterDecorator {
    * @private
    */
   readonly __type: T | undefined;
-
-  /**
-   * Returns the type's {@link Type.name|name}.
-   */
-  readonly toString: () => string;
 }
 
 /**
@@ -75,7 +75,7 @@ export type Tokens<Value> = [Token<Value>, ...Token<Value>[]];
  * });
  * ```
  */
-export function createType<T>(typeName: string): Type<T>;
+export function createType<T>(debugName: string): Type<T>;
 
 /**
  * Creates a type token with a default {@link Provider} and optional default registration options.
@@ -90,32 +90,33 @@ export function createType<T>(typeName: string): Type<T>;
  * container.register(ISpell);
  * ```
  */
-export function createType<T>(typeName: string, provider: Provider<T>, options?: RegistrationOptions): ProviderType<T>;
+export function createType<T>(debugName: string, provider: Provider<T>, options?: RegistrationOptions): ProviderType<T>;
 
 // @__NO_SIDE_EFFECTS__
 export function createType<T>(
-  typeName: string,
+  debugName: string,
   provider?: Provider<T>,
   options?: RegistrationOptions,
 ): Type<T> | ProviderType<T> {
-  const name = `Type<${typeName}>`;
   const type = ((target, propertyKey, parameterIndex): void => {
-    updateParameterMetadata(name, target, propertyKey, parameterIndex, (dependency) => {
+    updateParameterMetadata(debugName, target, propertyKey, parameterIndex, (dependency) => {
       checkSingleDecorator(dependency, target, propertyKey, parameterIndex);
       dependency.appliedBy = "Inject";
       dependency.tokenRef = tokenRef(() => type as Type<T>);
     });
   }) as ParameterDecorator & Writable<ProviderType<T>>;
 
+  const name = `Type<${debugName}>`;
   Object.defineProperty(type, "name", { value: name });
+  type.debugName = debugName;
+  type.__type = undefined;
+  type.toString = () => name;
 
   if (provider) {
     type.provider = provider;
     type.options = options;
   }
 
-  type.__type = undefined;
-  type.toString = () => name;
   return type;
 }
 
