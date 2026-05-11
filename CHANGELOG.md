@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.24.0
+
+This is an ergonomics-focused release that makes class decorators easier to use.
+
+Several no-argument class decorator factories can now be used directly as decorators, without the trailing `()`.
+The previous factory form remains temporarily supported for compatibility but is now deprecated in favor of
+the shorter syntax.
+
+### Why?
+
+These decorators do not take any configuration, so requiring `()` adds visual noise without value.
+It also makes completion slightly more awkward in IDEs as they typically complete the decorator name but
+do not automatically insert the factory parentheses.
+
+### Changes
+
+A quick Find & Replace should be enough to update all your usages.
+
+| Before                | After               |
+|:----------------------|:--------------------|
+| `@AutoRegister()`     | `@AutoRegister`     |
+| `@EagerInstantiate()` | `@EagerInstantiate` |
+| `@ContainerScoped()`  | `@ContainerScoped`  |
+| `@ResolutionScoped()` | `@ResolutionScoped` |
+| `@TransientScoped()`  | `@TransientScoped`  |
+
+### Reverted Changes
+
+- **Reverted**: improved editor code completion for `Container.register` calls.  
+  TS Server-based completion (e.g., in VS Code) now suggests all available provider types
+  (`useClass`, `useFactory`, `useValue`, `useExisting`) instead of just `useClass`.
+
+  This was included in [0.22.0](#0220), but causes unacceptable type widening.  
+  It might be reconsidered in the future if we find a more robust alternative.
+
 ## 0.23.1
 
 - Changed `injectBy` and `optionalBy` to use `object` instead of `any` for `thisArg`, for better type safety.
