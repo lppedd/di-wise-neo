@@ -1,6 +1,28 @@
 import { check, getTokenName } from "../errors";
 import { getMetadata } from "../metadata";
+import type { Constructor } from "../token";
 import type { ClassDecorator } from "./decorators";
+
+/**
+ * Class decorator that sets the class scope to **Container** and enables
+ * eager instantiation when the class is registered in the container.
+ *
+ * This causes the container to create and cache the instance of the class
+ * immediately, instead of deferring it until the first resolution.
+ *
+ * If the class cannot be resolved at registration time, registration fails.
+ *
+ * Example:
+ * ```ts
+ * @EagerInstantiate
+ * class Wizard {}
+ *
+ * // Wizard is registered with Container scope, and an instance
+ * // is created and cached immediately by the container
+ * container.register(Wizard);
+ * ```
+ */
+export function EagerInstantiate<This extends object, Ctor extends Constructor<This>>(target: Ctor): void;
 
 /**
  * Class decorator that sets the class scope to **Container** and enables
@@ -20,10 +42,16 @@ import type { ClassDecorator } from "./decorators";
  * // is created and cached immediately by the container
  * container.register(Wizard);
  * ```
+ *
+ * @deprecated Use `@EagerInstantiate` instead of `@EagerInstantiate()`.
  */
+export function EagerInstantiate<This extends object>(): ClassDecorator<This>;
+
 // @__NO_SIDE_EFFECTS__
-export function EagerInstantiate<This extends object>(): ClassDecorator<This> {
-  return (Class): void => {
+export function EagerInstantiate<This extends object, Ctor extends Constructor<This>>(
+  target?: Ctor,
+): ClassDecorator<This> | Ctor | void {
+  const decorator: ClassDecorator<This> = (Class): void => {
     const metadata = getMetadata(Class);
     const currentScope = metadata.scope;
     check(!currentScope || currentScope.value === "Container", () => {
@@ -43,4 +71,6 @@ export function EagerInstantiate<This extends object>(): ClassDecorator<This> {
       appliedBy: "EagerInstantiate",
     };
   };
+
+  return target === undefined ? decorator : decorator(target);
 }

@@ -770,7 +770,7 @@ describe("Container", () => {
   it("should instantiate container-scoped @EagerInstantiate classes", () => {
     let isInstantiated = false;
 
-    @EagerInstantiate()
+    @EagerInstantiate
     @Scoped("Container")
     class Wand {
       constructor() {
@@ -801,7 +801,7 @@ describe("Container", () => {
     );
 
     expect(() => {
-      @EagerInstantiate()
+      @EagerInstantiate
       @TransientScoped() // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {}
     }).toThrowErrorMatchingInlineSnapshot(
@@ -814,7 +814,7 @@ describe("Container", () => {
 
     expect(() => {
       @Scoped("Transient")
-      @EagerInstantiate() // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      @EagerInstantiate // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {}
     }).toThrowErrorMatchingInlineSnapshot(
       `
@@ -827,7 +827,7 @@ describe("Container", () => {
 
   it("should not throw error if multiple decorators set the same scope", () => {
     @Scoped("Container")
-    @EagerInstantiate()
+    @EagerInstantiate
     @Scoped("Container")
     @Scoped("Container") // eslint-disable-next-line @typescript-eslint/no-unused-vars
     class Wizard {}
@@ -836,7 +836,7 @@ describe("Container", () => {
   it("should throw if @EagerInstantiate class cannot resolve dependencies", () => {
     const Castle = createType<string>("Castle");
 
-    @EagerInstantiate()
+    @EagerInstantiate
     @Scoped("Container")
     class Wizard {
       constructor(@Inject(Castle) @Named("Hogwarts") _castle: string) {}

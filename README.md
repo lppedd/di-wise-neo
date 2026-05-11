@@ -529,7 +529,7 @@ This causes the container to immediately create and cache the instance of the cl
 at registration time, instead of deferring instantiation until the first resolution.
 
 ```ts
-@EagerInstantiate()
+@EagerInstantiate
 export class ExtensionContext {
   /* ... */
 }
