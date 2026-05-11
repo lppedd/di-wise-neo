@@ -124,12 +124,12 @@ describe("inject", () => {
   });
 
   it("should fallback to inject if no dependent", () => {
-    @AutoRegister()
+    @AutoRegister
     class Wand {
       owner = inject(Wizard);
     }
 
-    @AutoRegister()
+    @AutoRegister
     class Wizard {
       wand = injectBy(this, Wand);
     }
@@ -233,7 +233,7 @@ describe("inject", () => {
     });
 
     it("should support runInContext", () => {
-      @AutoRegister()
+      @AutoRegister
       @Scoped("Container")
       class Wizard {}
 

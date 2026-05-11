@@ -512,7 +512,7 @@ Enables automatic registration of the decorated class when it is resolved if it 
 been registered beforehand.
 
 ```ts
-@AutoRegister()
+@AutoRegister
 export class ExtensionContext {
   /* ... */
 }
