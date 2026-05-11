@@ -1,7 +1,24 @@
 import { check, getTokenName } from "../errors";
 import { getMetadata, type ScopeDecorator } from "../metadata";
 import type { Scope } from "../scope";
+import type { Constructor } from "../token";
 import type { ClassDecorator } from "./decorators";
+
+/**
+ * Class decorator that registers the decorated type with the **Container** scope.
+ *
+ * Use this scope when you want one cached instance per container,
+ * with parent-container lookup fallback.
+ *
+ * Example:
+ * ```ts
+ * @ContainerScoped
+ * class Wizard {
+ *   // ...
+ * }
+ * ```
+ */
+export function ContainerScoped<This extends object, Ctor extends Constructor<This>>(target: Ctor): void;
 
 /**
  * Class decorator that registers the decorated type with the **Container** scope.
@@ -16,11 +33,34 @@ import type { ClassDecorator } from "./decorators";
  *   // ...
  * }
  * ```
+ *
+ * @deprecated Use `@ContainerScoped` instead of `@ContainerScoped()`.
  */
+export function ContainerScoped<This extends object>(): ClassDecorator<This>;
+
 // @__NO_SIDE_EFFECTS__
-export function ContainerScoped<This extends object>(): ClassDecorator<This> {
-  return scoped("Container", "ContainerScoped");
+export function ContainerScoped<This extends object, Ctor extends Constructor<This>>(
+  target?: Ctor,
+): ClassDecorator<This> | Ctor | void {
+  const decorator = scoped("Container", "ContainerScoped");
+  return target === undefined ? decorator : decorator(target);
 }
+
+/**
+ * Class decorator that registers the decorated type with the **Resolution** scope.
+ *
+ * Use this scope when you want one cached instance per resolution graph,
+ * so repeated resolutions within the same request reuse the same value.
+ *
+ * Example:
+ * ```ts
+ * @ResolutionScoped
+ * class Wand {
+ *   // ...
+ * }
+ * ```
+ */
+export function ResolutionScoped<This extends object, Ctor extends Constructor<This>>(target: Ctor): void;
 
 /**
  * Class decorator that registers the decorated type with the **Resolution** scope.
@@ -35,11 +75,33 @@ export function ContainerScoped<This extends object>(): ClassDecorator<This> {
  *   // ...
  * }
  * ```
+ *
+ * @deprecated Use `@ResolutionScoped` instead of `@ResolutionScoped()`.
  */
+export function ResolutionScoped<This extends object>(): ClassDecorator<This>;
+
 // @__NO_SIDE_EFFECTS__
-export function ResolutionScoped<This extends object>(): ClassDecorator<This> {
-  return scoped("Resolution", "ResolutionScoped");
+export function ResolutionScoped<This extends object, Ctor extends Constructor<This>>(
+  target?: Ctor,
+): ClassDecorator<This> | Ctor | void {
+  const decorator = scoped("Resolution", "ResolutionScoped");
+  return target === undefined ? decorator : decorator(target);
 }
+
+/**
+ * Class decorator that registers the decorated type with the **Transient** scope.
+ *
+ * Use this scope when you want a fresh instance every time the class is resolved.
+ *
+ * Example:
+ * ```ts
+ * @TransientScoped
+ * class Wand {
+ *   // ...
+ * }
+ * ```
+ */
+export function TransientScoped<This extends object, Ctor extends Constructor<This>>(target: Ctor): void;
 
 /**
  * Class decorator that registers the decorated type with the **Transient** scope.
@@ -53,10 +115,17 @@ export function ResolutionScoped<This extends object>(): ClassDecorator<This> {
  *   // ...
  * }
  * ```
+ *
+ * @deprecated Use `@TransientScoped` instead of `@TransientScoped()`.
  */
+export function TransientScoped<This extends object>(): ClassDecorator<This>;
+
 // @__NO_SIDE_EFFECTS__
-export function TransientScoped<This extends object>(): ClassDecorator<This> {
-  return scoped("Transient", "TransientScoped");
+export function TransientScoped<This extends object, Ctor extends Constructor<This>>(
+  target?: Ctor,
+): ClassDecorator<This> | Ctor | void {
+  const decorator = scoped("Transient", "TransientScoped");
+  return target === undefined ? decorator : decorator(target);
 }
 
 /**

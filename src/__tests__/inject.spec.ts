@@ -244,7 +244,7 @@ describe("inject", () => {
     });
 
     it("should not throw on optional resolution", () => {
-      @ContainerScoped()
+      @ContainerScoped
       class Wand {}
 
       const injector = container.resolve(Injector);

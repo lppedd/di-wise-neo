@@ -789,8 +789,8 @@ describe("Container", () => {
 
   it("should throw when conflicting class scopes are set by decorators", () => {
     expect(() => {
-      @TransientScoped()
-      @ContainerScoped() // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      @TransientScoped
+      @ContainerScoped // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {}
     }).toThrowErrorMatchingInlineSnapshot(
       `
@@ -802,7 +802,7 @@ describe("Container", () => {
 
     expect(() => {
       @EagerInstantiate
-      @TransientScoped() // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      @TransientScoped // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class Wizard {}
     }).toThrowErrorMatchingInlineSnapshot(
       `
@@ -1194,7 +1194,7 @@ describe("Container", () => {
   });
 
   it("should resolve resolution scoped providers", () => {
-    @ResolutionScoped()
+    @ResolutionScoped
     class Decoration {}
 
     class Wand {
