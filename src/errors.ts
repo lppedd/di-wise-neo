@@ -75,10 +75,6 @@ export function getFullTokenName([token, name]: TokenInfo): string {
 }
 
 function getCause(error: any): string {
-  if (!error) {
-    return "";
-  }
-
   const msg = isError(error) ? error.message : String(error);
   return `\n  [cause] ${untag(msg)}`;
 }
