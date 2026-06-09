@@ -18,32 +18,9 @@ import type { ClassDecorator } from "./decorators";
  * }
  * ```
  */
-export function ContainerScoped<This extends object, Ctor extends Constructor<This>>(target: Ctor): void;
-
-/**
- * Class decorator that registers the decorated type with the **Container** scope.
- *
- * Use this scope when you want one cached instance per container,
- * with parent-container lookup fallback.
- *
- * Example:
- * ```ts
- * @ContainerScoped()
- * class Wizard {
- *   // ...
- * }
- * ```
- *
- * @deprecated Use `@ContainerScoped` instead of `@ContainerScoped()`.
- */
-export function ContainerScoped<This extends object>(): ClassDecorator<This>;
-
 // @__NO_SIDE_EFFECTS__
-export function ContainerScoped<This extends object, Ctor extends Constructor<This>>(
-  target?: Ctor,
-): ClassDecorator<This> | Ctor | void {
-  const decorator = scoped("Container", "ContainerScoped");
-  return target === undefined ? decorator : decorator(target);
+export function ContainerScoped<This extends object, Ctor extends Constructor<This>>(target: Ctor): void {
+  scoped("Container", "ContainerScoped")(target);
 }
 
 /**
@@ -60,32 +37,9 @@ export function ContainerScoped<This extends object, Ctor extends Constructor<Th
  * }
  * ```
  */
-export function ResolutionScoped<This extends object, Ctor extends Constructor<This>>(target: Ctor): void;
-
-/**
- * Class decorator that registers the decorated type with the **Resolution** scope.
- *
- * Use this scope when you want one cached instance per resolution graph,
- * so repeated resolutions within the same request reuse the same value.
- *
- * Example:
- * ```ts
- * @ResolutionScoped()
- * class Wand {
- *   // ...
- * }
- * ```
- *
- * @deprecated Use `@ResolutionScoped` instead of `@ResolutionScoped()`.
- */
-export function ResolutionScoped<This extends object>(): ClassDecorator<This>;
-
 // @__NO_SIDE_EFFECTS__
-export function ResolutionScoped<This extends object, Ctor extends Constructor<This>>(
-  target?: Ctor,
-): ClassDecorator<This> | Ctor | void {
-  const decorator = scoped("Resolution", "ResolutionScoped");
-  return target === undefined ? decorator : decorator(target);
+export function ResolutionScoped<This extends object, Ctor extends Constructor<This>>(target: Ctor): void {
+  scoped("Resolution", "ResolutionScoped")(target);
 }
 
 /**
@@ -101,31 +55,9 @@ export function ResolutionScoped<This extends object, Ctor extends Constructor<T
  * }
  * ```
  */
-export function TransientScoped<This extends object, Ctor extends Constructor<This>>(target: Ctor): void;
-
-/**
- * Class decorator that registers the decorated type with the **Transient** scope.
- *
- * Use this scope when you want a fresh instance every time the class is resolved.
- *
- * Example:
- * ```ts
- * @TransientScoped()
- * class Wand {
- *   // ...
- * }
- * ```
- *
- * @deprecated Use `@TransientScoped` instead of `@TransientScoped()`.
- */
-export function TransientScoped<This extends object>(): ClassDecorator<This>;
-
 // @__NO_SIDE_EFFECTS__
-export function TransientScoped<This extends object, Ctor extends Constructor<This>>(
-  target?: Ctor,
-): ClassDecorator<This> | Ctor | void {
-  const decorator = scoped("Transient", "TransientScoped");
-  return target === undefined ? decorator : decorator(target);
+export function TransientScoped<This extends object, Ctor extends Constructor<This>>(target: Ctor): void {
+  scoped("Transient", "TransientScoped")(target);
 }
 
 /**
@@ -154,13 +86,13 @@ export function Scoped<This extends object>(scope: Scope): ClassDecorator<This> 
 }
 
 function scoped<This extends object>(scope: Scope, decorator: ScopeDecorator): ClassDecorator<This> {
-  return (Class): void => {
-    const metadata = getMetadata(Class);
+  return (target): void => {
+    const metadata = getMetadata(target);
     const currentScope = metadata.scope;
     check(!currentScope || currentScope.value === scope, () => {
       const { value, appliedBy } = currentScope!;
       const by = appliedBy === "Scoped" ? `${appliedBy}(${value})` : appliedBy;
-      const className = getTokenName(Class);
+      const className = getTokenName(target);
       return (
         `class ${className}: scope ${value} was already set by @${by},\n  ` +
         `but @${decorator} is trying to set a conflicting scope ${scope}.\n  ` +
