@@ -8,6 +8,12 @@ describe("Type", () => {
     expect(createType("foo")).not.toBe(createType("foo"));
   });
 
+  it("should have debugName", () => {
+    const type = createType("baz");
+    expect(type.name).toBe("Type<baz>");
+    expect(type.debugName).toBe("baz");
+  });
+
   it("should have toString", () => {
     expect(String(createType("foo"))).toBe("Type<foo>");
     expect(createType("bar").toString()).toBe("Type<bar>");
