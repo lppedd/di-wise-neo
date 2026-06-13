@@ -20,7 +20,7 @@ import type { ClassDecorator } from "./decorators";
  */
 // @__NO_SIDE_EFFECTS__
 export function ContainerScoped<This extends object, Ctor extends Constructor<This>>(target: Ctor): void {
-  scoped("Container", "ContainerScoped")(target);
+  scoped(target, "Container", "ContainerScoped");
 }
 
 /**
@@ -39,7 +39,7 @@ export function ContainerScoped<This extends object, Ctor extends Constructor<Th
  */
 // @__NO_SIDE_EFFECTS__
 export function ResolutionScoped<This extends object, Ctor extends Constructor<This>>(target: Ctor): void {
-  scoped("Resolution", "ResolutionScoped")(target);
+  scoped(target, "Resolution", "ResolutionScoped");
 }
 
 /**
@@ -57,7 +57,7 @@ export function ResolutionScoped<This extends object, Ctor extends Constructor<T
  */
 // @__NO_SIDE_EFFECTS__
 export function TransientScoped<This extends object, Ctor extends Constructor<This>>(target: Ctor): void {
-  scoped("Transient", "TransientScoped")(target);
+  scoped(target, "Transient", "TransientScoped");
 }
 
 /**
@@ -82,27 +82,25 @@ export function TransientScoped<This extends object, Ctor extends Constructor<Th
  */
 // @__NO_SIDE_EFFECTS__
 export function Scoped<This extends object>(scope: Scope): ClassDecorator<This> {
-  return scoped(scope, "Scoped");
+  return (target) => scoped(target, scope, "Scoped");
 }
 
-function scoped<This extends object>(scope: Scope, decorator: ScopeDecorator): ClassDecorator<This> {
-  return (target): void => {
-    const metadata = getMetadata(target);
-    const currentScope = metadata.scope;
-    check(!currentScope || currentScope.value === scope, () => {
-      const { value, appliedBy } = currentScope!;
-      const by = appliedBy === "Scoped" ? `${appliedBy}(${value})` : appliedBy;
-      const className = getTokenName(target);
-      return (
-        `class ${className}: scope ${value} was already set by @${by},\n  ` +
-        `but @${decorator} is trying to set a conflicting scope ${scope}.\n  ` +
-        `Only one decorator should set the class scope, or all must use the same value.`
-      );
-    });
+function scoped<This extends object>(target: Constructor<This>, scope: Scope, decorator: ScopeDecorator): void {
+  const metadata = getMetadata(target);
+  const currentScope = metadata.scope;
+  check(!currentScope || currentScope.value === scope, () => {
+    const { value, appliedBy } = currentScope!;
+    const by = appliedBy === "Scoped" ? `${appliedBy}(${value})` : appliedBy;
+    const className = getTokenName(target);
+    return (
+      `class ${className}: scope ${value} was already set by @${by},\n  ` +
+      `but @${decorator} is trying to set a conflicting scope ${scope}.\n  ` +
+      `Only one decorator should set the class scope, or all must use the same value.`
+    );
+  });
 
-    metadata.scope = {
-      value: scope,
-      appliedBy: decorator,
-    };
+  metadata.scope = {
+    value: scope,
+    appliedBy: decorator,
   };
 }
