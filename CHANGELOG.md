@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.25.0
+
+- Removed the previously [deprecated](#0240) decorator factories.
+
+  | Removed               | Replacement         |
+  |:----------------------|:--------------------|
+  | `@AutoRegister()`     | `@AutoRegister`     |
+  | `@EagerInstantiate()` | `@EagerInstantiate` |
+  | `@ContainerScoped()`  | `@ContainerScoped`  |
+  | `@ResolutionScoped()` | `@ResolutionScoped` |
+  | `@TransientScoped()`  | `@TransientScoped`  |
+
 ## 0.24.0
 
 This is an ergonomics-focused release that makes class decorators easier to use.
