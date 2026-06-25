@@ -283,9 +283,10 @@ export class ContainerImpl implements Container {
 
     if (isClassProvider(provider)) {
       const metadata = getMetadata(provider.useClass);
+      // An explicit provider name overrides what is specified via @Named
+      const effectiveName = name ?? metadata.name;
       const registration: Registration<T> = {
-        // An explicit provider name overrides what is specified via @Named
-        name: metadata.name ?? name,
+        name: effectiveName,
         provider: metadata.provider,
         options: {
           // Explicit registration options override what is specified via class decorators (e.g., @Scoped)
@@ -302,9 +303,9 @@ export class ContainerImpl implements Container {
       // These tokens will point to the original class token and will have the same scope.
       for (const aliasToken of metadata.tokenRef.getRefTokens()) {
         this.myTokenRegistry.put(aliasToken, {
-          name: name,
+          name: effectiveName,
           provider: {
-            useExisting: [token, name],
+            useExisting: [token, effectiveName],
           },
         });
       }

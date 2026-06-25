@@ -726,8 +726,8 @@ describe("Container", () => {
     class Wizard {}
 
     container.register(IWizard, { useClass: Wizard });
-    expect(container.resolve(IWizard)).toBeDefined();
-    expect(container.resolve(Wizard)).toBeDefined();
+    expect(() => container.resolve(IWizard)).not.toThrow();
+    expect(() => container.resolve(Wizard)).not.toThrow();
   });
 
   it("should resolve all tokens", () => {
@@ -917,6 +917,33 @@ describe("Container", () => {
 
     container.register(Wizard);
     expect(container.resolve(Wizard, "Dumbledore")).toBe(container.resolve(Wizard));
+  });
+
+  it("should override @Named when explicit registration name is passed", () => {
+    @Scoped("Container")
+    @Named("Dumbledore")
+    class Wizard {}
+
+    // Here @Named wins because explicit name is not passed to register()
+    container.register(Wizard);
+
+    expect(() => container.resolve(Wizard, "Dumbledore")).not.toThrow();
+    expect(() => container.resolve(Wizard, "Potter")).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] unregistered token Wizard['Potter']]`,
+    );
+
+    container.unregister(Wizard);
+
+    // Here @Named loses because explicit name is passed to register()
+    container.register(Wizard, {
+      useClass: Wizard,
+      name: "Potter",
+    });
+
+    expect(() => container.resolve(Wizard, "Potter")).not.toThrow();
+    expect(() => container.resolve(Wizard, "Dumbledore")).toThrowErrorMatchingInlineSnapshot(
+      `[Error: [di-wise-neo] unregistered token Wizard['Dumbledore']]`,
+    );
   });
 
   it("should inject named token", () => {
