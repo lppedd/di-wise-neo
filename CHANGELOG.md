@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.26.0
+
+- Deprecated the `@Injectable` decorator in favor of `@Alias`, which better represents the decorator's purpose.  
+  `@Injectable` remains supported for backward compatibility, but will be removed in a future version.
+- Fixed an issue where aliases declared with `@Injectable` / `@Alias` were not respected when registering 
+  a token with a `ClassProvider`.
+
+  ```ts
+  const IWizard = createType<Wizard>("Wizard");
+
+  @Alias(WizardImpl)
+  class WizardImpl implements Wizard {
+    // ...
+  }
+
+  container.register(IWizard, { useClass: WizardImpl });
+  container.resolve(IWizard);     // Resolved
+  container.resolve(WizardImpl);  // Previously failed, now resolved
+  ```
+
 ## 0.25.0
 
 - Removed the previously [deprecated](#0240) decorator factories.
