@@ -153,7 +153,7 @@ export interface Container {
   /**
    * Registers a {@link ClassProvider}, using the class itself as its token.
    *
-   * Tokens provided via the {@link Injectable} decorator applied to the class
+   * Tokens provided via the {@link Alias} decorator applied to the class
    * are also registered as aliases.
    *
    * The scope is determined by the {@link Scoped} decorator - if present -
