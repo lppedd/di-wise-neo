@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.26.1
+
+- Fixed an issue where the name declared with `@Named` incorrectly took precedence over 
+  an explicit registration name.
+
+  ```ts
+  const IWizard = createType<Wizard>("Wizard");
+
+  @Named("Dumbledore")
+  class DumbledoreWizard implements Wizard {
+    // ...
+  }
+
+  container.register(IWizard, { 
+    useClass: DumbledoreWizard,
+    name: "Albus", // "Albus" should take precedence over "Dumbledore"
+  });
+  
+  container.resolve(IWizard, "Dumbledore"); // Previously resolved, now correctly throws an error
+  container.resolve(IWizard, "Albus");      // Previously threw an error, now correctly resolves
+  ```
+
 ## 0.26.0
 
 - Deprecated the `@Injectable` decorator in favor of `@Alias`, which better represents the decorator's purpose.  
