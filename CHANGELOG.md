@@ -1,8 +1,12 @@
 # Changelog
 
+## 0.26.2
+
+- Removed the accidentally addded by unnecessary `ProviderType.type` property.
+
 ## 0.26.1
 
-- Fixed an issue where the name declared with `@Named` incorrectly took precedence over 
+- Fixed an issue where the name declared with `@Named` incorrectly took precedence over
   an explicit registration name.
 
   ```ts
@@ -26,7 +30,7 @@
 
 - Deprecated the `@Injectable` decorator in favor of `@Alias`, which better represents the decorator's purpose.  
   `@Injectable` remains supported for backward compatibility, but will be removed in a future version.
-- Fixed an issue where aliases declared with `@Injectable` / `@Alias` were not respected when registering 
+- Fixed an issue where aliases declared with `@Injectable` / `@Alias` were not respected when registering
   a token with a `ClassProvider`.
 
   ```ts
