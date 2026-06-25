@@ -204,7 +204,10 @@ export interface Container {
   register<Value, ProviderValue extends Value>(token: Token<Value>, provider: ValueProvider<ProviderValue>): Container;
 
   /**
-   * Removes all registrations for the given token from the container's internal registry.
+   * Removes registrations for the given token from the container's internal registry.
+   *
+   * When a `name` is provided, only the registration with that `name` is removed.
+   * Otherwise, all registrations are removed.
    *
    * Returns an array of the distinct values that were cached by this container for the
    * removed registrations. Values from {@link ValueProvider} registrations are not included,
