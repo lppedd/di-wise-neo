@@ -259,7 +259,7 @@ export class ContainerImpl implements Container {
     this.myTokenRegistry.put(Class, registration);
 
     // Register additional aliasing tokens specified via class decorators.
-    // These tokens will point to the original Class token and will have the same scope.
+    // These tokens will point to the original class token and will have the same scope.
     for (const aliasToken of metadata.tokenRef.getRefTokens()) {
       this.myTokenRegistry.put(aliasToken, {
         name: name,
@@ -295,10 +295,11 @@ export class ContainerImpl implements Container {
         dependencies: metadata.dependencies,
       };
 
+      // Register the class itself
       this.myTokenRegistry.put(token, registration);
 
       // Register additional aliasing tokens specified via class decorators.
-      // These tokens will point to the original token and will have the same scope.
+      // These tokens will point to the original class token and will have the same scope.
       for (const aliasToken of metadata.tokenRef.getRefTokens()) {
         this.myTokenRegistry.put(aliasToken, {
           name: name,
