@@ -297,6 +297,17 @@ export class ContainerImpl implements Container {
 
       this.myTokenRegistry.put(token, registration);
 
+      // Register additional aliasing tokens specified via class decorators.
+      // These tokens will point to the original token and will have the same scope.
+      for (const aliasToken of metadata.tokenRef.getRefTokens()) {
+        this.myTokenRegistry.put(aliasToken, {
+          name: name,
+          provider: {
+            useExisting: [token, name],
+          },
+        });
+      }
+
       // Eager-instantiate only if the provided class is container-scoped.
       // Note that we are comparing the scope using the registration configured just above,
       // which takes into account both the metadata and the container option as a fallback.

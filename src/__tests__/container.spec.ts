@@ -719,6 +719,17 @@ describe("Container", () => {
     );
   });
 
+  it("should resolve injectable alias tokens", () => {
+    const IWizard = createType<Wizard>("IWizard");
+
+    @Alias(Wizard)
+    class Wizard {}
+
+    container.register(IWizard, { useClass: Wizard });
+    expect(container.resolve(IWizard)).toBeDefined();
+    expect(container.resolve(Wizard)).toBeDefined();
+  });
+
   it("should resolve all tokens", () => {
     const Character = createType<{ name: string }>("Character");
 
