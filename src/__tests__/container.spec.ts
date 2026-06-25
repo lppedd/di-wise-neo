@@ -4,6 +4,7 @@
 import { afterEach, assert, describe, expect, it, vi } from "vitest";
 
 import {
+  Alias,
   AutoRegister,
   build,
   classRef,
@@ -14,7 +15,6 @@ import {
   EagerInstantiate,
   Inject,
   inject,
-  Injectable,
   InjectAll,
   injectAll,
   Named,
@@ -25,7 +25,7 @@ import {
   ResolutionScoped,
   Scoped,
   tokenRef,
-  TransientScoped,
+  TransientScoped
 } from "..";
 import { useInjectionContext } from "../injectionContext";
 
@@ -173,7 +173,7 @@ describe("Container", () => {
     const Character = createType<{}>("Character");
     const Dumbledore = createType<{}>("Dumbledore");
 
-    @Injectable(Character, Dumbledore)
+    @Alias(Character, Dumbledore)
     @Scoped("Container")
     class Wizard {}
 
@@ -722,14 +722,14 @@ describe("Container", () => {
   it("should resolve all tokens", () => {
     const Character = createType<{ name: string }>("Character");
 
-    @Injectable(Character)
+    @Alias(Character)
     class Wizard {
       name = "Wizard";
     }
 
-    // Injectable decorators can be stacked
-    @Injectable(tokenRef(() => Person))
-    @Injectable(tokenRef(() => Character))
+    // @Alias decorators can be stacked
+    @Alias(tokenRef(() => Person))
+    @Alias(tokenRef(() => Character))
     class Witch {
       name = "Witch";
     }
@@ -1095,13 +1095,13 @@ describe("Container", () => {
     const IWand = createType<Wand>("Wand");
     const IWizard = createType<Wizard>("Wizard");
 
-    @Injectable(IWand)
+    @Alias(IWand)
     @Scoped("Container")
     class Wand {
       dep = inject(IWizard);
     }
 
-    @Injectable(IWizard)
+    @Alias(IWizard)
     @Scoped("Container")
     class Wizard {
       dep = inject(IWand);

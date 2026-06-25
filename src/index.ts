@@ -1,6 +1,7 @@
 export type { ChildContainerOptions, Container, ContainerHook, ContainerOptions } from "./container";
 export { createContainer } from "./container";
 export {
+  Alias,
   AutoRegister,
   ContainerScoped,
   EagerInstantiate,

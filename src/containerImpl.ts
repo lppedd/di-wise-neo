@@ -258,10 +258,10 @@ export class ContainerImpl implements Container {
     // Register the class itself
     this.myTokenRegistry.put(Class, registration);
 
-    // Register the additional tokens specified via class decorators.
+    // Register additional aliasing tokens specified via class decorators.
     // These tokens will point to the original Class token and will have the same scope.
-    for (const token of metadata.tokenRef.getRefTokens()) {
-      this.myTokenRegistry.put(token, {
+    for (const aliasToken of metadata.tokenRef.getRefTokens()) {
+      this.myTokenRegistry.put(aliasToken, {
         name: name,
         provider: {
           useExisting: [Class, name],

@@ -11,40 +11,40 @@ import type { ClassDecorator } from "./decorators";
  *
  * Example:
  * ```ts
- * @Injectable(Weapon)
+ * @Alias(Weapon)
  * class Rifle {}
  * ```
  *
- * Note that `@Injectable` decorators can be stacked to add multiple aliases.
+ * Note that `@Alias` decorators can be stacked to add multiple aliases.
  *
  * Example:
  * ```ts
- * @Injectable(Weapon)
- * @Injectable(Gun) // Or just @Injectable(Weapon, Gun)
+ * @Alias(Weapon)
+ * @Alias(Gun) // Or just @Alias(Weapon, Gun)
  * class Rifle {}
  * ```
  */
-export function Injectable<Value, This extends Value & object>(token: Token<Value>): ClassDecorator<This>;
-export function Injectable<VA, VB, This extends VA & VB & object>(tokenA: Token<VA>, tokenB: Token<VB>): ClassDecorator<This>;
-export function Injectable<VA, VB, VC, This extends VA & VB & VC & object>(
+export function Alias<Value, This extends Value & object>(token: Token<Value>): ClassDecorator<This>;
+export function Alias<VA, VB, This extends VA & VB & object>(tokenA: Token<VA>, tokenB: Token<VB>): ClassDecorator<This>;
+export function Alias<VA, VB, VC, This extends VA & VB & VC & object>(
   tokenA: Token<VA>,
   tokenB: Token<VB>,
   tokenC: Token<VC>,
 ): ClassDecorator<This>;
-export function Injectable<VA, VB, VC, VD, This extends VA & VB & VC & VD & object>(
+export function Alias<VA, VB, VC, VD, This extends VA & VB & VC & VD & object>(
   tokenA: Token<VA>,
   tokenB: Token<VB>,
   tokenC: Token<VC>,
   tokenD: Token<VD>,
 ): ClassDecorator<This>;
-export function Injectable<VA, VB, VC, VD, VE, This extends VA & VB & VC & VD & VE & object>(
+export function Alias<VA, VB, VC, VD, VE, This extends VA & VB & VC & VD & VE & object>(
   tokenA: Token<VA>,
   tokenB: Token<VB>,
   tokenC: Token<VC>,
   tokenD: Token<VD>,
   tokenE: Token<VE>,
 ): ClassDecorator<This>;
-export function Injectable<VA, VB, VC, VD, VE, VF, This extends VA & VB & VC & VD & VE & VF & object>(
+export function Alias<VA, VB, VC, VD, VE, VF, This extends VA & VB & VC & VD & VE & VF & object>(
   tokenA: Token<VA>,
   tokenB: Token<VB>,
   tokenC: Token<VC>,
@@ -64,25 +64,25 @@ export function Injectable<VA, VB, VC, VD, VE, VF, This extends VA & VB & VC & V
  *
  * Example:
  * ```ts
- * @Injectable(tokenRef(() => Weapon)) // Weapon is declared after Rifle
+ * @Alias(tokenRef(() => Weapon)) // Weapon is declared after Rifle
  * class Rifle {}
  * // Other code...
  * const Weapon = createType("Weapon");
  * ```
  *
- * Note that `@Injectable` decorators can be stacked to add multiple aliases.
+ * Note that `@Alias` decorators can be stacked to add multiple aliases.
  *
  * Example:
  * ```ts
- * @Injectable(tokenRef(() => Weapon))
- * @Injectable(Gun)
+ * @Alias(tokenRef(() => Weapon))
+ * @Alias(Gun)
  * class Rifle {}
  * ```
  */
-export function Injectable<Value, This extends Value & object>(tokens: TokenRef<Value>): ClassDecorator<This>;
+export function Alias<Value, This extends Value & object>(tokens: TokenRef<Value>): ClassDecorator<This>;
 
 // @__NO_SIDE_EFFECTS__
-export function Injectable<This extends object>(...args: [...Tokens<This>] | [TokenRef<This>]): ClassDecorator<This> {
+export function Alias<This extends object>(...args: [...Tokens<This>] | [TokenRef<This>]): ClassDecorator<This> {
   return (target): void => {
     const metadata = getMetadata(target);
     const arg0 = args[0];
@@ -102,3 +102,8 @@ export function Injectable<This extends object>(...args: [...Tokens<This>] | [To
     };
   };
 }
+
+/**
+ * @deprecated Use {@link Alias} instead.
+ */
+export const Injectable: typeof Alias = Alias;
