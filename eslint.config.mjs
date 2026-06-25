@@ -2,7 +2,6 @@
 
 import eslint from "@eslint/js";
 import pluginSimpleImportSort from "eslint-plugin-simple-import-sort";
-import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
@@ -10,7 +9,6 @@ export default tseslint.config(
     name: "di-wise-neo/languages",
     languageOptions: {
       ecmaVersion: 2022,
-      globals: globals.es2022,
     },
   },
   {

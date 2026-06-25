@@ -60,7 +60,6 @@
     "bunchee": "6.11.0",
     "eslint": "10.5.0",
     "eslint-plugin-simple-import-sort": "13.0.0",
-    "globals": "17.7.0",
     "prettier": "3.8.4",
     "typedoc": "0.28.19",
     "typescript": "6.0.3",
