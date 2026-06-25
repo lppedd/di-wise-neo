@@ -34,11 +34,6 @@ export interface Type<T> extends ParameterDecorator {
  */
 export interface ProviderType<T> extends Type<T> {
   /**
-   * The underlying `Type<T>`.
-   */
-  readonly type: Type<T>;
-
-  /**
    * The type's default provider.
    */
   readonly provider: Provider<T>;
@@ -118,7 +113,6 @@ export function createType<T>(
   type.toString = () => name;
 
   if (provider) {
-    type.type = type;
     type.provider = provider;
     type.options = options;
   }
