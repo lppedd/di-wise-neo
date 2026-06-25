@@ -2,7 +2,7 @@
 
 ## 0.26.2
 
-- Removed the accidentally addded by unnecessary `ProviderType.type` property.
+- Removed the accidentally added but unnecessary `ProviderType.type` property.
 
 ## 0.26.1
 
