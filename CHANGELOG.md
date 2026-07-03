@@ -17,11 +17,11 @@
     // ...
   }
 
-  container.register(IWizard, { 
+  container.register(IWizard, {
     useClass: DumbledoreWizard,
     name: "Albus", // "Albus" should take precedence over "Dumbledore"
   });
-  
+
   container.resolve(IWizard, "Dumbledore"); // Previously resolved, now correctly throws an error
   container.resolve(IWizard, "Albus");      // Previously threw an error, now correctly resolves
   ```
@@ -105,6 +105,7 @@ A quick Find & Replace should be enough to update all your usages.
   - `@TransientScoped()`
 
   These decorators make scoped registration more readable and less error-prone. For example:
+
   ```ts
   // Before
   @Scoped("Container")
@@ -231,6 +232,7 @@ features are in place for `1.0.0`.
   // Removing a hook
   container.removeHook(myHook);
   ```
+
 - Exported the `assertInjectionContext` function, to allow consumers to assert that
   the current stack frame is within an injection context.
 
@@ -248,7 +250,7 @@ features are in place for `1.0.0`.
 
   ```ts
   const ISecretStore = createType<SecretStore>("SecretStore", {
-    useClass: classRef(() => SecretStoreImpl), // SecretStoreImpl is defined later in the file 
+    useClass: classRef(() => SecretStoreImpl), // SecretStoreImpl is defined later in the file
   });
   ```
 
@@ -269,7 +271,7 @@ features are in place for `1.0.0`.
 
   ```ts
   const ITaskManager = createType<TaskManager>("TaskManager", { useClass: CloudTaskManagerImpl });
-  
+
   // No need to pass in a provider at registration site
   container.register(ITaskManager);
   ```
@@ -356,6 +358,7 @@ Breaking changes may still occur, but only:
   [di-wise-neo] failed to resolve dependency for Wizard(parameter #0: Type<Castle>)
     [cause] unregistered token Type<Castle>
   ```
+
 - Handled unnamed/anonymous classes in error reporting to keep error messages understandable.
 - Refactored dependency resolution internals to improve long-term maintainability.
 
@@ -366,6 +369,7 @@ Breaking changes may still occur, but only:
   ```text
   [di-wise-neo] circular dependency detected while resolving Wizard → Wand → Wizard
   ```
+
 - Performed various internal cleanups.
 
 ## 0.9.1
@@ -377,6 +381,7 @@ Breaking changes may still occur, but only:
   ```text
   [di-wise-neo] multiple @Named decorators on Wizard.set parameter 0, but only one is allowed
   ```
+
 - Improved the error message for multiple injection decorators declared on a parameter.
 
   ```text
@@ -392,7 +397,7 @@ Breaking changes may still occur, but only:
   ```ts
   @Scoped("Transient")
   class UnregisteredClass {
-    /* ... */ 
+    /* ... */
   }
 
   container.resolve(UnregisteredClass);
@@ -409,6 +414,7 @@ Breaking changes may still occur, but only:
   With this change, implicit registration is no longer allowed, and the only ways for a class
   to be auto-registered are by decorating it with `@AutoRegister()` or by creating the container
   with `autoRegister: true`.
+
 - Improved the unregistered token error message to include the name qualifier, if present.
 
   ```text
@@ -449,6 +455,7 @@ Breaking changes may still occur, but only:
   - `registerAlias`
 
   These methods were ultimately redundant and added little value in practice.
+
 - Improved in-code documentation.
 - Performed various internal cleanups to improve readability and maintainability.
 
