@@ -1,6 +1,6 @@
 import type { ParameterDecorator } from "./decorators/decorators";
 import { checkSingleDecorator, updateParameterMetadata } from "./decorators/utils";
-import type { Provider } from "./provider";
+import type { ClassProvider, ExistingProvider, FactoryProvider, Provider, ValueProvider } from "./provider";
 import { tokenRef } from "./tokenRef";
 import type { RegistrationOptions } from "./tokenRegistry";
 import type { Writable } from "./utils/writable";
@@ -78,11 +78,28 @@ export type Tokens<Value> = [Token<Value>, ...Token<Value>[]];
 export function createType<T>(debugName: string): Type<T>;
 
 /**
- * Creates a type token with a default {@link Provider} and optional default registration options.
+ * Creates a type token with a default {@link ClassProvider} and optional default registration options.
  *
  * Example:
  * ```ts
- * // Notice how we pass in a Provider directly at type creation site
+ * const ISpell = createType<Spell>("Spell", {
+ *   useClass: DefaultSpell,
+ * });
+ *
+ * container.register(ISpell);
+ * ```
+ */
+export function createType<T extends object>(
+  debugName: string,
+  provider: ClassProvider<T>,
+  options?: RegistrationOptions,
+): ProviderType<T>;
+
+/**
+ * Creates a type token with a default {@link FactoryProvider} and optional default registration options.
+ *
+ * Example:
+ * ```ts
  * const ISpell = createType<Spell>("Spell", {
  *   useFactory: () => getDefaultSpell(),
  * });
@@ -90,7 +107,36 @@ export function createType<T>(debugName: string): Type<T>;
  * container.register(ISpell);
  * ```
  */
-export function createType<T>(debugName: string, provider: Provider<T>, options?: RegistrationOptions): ProviderType<T>;
+export function createType<T>(debugName: string, provider: FactoryProvider<T>, options?: RegistrationOptions): ProviderType<T>;
+
+/**
+ * Creates a type token with a default {@link ValueProvider} and optional default registration options.
+ *
+ * Example:
+ * ```ts
+ * const defaultSpell = getDefaultSpell();
+ * const ISpell = createType<Spell>("Spell", {
+ *   useValue: defaultSpell,
+ * });
+ *
+ * container.register(ISpell);
+ * ```
+ */
+export function createType<T>(debugName: string, provider: ValueProvider<T>, options?: RegistrationOptions): ProviderType<T>;
+
+/**
+ * Creates a type token with a default {@link ExistingProvider} and optional default registration options.
+ *
+ * Example:
+ * ```ts
+ * const ISpell = createType<Spell>("Spell", {
+ *   useExisting: IBaseSpell,
+ * });
+ *
+ * container.register(ISpell);
+ * ```
+ */
+export function createType<T>(debugName: string, provider: ExistingProvider<T>, options?: RegistrationOptions): ProviderType<T>;
 
 // @__NO_SIDE_EFFECTS__
 export function createType<T>(
