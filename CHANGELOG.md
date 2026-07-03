@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.26.3
+
+- Improved type strictness for `createType<T>(...): ProviderType<T>`.  
+  `createType` now reports a type error when multiple provider types are specified.
+
+  ```ts
+  // Cannot specify multiple provider types
+  const IEnv = createType<string>("Env", { // TS2769: No overload matches this call
+    useValue: "development",
+    useFactory: () => getenv("ENV"),
+  });
+  ```
+
 ## 0.26.2
 
 - Removed the accidentally added but unnecessary `ProviderType.type` property.
