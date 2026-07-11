@@ -6,7 +6,6 @@ export {
   ContainerScoped,
   EagerInstantiate,
   Inject,
-  Injectable,
   InjectAll,
   Named,
   Optional,

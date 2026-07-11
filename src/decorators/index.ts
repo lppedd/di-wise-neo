@@ -1,7 +1,7 @@
+export { Alias } from "./alias";
 export { AutoRegister } from "./autoRegister";
 export { EagerInstantiate } from "./eagerInstantiate";
 export { Inject } from "./inject";
-export { Alias, Injectable } from "./injectable";
 export { InjectAll } from "./injectAll";
 export { Named } from "./named";
 export { Optional } from "./optional";

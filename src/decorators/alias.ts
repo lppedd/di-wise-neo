@@ -102,8 +102,3 @@ export function Alias<This extends object>(...args: [...Tokens<This>] | [TokenRe
     };
   };
 }
-
-/**
- * @deprecated Use {@link Alias} instead.
- */
-export const Injectable: typeof Alias = Alias;
