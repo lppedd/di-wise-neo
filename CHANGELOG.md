@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.27.0
+
+- Removed the previously [deprecated](#0260) `@Injectable` decorator, in favor of `@Alias`.
+
 ## 0.26.3
 
 - Improved type strictness for `createType<T>(...): ProviderType<T>`.  
